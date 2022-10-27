@@ -11,7 +11,7 @@ function WriteLog()
 # Get this script's directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 # Form the binary target directory for cross Windows builds.
-DIR_BIN_WIN="$(realpath "${DIR}/cmake-build-debug/bin")"
+DIR_BIN_WIN="$(realpath "${DIR}/cmake-build-debug-gw/bin")"
 # Location of MinGW DLLs.
 DIR_MINGW_DLL="/usr/x86_64-w64-mingw32/lib"
 # Location of MinGW DLLs 2.

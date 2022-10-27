@@ -14,3 +14,17 @@ Both using a CMake special tool-chain.
 2. Reporting in GitLab when compile failure. 
 3. Reporting in GitLab when unit-tests fail.
 4. Build a Debian package after a push on the 'release' branch. (maybe Windows too)
+
+## Prerequisites
+
+To be able to perform the builds the next packages need to be installed: 
+
+```bash
+apt install \
+  git
+  cmake
+  gcc-12
+  g++-12
+  mingw-w64
+  wine
+```
