@@ -1,3 +1,12 @@
+before_script:
+  - echo "Before script section"
+  - echo "For example you might run an update here or install a build dependency"
+  - echo "Or perhaps you might print out some debugging details"
+
+after_script:
+  - echo "After script section"
+  - echo "For example you might do some cleanup here"
+
 build-job:
   stage: build
   script:
@@ -23,5 +32,5 @@ deploy-prod:
   stage: deploy
   script:
     - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
-    - touch stage-deploy.txt
+    - touch stage-deplogit y.txt
   environment: production
