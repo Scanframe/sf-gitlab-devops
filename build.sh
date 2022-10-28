@@ -18,8 +18,8 @@ function WriteLog()
 function ShowHelp()
 {
 	WriteLog "Usage: ${0} [<options>] <sub-dir> [<target>]
-
   -d : Debug: Show executed commands rather then executing them.
+  -p : Install prerequisite Linux packages using 'apt' for now.
   -c : Cleans build targets first (adds build option '--clean-first')
   -t : Add tests to the build configuration.
   -w : Cross compile Windows on Linux using MinGW.
@@ -42,6 +42,33 @@ function ShowHelp()
     Build 'com' project and all sub-projects: ${0} com
     Build 'rt-shared-lib' project and all sub-projects: ${0} rt-shared-lib
 	"
+}
+
+# Install needed packages depending in the Windows(cygwin) or Linux environment it is called from.
+#
+function InstallPackages()
+{
+	if [[ "${1}" == "Linux" ]] ; then
+		WriteLog "About to install required packages..."
+		if ! sudo apt install cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
+			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12; then
+			WriteLog "Failed to install 1 or more packages!"
+			exit 1
+		fi
+	elif [[ "${1}" == "Linux/Cross" ]] ; then
+		if ! sudo apt install mingw-w64 cmake doxygen graphviz ; then
+			WriteLog "Failed to install 1 or more packages!"
+			exit 1
+		fi
+	elif [[ "${1}" == "Windows" ]] ; then
+		if ! cyg-apt install doxygen graphviz ; then
+			WriteLog "Failed to install 1 or more Cygwin packages!"
+			exit 1
+		fi
+	else
+		# shellcheck disable=SC2128
+		WriteLog "Unknown '$1' environment selection passed to function '${FUNCNAME}'."
+	fi
 }
 
 # Detect windows using the cygwin 'uname' command.
@@ -90,7 +117,7 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 
 argument=()
 while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "dhcbtmws" opt; do
+	while getopts "dhcbtmwsp" opt; do
 		case $opt in
 			h)
 				ShowHelp
@@ -98,6 +125,14 @@ while [ $# -gt 0 ] && [ "$1" != "--" ]; do
 				;;
 			d)
 				FLAG_DEBUG=true
+				;;
+			p)
+				if [[ ${FLAG_CROSS_WINDOWS} ]] ; then
+					InstallPackages "${SF_TARGET_SYSTEM}/Cross"
+				else
+					InstallPackages "${SF_TARGET_SYSTEM}"
+				fi
+					exit 0
 				;;
 			c)
 				WriteLog "Clean first enabled"

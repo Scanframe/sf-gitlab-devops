@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 if(NOT DEFINED SF_CROSS_WINDOWS)
 	# Seems the variable 'CMAKE_SYSTEM_NAME' is no set yet at this time.
 	#if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set(CMAKE_TOOLCHAIN_FILE "cmake/SfToolChainLinux.cmake" #[[CACHE PATH "" FORCE]])
+	set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainLinux.cmake" #[[CACHE PATH "" FORCE]])
 	#endif()
 else () #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	# Suppressing a lot of Vulkan directory warnings.
@@ -19,7 +19,7 @@ else () #if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.
 	set(ENV{SF_QT_VERSION_CMAKE_DIR} "$ENV{HOME}/lib/QtWin/6.4.0/mingw_64/lib/cmake")
 	# Set the toolchain for the cross compiler for Windows.
-	set(CMAKE_TOOLCHAIN_FILE "cmake/SfToolChainCrossWindows.cmake")
+	set(CMAKE_TOOLCHAIN_FILE "com/cmake/SfToolChainCrossWindows.cmake")
 endif ()
 
 # project name and language
