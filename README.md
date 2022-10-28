@@ -68,4 +68,9 @@ sudo gitlab-runner register --url https://git.scanframe.com/ --registration-toke
 ```
 
 # What Now?!
-Configuration (with the authentication token) was saved in "/etc/gitlab-runner/config.toml"
+
+### GitLab Runner Service
+
+The service uses config file `/etc/gitlab-runner/config.toml` 
+
+
