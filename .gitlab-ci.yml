@@ -27,7 +27,7 @@ job-make-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-debug-gnu/
+      - cmake-build-*-gnu/
   script:
     - ./build.sh -Cm .
 
@@ -35,12 +35,20 @@ job-make-gnu:
 job-build-test-gnu:
   stage: build-test
   needs: [job-make-gnu]
+  cache:
+    key: make-bin-gnu
+    paths:
+      - cmake-build-*-gnu/
   script:
     - ./build.sh -b . $TEST_TARGET
 
 job-test-gnu:
   stage: test
   needs: [job-build-test-gnu]
+  cache:
+    key: make-bin-gnu
+    paths:
+      - cmake-build-*-gnu/
   script:
     - ./bin/$TEST_TARGET.bin
 
@@ -48,6 +56,10 @@ job-test-gnu:
 job-build-gnu:
   stage: build
   needs: [job-make-gnu]
+  cache:
+    key: make-bin-gnu
+    paths:
+      - cmake-build-*-gnu/
   script:
     - ./build.sh -b . $RUN_TARGET
 
@@ -59,7 +71,7 @@ job-make-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-debug-gw/
+      - cmake-build-*-gw/
   script:
     - ./build.sh -wm .
 
@@ -67,12 +79,20 @@ job-make-gw:
 job-build-test-gw:
   stage: build-test
   needs: [job-make-gw]
+  cache:
+    key: make-bin-gw
+    paths:
+      - cmake-build-*-gw/
   script:
     - ./build.sh -wb . $TEST_TARGET
 
 job-test-gw:
   stage: test
   needs: [job-build-test-gw]
+  cache:
+    key: make-bin-gw
+    paths:
+      - cmake-build-*-gw/
   script:
     - wine64 ./binwin/$TEST_TARGET.exe
 
@@ -80,6 +100,10 @@ job-test-gw:
 job-build-gw:
   stage: build
   needs: [job-make-gw]
+  cache:
+    key: make-bin-gw
+    paths:
+      - cmake-build-*-gw/
   script:
     - ./build.sh -wb . $RUN_TARGET
 
@@ -87,9 +111,13 @@ job-build-gw:
 
 job-deploy-linux:
   stage: deploy
+  cache:
+    key: make-bin-gw
+    paths:
+      - cmake-build-*-gnu/
   environment: production
   script:
-    - echo "------ Deploy ($CI_COMMIT_BRANCH) -------"
+    - ls -la cmake-build-*-*/bin
     - echo ssh -o StrictHostKeyChecking=no -i ~/.ssh/public-key-file root@my-deplay-server
     - echo ssh -o StrictHostKeyChecking=no -i $SSH_KEY_FILE root@my-deplay-server "
       git -C /home/sites/app/
