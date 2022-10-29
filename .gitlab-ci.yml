@@ -41,7 +41,7 @@ job-build-test-gnu:
       - cmake-build-*-gnu
       - bin/
   script:
-    - ./build.sh -b . ${TEST_TARGET}
+    - ./build.sh -b . "${TEST_TARGET}"
 
 job-test-gnu:
   stage: test
@@ -52,7 +52,7 @@ job-test-gnu:
       - cmake-build-*-gnu
       - bin/
   script:
-    - ./bin/$TEST_TARGET.bin
+    - "./bin/${TEST_TARGET}.bin"
 
 # Jobs for building the actual run target using the build.sh script calling CMake with appropriate arguments.
 job-build-gnu:
@@ -64,7 +64,7 @@ job-build-gnu:
       - cmake-build-*-gnu
       - bin/
   script:
-    - ./build.sh -b . ${RUN_TARGET}
+    - ./build.sh -b . "${RUN_TARGET}"
 
 ################################ Linux GW Compiler ############################
 
@@ -89,7 +89,7 @@ job-build-test-gw:
       - cmake-build-*-gw
       - binwin/
   script:
-    - ./build.sh -wb . ${TEST_TARGET}
+    - ./build.sh -wb . "${TEST_TARGET}"
 
 job-test-gw:
   stage: test
@@ -100,7 +100,7 @@ job-test-gw:
       - cmake-build-*-gw
       - binwin/
   script:
-    - ./wine-exec.sh ./binwin/${TEST_TARGET}.exe
+    - ./wine-exec.sh "${TEST_TARGET}.exe"
 
 # Job for building using the build.sh script calling CMake with appropriate arguments.
 job-build-gw:
@@ -112,12 +112,13 @@ job-build-gw:
       - cmake-build-*-gw
       - binwin
   script:
-    - ./build.sh -wb . ${RUN_TARGET}
+    - ./build.sh -wb . "${RUN_TARGET}"
 
 ###############################################################################
 
-job-deploy-linux:
+job-deploy:
   stage: deploy
+  #needs: [job-build-gnu,job-build-gw]
   cache:
     key: make-bin-gw
     paths:
