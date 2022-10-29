@@ -2,7 +2,7 @@
 #set -x
 
 # Define some foreground colors values.
-if [[ "${COLORTERM}" = "truecolor" ]] ; then
+if [[ "${COLORTERM}" != "truecolor" ]] ; then
 	fg_black=""
 	fg_red=""
 	fg_green=""
