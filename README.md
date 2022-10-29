@@ -8,6 +8,9 @@
   * [Prerequisites](#prerequisites)
     * [Linux Packages](#linux-packages)
     * [GitLab Runner](#gitlab-runner)
+      * [Considerations](#considerations)
+      * [Installation](#installation)
+      * [Registration](#registration)
 <!-- TOC -->
 
 ## Introduction
@@ -34,16 +37,15 @@ To be able to perform the builds the next packages need to be installed.
 ### Linux Packages
  
 ```bash
-apt install \
-  git \
-  cmake \
-  gcc-12 \
-  g++-12 \
-  mingw-w64 \
-  wine
+apt-get install git cmake gcc-12 g++-12 mingw-w64 wine
 ```
 
 ### GitLab Runner
+
+#### Considerations
+
+For learning how a CI/CD pipeline is operating a VirtualBox instance is created using an
+Ubuntu Server v22.04 (as of writing).
 
 #### Installation
 
@@ -53,24 +55,30 @@ can be downloaded from this ([link](https://gitlab-runner-downloads.s3.amazonaws
 
 ```bash
 wget -P ~/download "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
-
 dpkg -i gitlab-runner_amd64.deb
-
 apt-get install -f ~/download/gitlab-runner_amd64.deb
 ```
 
+The standard user under which the runner runs is `gitlab-runner` and the working directory is `~/builds/`.
+To change this the gitlab-runner service file `/etc/systemd/system/gitlab-runner.service` needs to edited.
+Other configuration is available in  `/etc/gitlab-runner/config.toml` for runner instance running 
+as a service.
+
 #### Registration
 
-Command to register a runner.
+Command to register a runner at a GitLab server.
 
 ```bash
 sudo gitlab-runner register --url https://git.scanframe.com/ --registration-token $REGISTRATION_TOKEN
 ```
 
-# What Now?!
+**Making it RUN**
 
-### GitLab Runner Service
+It seems that the one of the **tags** (vbox, cplusplus) must correspond with one of the tags in the GitLab-Runner configuration.
 
-The service uses config file `/etc/gitlab-runner/config.toml` 
-
-
+```yaml
+default:
+  tags:
+    - vbox
+    - cplusplus
+```
