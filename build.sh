@@ -1,17 +1,32 @@
 #!/bin/bash
 #set -x
 
-# Define some foreground colors.
-# shellcheck disable=SC2034
-fg_black="$(tput setaf 0)"
-fg_red="$(tput setaf 1)"
-fg_green="$(tput setaf 2 bold)"
-fg_yellow="$(tput setaf 3)"
-fg_blue="$(tput setaf 4)"
-fg_magenta="$(tput setaf 5)"
-fg_cyan="$(tput setaf 6)"
-fg_white="$(tput setaf 7)"
-fg_reset="$(tput sgr0)"
+# Define some foreground colors values.
+if [[ -z "${TERM}" ]] ; then
+	fg_black=""
+	fg_red=""
+	fg_green=""
+	fg_yellow=""
+	fg_blue=""
+	fg_magenta=""
+	fg_cyan=""
+	fg_white=""
+	fg_reset=""
+else
+	# shellcheck disable=SC2034
+	fg_black="$(tput setaf 0)"
+	fg_red="$(tput setaf 1)"
+	# shellcheck disable=SC2034
+	fg_green="$(tput setaf 2)"
+	fg_yellow="$(tput setaf 3)"
+	# shellcheck disable=SC2034
+	fg_blue="$(tput setaf 4)"
+	fg_magenta="$(tput setaf 5)"
+	fg_cyan="$(tput setaf 6)"
+	# shellcheck disable=SC2034
+	fg_white="$(tput setaf 7)"
+	fg_reset="$(tput sgr0)"
+fi
 
 # Get the bash script directory.
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

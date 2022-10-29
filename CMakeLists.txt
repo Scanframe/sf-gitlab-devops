@@ -1,5 +1,5 @@
-# set minimum cmake version
-cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+# set minimum cmake versionbold
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 # Make it so our own packages are found.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/com/cmake")
 # Check if this is a cross compile for windows.
