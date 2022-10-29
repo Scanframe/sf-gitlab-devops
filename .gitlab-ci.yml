@@ -24,6 +24,10 @@ variables:
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
   stage: make
+  cache:
+    key: make-bin-gnu
+    paths:
+      - cmake-build-*-gnu
   script:
     - ./build.sh -Cm .
 
@@ -52,6 +56,10 @@ job-build-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 job-make-gw:
   stage: make
+  cache:
+    key: make-bin-gw
+    paths:
+      - cmake-build-*-gw
   script:
     - ./build.sh -wm .
 
