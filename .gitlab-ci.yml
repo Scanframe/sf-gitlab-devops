@@ -27,7 +27,9 @@ job-make-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-*-gnu/
+      - cmake-build-*/
+      - bin/
+      - binwin/
   script:
     - ./build.sh -Cm .
 
@@ -38,8 +40,9 @@ job-build-test-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-*-gnu/
+      - cmake-build-*/
       - bin/
+      - binwin/
   script:
     - ./build.sh -b . $TEST_TARGET
 
@@ -49,8 +52,9 @@ job-test-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-*-gnu/
+      - cmake-build-*/
       - bin/
+      - binwin/
   script:
     - ./bin/$TEST_TARGET.bin
 
@@ -61,8 +65,9 @@ job-build-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-*-gnu/
+      - cmake-build-*/
       - bin/
+      - binwin/
   script:
     - ./build.sh -b . $RUN_TARGET
 
@@ -74,7 +79,8 @@ job-make-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*-gw/
+      - cmake-build-*/
+      - bin/
       - binwin/
   script:
     - ./build.sh -wm .
@@ -86,10 +92,11 @@ job-build-test-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*-gw/
+      - cmake-build-*/
+      - bin/
       - binwin/
   script:
-    - ./build.sh -wb . $TEST_TARGET
+    - ./build.sh -wb . ${TEST_TARGET}
 
 job-test-gw:
   stage: test
@@ -97,10 +104,11 @@ job-test-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*-gw/
+      - cmake-build-*/
+      - bin/
       - binwin/
   script:
-    - ./wine-exec.sh ./binwin/$TEST_TARGET.exe
+    - ./wine-exec.sh ./binwin/${TEST_TARGET}.exe
 
 # Job for building using the build.sh script calling CMake with appropriate arguments.
 job-build-gw:
@@ -109,7 +117,8 @@ job-build-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*-gw/
+      - cmake-build-*/
+      - bin/
       - binwin/
   script:
     - ./build.sh -wb . $RUN_TARGET
@@ -121,7 +130,9 @@ job-deploy-linux:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*-gnu/
+      - cmake-build-*/
+      - bin/
+      - binwin/
   environment: production
   script:
     - ls -la cmake-build-*-*/bin
