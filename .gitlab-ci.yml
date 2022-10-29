@@ -39,6 +39,7 @@ job-build-test-gnu:
     key: make-bin-gnu
     paths:
       - cmake-build-*-gnu/
+      - bin/
   script:
     - ./build.sh -b . $TEST_TARGET
 
@@ -49,6 +50,7 @@ job-test-gnu:
     key: make-bin-gnu
     paths:
       - cmake-build-*-gnu/
+      - bin/
   script:
     - ./bin/$TEST_TARGET.bin
 
@@ -60,6 +62,7 @@ job-build-gnu:
     key: make-bin-gnu
     paths:
       - cmake-build-*-gnu/
+      - bin/
   script:
     - ./build.sh -b . $RUN_TARGET
 
@@ -72,6 +75,7 @@ job-make-gw:
     key: make-bin-gw
     paths:
       - cmake-build-*-gw/
+      - binwin/
   script:
     - ./build.sh -wm .
 
@@ -83,6 +87,7 @@ job-build-test-gw:
     key: make-bin-gw
     paths:
       - cmake-build-*-gw/
+      - binwin/
   script:
     - ./build.sh -wb . $TEST_TARGET
 
@@ -93,6 +98,7 @@ job-test-gw:
     key: make-bin-gw
     paths:
       - cmake-build-*-gw/
+      - binwin/
   script:
     - wine64 ./binwin/$TEST_TARGET.exe
 
@@ -104,6 +110,7 @@ job-build-gw:
     key: make-bin-gw
     paths:
       - cmake-build-*-gw/
+      - binwin/
   script:
     - ./build.sh -wb . $RUN_TARGET
 

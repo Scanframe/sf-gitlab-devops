@@ -11,7 +11,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-#_SetOutputDirs()
+_SetOutputDirs()
 
 # Set the actual executable target.
 add_executable(${PROJECT_NAME})
