@@ -27,7 +27,7 @@ job-make-gnu:
   cache:
     key: make-bin-gnu
     paths:
-      - cmake-build-*/
+      - cmake-build-debug-gnu/
   script:
     - ./build.sh -Cm .
 
@@ -59,7 +59,7 @@ job-make-gw:
   cache:
     key: make-bin-gw
     paths:
-      - cmake-build-*/
+      - cmake-build-debug-gw/
   script:
     - ./build.sh -wm .
 
