@@ -25,22 +25,21 @@ variables:
 job-make-gnu:
   stage: make
   cache:
+    key: make-bin-gnu
     paths:
-      - cmake-build-*/
-      - bin/
-      - binwin/
+      - cmake-build-*-gnu
   script:
-    - ./build.sh -Cm .
+    - ./build.sh -m .
 
 # Job for test builds using the build.sh script calling CMake with appropriate arguments.
 job-build-test-gnu:
   stage: build-test
   needs: [job-make-gnu]
   cache:
+    key: make-bin-gnu
     paths:
-      - cmake-build-*/
+      - cmake-build-*-gnu
       - bin/
-      - binwin/
   script:
     - ./build.sh -b . $TEST_TARGET
 
@@ -48,10 +47,10 @@ job-test-gnu:
   stage: test
   needs: [job-build-test-gnu]
   cache:
+    key: make-bin-gnu
     paths:
-      - cmake-build-*/
+      - cmake-build-*-gnu
       - bin/
-      - binwin/
   script:
     - ./bin/$TEST_TARGET.bin
 
@@ -60,10 +59,10 @@ job-build-gnu:
   stage: build
   needs: [job-make-gnu]
   cache:
+    key: make-bin-gnu
     paths:
-      - cmake-build-*/
+      - cmake-build-*-gnu
       - bin/
-      - binwin/
   script:
     - ./build.sh -b . $RUN_TARGET
 
@@ -73,9 +72,9 @@ job-build-gnu:
 job-make-gw:
   stage: make
   cache:
+    key: make-bin-gw
     paths:
-      - cmake-build-*/
-      - bin/
+      - cmake-build-*-gw
       - binwin/
   script:
     - ./build.sh -wm .
@@ -85,33 +84,33 @@ job-build-test-gw:
   stage: build-test
   needs: [job-make-gw]
   cache:
+    key: make-bin-gw
     paths:
-      - cmake-build-*/
-      - bin/
+      - cmake-build-*-gw
       - binwin/
   script:
-    - ./build.sh -wb . ${TEST_TARGET}
+    - ./build.sh -wb . $TEST_TARGET
 
 job-test-gw:
   stage: test
   needs: [job-build-test-gw]
   cache:
+    key: make-bin-gw
     paths:
-      - cmake-build-*/
-      - bin/
+      - cmake-build-*-gw
       - binwin/
   script:
-    - ./wine-exec.sh ./binwin/${TEST_TARGET}.exe
+    - ./wine-exec.sh ./binwin/$TEST_TARGET.exe
 
 # Job for building using the build.sh script calling CMake with appropriate arguments.
 job-build-gw:
   stage: build
   needs: [job-make-gw]
   cache:
+    key: make-bin-gw
     paths:
-      - cmake-build-*/
-      - bin/
-      - binwin/
+      - cmake-build-*-gw
+      - binwin
   script:
     - ./build.sh -wb . $RUN_TARGET
 
@@ -120,10 +119,9 @@ job-build-gw:
 job-deploy-linux:
   stage: deploy
   cache:
+    key: make-bin-gw
     paths:
-      - cmake-build-*/
-      - bin/
-      - binwin/
+      - cmake-build-*-gnu/
   environment: production
   script:
     - ls -la cmake-build-*-*/bin
