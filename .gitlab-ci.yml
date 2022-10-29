@@ -100,7 +100,7 @@ job-test-gw:
       - cmake-build-*-gw/
       - binwin/
   script:
-    - wine64 ./binwin/$TEST_TARGET.exe
+    - ./wine-exec.sh ./binwin/$TEST_TARGET.exe
 
 # Job for building using the build.sh script calling CMake with appropriate arguments.
 job-build-gw:
