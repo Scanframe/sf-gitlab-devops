@@ -2,7 +2,7 @@
 #set -x
 
 # Define and use some foreground colors values when not running CI-jobs.
-if [[ "${COLORTERM}" == "truecolor" && ! ${CI} ]] ; then
+if [[ ${CI} ]] ; then
 	fg_black="";
 	fg_red=""
 	fg_green=""
@@ -121,7 +121,6 @@ function InstallPackages()
 }
 
 # Detect windows using the cygwin 'uname' command.
-
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]] ; then
 	WriteLog "Windows detected."
 	export SF_TARGET_SYSTEM="Windows"
@@ -138,6 +137,9 @@ else
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
 fi
+
+# Report the working directory
+WriteLog "Working from directory '${SCRIPT_DIR}'."
 
 # Initialize arguments and switches.
 FLAG_DEBUG=false

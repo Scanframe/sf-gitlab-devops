@@ -30,17 +30,7 @@ job-check:
   cache: []
   script:
     - echo "Working Directory=$(pwd)"
-    - echo "CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA}"
-    - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}"
-    - echo "CI_COMMIT_REF_SLUG=${CI_COMMIT_REF_SLUG}"
-    - echo "CI_COMMIT_REF_NAME=${CI_COMMIT_REF_NAME}"
-    - echo "CI_COMMIT_TAG=${CI_COMMIT_TAG}"
-    - echo "CI=${CI}"
-    - echo "CI_JOB_ID=${CI_JOB_ID}"
-    - echo "CI_REPOSITORY_URL=${CI_REPOSITORY_URL}"
-    - echo "CI_PROJECT_URL=${CI_PROJECT_URL}"
-    - echo "Environment..."
-    - env
+    - echo "Environment..." && env
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
