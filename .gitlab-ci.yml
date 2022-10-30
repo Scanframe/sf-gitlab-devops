@@ -9,11 +9,16 @@ default:
 # Order of stages for jobs to perform in.
 stages:
   - report
-  - make
-  - build-test
-  - test
-  - build
-  - deploy
+  - make-gnu
+  - build-test-gnu
+  - test-gnu
+  - build-gnu
+  - deploy-gnu
+  - make-gw
+  - build-test-gw
+  - test-gw
+  - build-gw
+  - deploy-gw
 
 variables:
   TEST_TARGET: "hello-world-test"
@@ -39,7 +44,7 @@ job-report:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  stage: make
+  stage: make-gnu
   needs: [ job-report ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
@@ -50,7 +55,7 @@ job-make-gnu:
 
 # Job for test builds using the build.sh script calling CMake with appropriate arguments.
 job-build-test-gnu:
-  stage: build-test
+  stage: build-test-gnu
   needs: [ job-make-gnu ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
@@ -64,7 +69,7 @@ job-build-test-gnu:
     - ./build.sh -b . "${TEST_TARGET}"
 
 job-test-gnu:
-  stage: test
+  stage: test-gnu
   needs: [ job-build-test-gnu ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
@@ -79,7 +84,7 @@ job-test-gnu:
 
 # Jobs for building the actual run target using the build.sh script calling CMake with appropriate arguments.
 job-build-gnu:
-  stage: build
+  stage: build-gnu
   needs: [ job-make-gnu ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
@@ -96,7 +101,7 @@ job-build-gnu:
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 job-make-gw:
-  stage: make
+  stage: make-gw
   needs: [ job-report ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
@@ -107,7 +112,7 @@ job-make-gw:
 
 # Job for test builds using the build.sh script calling CMake with appropriate arguments.
 job-build-test-gw:
-  stage: build-test
+  stage: build-test-gw
   needs: [ job-make-gw ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
@@ -121,7 +126,7 @@ job-build-test-gw:
     - ./build.sh -wb . "${TEST_TARGET}"
 
 job-test-gw:
-  stage: test
+  stage: test-gw
   needs: [ job-build-test-gw ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
@@ -136,7 +141,7 @@ job-test-gw:
 
 # Job for building using the build.sh script calling CMake with appropriate arguments.
 job-build-gw:
-  stage: build
+  stage: build-gw
   needs: [ job-make-gw ]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
@@ -152,7 +157,7 @@ job-build-gw:
 ################################ Deployment jobs ####################################
 
 job-deploy-gnu:
-  stage: deploy
+  stage: deploy-gnu
   needs: [job-build-gnu]
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-gw"
@@ -164,7 +169,7 @@ job-deploy-gnu:
     - echo "May be rsync-ed to a production site?"
 
 job-deploy-gw:
-  stage: deploy
+  stage: deploy-gw
   needs: [job-build-gw]
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-gw"
