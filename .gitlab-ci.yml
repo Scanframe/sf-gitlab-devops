@@ -1,6 +1,3 @@
-##
-## For keywords and structure look at https://docs.gitlab.com/ee/ci/yaml/
-##
 default:
   tags:
     - cplusplus
@@ -8,27 +5,31 @@ default:
 
 # Order of stages for jobs to perform in.
 stages:
-  - report
-  - make-gnu
-  - build-test-gnu
-  - test-gnu
-  - build-gnu
-  - deploy-gnu
-  - make-gw
-  - build-test-gw
-  - test-gw
-  - build-gw
-  - deploy-gw
+  # Jobs checking the environment requirements.
+  - check
+  # Jobs producing makefiles using CMake
+  - make
+  # Jobs for building the actual run target and possible dynamic libraries using.
+  - build
+  # Jobs for building tests using dynamic libraries of the build.
+  - build-test
+  # Jobs executing the build (unit-)tests.
+  - test
+  # Jobs for deploying of stored artifacts.
+  - deploy
 
 variables:
   TEST_TARGET: "hello-world-test"
   RUN_TARGET: "hello-world"
+  # Fixed directory the source root is mounted to.
+  DIR_MOUNT_GNU: "/tmp/build-gnu"
 
-job-report:
-  stage: report
+job-check:
+  stage: check
   # Do not need the cache for this one.
   cache: []
   script:
+    - echo "Working Directory=$(pwd)"
     - echo "CI_COMMIT_SHORT_SHA=${CI_COMMIT_SHORT_SHA}"
     - echo "CI_COMMIT_SHA=${CI_COMMIT_SHA}"
     - echo "CI_COMMIT_REF_SLUG=${CI_COMMIT_REF_SLUG}"
@@ -38,25 +39,32 @@ job-report:
     - echo "CI_JOB_ID=${CI_JOB_ID}"
     - echo "CI_REPOSITORY_URL=${CI_REPOSITORY_URL}"
     - echo "CI_PROJECT_URL=${CI_PROJECT_URL}"
-
-################################ Linux GNU Compiler ###########################
+    - echo "Environment..."
+    - env
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  stage: make-gnu
-  needs: [ job-report ]
+  stage: make
+  needs: [job-check]
+  # Bind/Mount the current directory so the path is the same.
+  before_script:
+    - mkdir -p "${DIR_MOUNT_GNU}"
+    - bindfs ./ "${DIR_MOUNT_GNU}"
+  # Unmount the bind directory.
+  after_script:
+    - fusermount -u "${DIR_MOUNT_GNU}"
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
       - cmake-build-*/
   script:
-    - ./build.sh -m .
+    - ${DIR_MOUNT_GNU}/build.sh -m .
 
-# Job for test builds using the build.sh script calling CMake with appropriate arguments.
-job-build-test-gnu:
-  stage: build-test-gnu
-  needs: [ job-make-gnu ]
+job-build-gnu:
+  stage: build
+  needs: [job-make-gnu]
+  dependencies: [job-make-gnu]
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
@@ -66,11 +74,41 @@ job-build-test-gnu:
     paths:
       - bin/
   script:
-    - ./build.sh -b . "${TEST_TARGET}"
+    - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
+
+job-build-test-gnu:
+  stage: build-test
+  needs: [job-make-gnu,job-build-gnu]
+  dependencies: [job-make-gnu,job-build-gnu]
+  # Bind/Mount the current directory so the path is the same.
+  before_script:
+    - mkdir -p "${DIR_MOUNT_GNU}"
+    - bindfs ./ "${DIR_MOUNT_GNU}"
+  # Unmount the bind directory.
+  after_script:
+    - fusermount -u "${DIR_MOUNT_GNU}"
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gnu"
+    paths:
+      - bin/
+  script:
+    - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
 
 job-test-gnu:
-  stage: test-gnu
-  needs: [ job-build-test-gnu ]
+  stage: test
+  needs: [job-build-test-gnu]
+  dependencies: [job-build-test-gnu]
+  # Bind/Mount the current directory so the path is the same.
+  before_script:
+    - mkdir -p "${DIR_MOUNT_GNU}"
+    - bindfs ./ "${DIR_MOUNT_GNU}"
+  # Unmount the bind directory.
+  after_script:
+    - fusermount -u "${DIR_MOUNT_GNU}"
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
@@ -80,108 +118,17 @@ job-test-gnu:
     paths:
       - bin/
   script:
-    - "./bin/${TEST_TARGET}.bin"
-
-# Jobs for building the actual run target using the build.sh script calling CMake with appropriate arguments.
-job-build-gnu:
-  stage: build-gnu
-  needs: [ job-make-gnu ]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - bin/
-  script:
-    - ./build.sh -b . "${RUN_TARGET}"
-
-################################ Linux GW Compiler ############################
-
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-job-make-gw:
-  stage: make-gw
-  needs: [ job-report ]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  script:
-    - ./build.sh -wm .
-
-# Job for test builds using the build.sh script calling CMake with appropriate arguments.
-job-build-test-gw:
-  stage: build-test-gw
-  needs: [ job-make-gw ]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - binwin/
-  script:
-    - ./build.sh -wb . "${TEST_TARGET}"
-
-job-test-gw:
-  stage: test-gw
-  needs: [ job-build-test-gw ]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - binwin/
-  script:
-    - ./wine-exec.sh "${TEST_TARGET}.exe"
-
-# Job for building using the build.sh script calling CMake with appropriate arguments.
-job-build-gw:
-  stage: build-gw
-  needs: [ job-make-gw ]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_JOB_NAME}"
-    paths:
-      - binwin/
-  script:
-    - ./build.sh -wb . "${RUN_TARGET}"
-
-################################ Deployment jobs ####################################
+    - ${DIR_MOUNT_GNU}/bin/${TEST_TARGET}.bin
 
 job-deploy-gnu:
-  stage: deploy-gnu
+  stage: deploy
   needs: [job-build-gnu]
+  dependencies: [job-build-gnu]
   artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
+    name: "${CI_COMMIT_REF_NAME}-gnu"
     paths:
       - bin/
   environment: production
   script:
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
     - echo "May be rsync-ed to a production site?"
-
-job-deploy-gw:
-  stage: deploy-gw
-  needs: [job-build-gw]
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - binwin/
-  environment: production
-  script:
-    - echo "Packaged in a installer or a zip-file?"
-    - echo "May be rsync-ed to a production site?"
-
-#    - ls -la cmake-build-*-*/bin
-#    - echo ssh -o StrictHostKeyChecking=no -i ~/.ssh/public-key-file root@my-deplay-server
-#    - echo ssh -o StrictHostKeyChecking=no -i $SSH_KEY_FILE root@my-deplay-server "
-#      git -C /home/sites/app/
-#      "
