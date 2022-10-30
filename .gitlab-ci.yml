@@ -19,14 +19,6 @@ variables:
   TEST_TARGET: "hello-world-test"
   RUN_TARGET: "hello-world"
 
-# Cache modules in between jobs for all cmake build.
-# TODO: Try getting 2 different caches for Linux and Windows builds.
-cache:
-  #key: ${CI_COMMIT_SHA}
-  key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}"
-  paths:
-    - cmake-build-*/
-
 job-report:
   stage: report
   # Do not need the cache for this one.
@@ -49,6 +41,10 @@ job-report:
 job-make-gnu:
   stage: make
   needs: [ job-report ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
   script:
     - ./build.sh -m .
 
@@ -56,6 +52,10 @@ job-make-gnu:
 job-build-test-gnu:
   stage: build-test
   needs: [ job-make-gnu ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
@@ -67,6 +67,9 @@ job-test-gnu:
   stage: test
   needs: [ job-build-test-gnu ]
   cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
@@ -78,6 +81,10 @@ job-test-gnu:
 job-build-gnu:
   stage: build
   needs: [ job-make-gnu ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
@@ -91,6 +98,10 @@ job-build-gnu:
 job-make-gw:
   stage: make
   needs: [ job-report ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
   script:
     - ./build.sh -wm .
 
@@ -98,6 +109,10 @@ job-make-gw:
 job-build-test-gw:
   stage: build-test
   needs: [ job-make-gw ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
@@ -108,6 +123,10 @@ job-build-test-gw:
 job-test-gw:
   stage: test
   needs: [ job-build-test-gw ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
@@ -119,6 +138,10 @@ job-test-gw:
 job-build-gw:
   stage: build
   needs: [ job-make-gw ]
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
   artifacts:
     name: "${CI_JOB_NAME}"
     paths:
