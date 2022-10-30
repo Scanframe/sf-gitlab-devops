@@ -57,7 +57,7 @@ job-build-test-gnu:
     paths:
       - cmake-build-*/
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gnu"
     paths:
       - bin/
   script:
@@ -71,7 +71,7 @@ job-test-gnu:
     paths:
       - cmake-build-*/
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gnu"
     paths:
       - bin/
   script:
@@ -86,7 +86,7 @@ job-build-gnu:
     paths:
       - cmake-build-*/
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gnu"
     paths:
       - bin/
   script:
@@ -114,7 +114,7 @@ job-build-test-gw:
     paths:
       - cmake-build-*/
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gw"
     paths:
       - binwin/
   script:
@@ -128,7 +128,7 @@ job-test-gw:
     paths:
       - cmake-build-*/
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gw"
     paths:
       - binwin/
   script:
@@ -149,21 +149,30 @@ job-build-gw:
   script:
     - ./build.sh -wb . "${RUN_TARGET}"
 
-###############################################################################
+################################ Deployment jobs ####################################
 
-job-deploy:
+job-deploy-gnu:
   stage: deploy
-  needs: [job-build-gnu,job-build-gw]
-  # Do not need the cache for this one.
-  cache: []
+  needs: [job-build-gnu]
   artifacts:
-    name: "${CI_JOB_NAME}"
+    name: "${CI_COMMIT_REF_NAME}-gw"
     paths:
       - bin/
-      - binwin/
   environment: production
   script:
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
+    - echo "May be rsync-ed to a production site?"
+
+job-deploy-gw:
+  stage: deploy
+  needs: [job-build-gw]
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gw"
+    paths:
+      - binwin/
+  environment: production
+  script:
+    - echo "Packaged in a installer or a zip-file?"
     - echo "May be rsync-ed to a production site?"
 
 #    - ls -la cmake-build-*-*/bin
