@@ -1,9 +1,9 @@
 #!/bin/bash
 #set -x
 
-# Define some foreground colors values.
-if [[ "${COLORTERM}" == "truecolor" && -n "${DESKTOP_SESSION}" ]] ; then
-	fg_black=""
+# Define and use some foreground colors values when not running CI-jobs.
+if [[ "${COLORTERM}" == "truecolor" && ! ${CI} ]] ; then
+	fg_black="";
 	fg_red=""
 	fg_green=""
 	fg_yellow=""

@@ -47,19 +47,17 @@ job-check:
 job-make-gnu:
   stage: make
   needs: [job-check]
-  # Bind/Mount the current directory so the path is the same.
-  before_script:
-    - mkdir -p "${DIR_MOUNT_GNU}"
-    - bindfs ./ "${DIR_MOUNT_GNU}"
-  # Unmount the bind directory.
-  after_script:
-    - fusermount -u "${DIR_MOUNT_GNU}"
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
       - cmake-build-*/
   script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
+    # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GNU}/build.sh -m .
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-build-gnu:
   stage: build
@@ -74,19 +72,17 @@ job-build-gnu:
     paths:
       - bin/
   script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
+    # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-build-test-gnu:
   stage: build-test
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
-  # Bind/Mount the current directory so the path is the same.
-  before_script:
-    - mkdir -p "${DIR_MOUNT_GNU}"
-    - bindfs ./ "${DIR_MOUNT_GNU}"
-  # Unmount the bind directory.
-  after_script:
-    - fusermount -u "${DIR_MOUNT_GNU}"
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
@@ -96,19 +92,17 @@ job-build-test-gnu:
     paths:
       - bin/
   script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
+    # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-test-gnu:
   stage: test
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
-  # Bind/Mount the current directory so the path is the same.
-  before_script:
-    - mkdir -p "${DIR_MOUNT_GNU}"
-    - bindfs ./ "${DIR_MOUNT_GNU}"
-  # Unmount the bind directory.
-  after_script:
-    - fusermount -u "${DIR_MOUNT_GNU}"
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
@@ -118,7 +112,12 @@ job-test-gnu:
     paths:
       - bin/
   script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
+    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${DIR_MOUNT_GNU}/bin/${TEST_TARGET}.bin
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-deploy-gnu:
   stage: deploy
