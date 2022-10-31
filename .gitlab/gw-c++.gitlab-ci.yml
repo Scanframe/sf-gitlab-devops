@@ -1,0 +1,34 @@
+# Template for Linux GW compiler only.
+.tpl-comp-gw:
+  rules:
+    # Detect Linux architecture of runner for GW compiler only. (Variable cannot be quoted in 'if:' !)
+    # FIXME: Seems plain comparing a string with '==' is not working.
+    - if: $CI_RUNNER_EXECUTABLE_ARCH =~ "^linux/amd64$"
+
+# Template to mount source root on a fixed directory path for Linux GW compiler.
+.tpl-bind-gw:
+  before_script:
+    # Log to syslog to be able to see execution flow.
+    - logger --tag "${SF_LOG_TAG}" "Mounting '${SF_DIR_MOUNT_GW}' =>  '$(pwd)'"
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${SF_DIR_MOUNT_GW}" && bindfs ./ "${SF_DIR_MOUNT_GW}"
+  after_script:
+    # Log to syslog to be able to see execution flow.
+    - logger --tag "${SF_LOG_TAG}" "Unmounting '${SF_DIR_MOUNT_GW}' =>  '$(pwd)'"
+    # Unmount the bind directory.
+    - fusermount -u "${SF_DIR_MOUNT_GW}"
+
+# Template to configure cache for CMake generated files for the GW compiler.
+.tpl-cache-gw:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
+
+# Template to define artifacts in the designated directory.
+.tpl-artifacts-gw:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gw"
+    expire_in: 2 days
+    paths:
+      - "${SF_DIR_BIN_GW}"

@@ -1,30 +1,16 @@
-include: 
-  local: ".gitlab/shell-c++.gitlab-ci.yml"
+include:
+  - local: ".gitlab/common-c++.gitlab-ci.yml"
+  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+  - local: ".gitlab/gw-c++.gitlab-ci.yml"
 
 default:
   tags:
     - cplusplus
-    - vbox
 
-# Overriding the 2 variables.
+# 2 additional variables needed for this file.
 variables:
-  TEST_TARGET: "hello-world-test"
-  RUN_TARGET: "hello-world"
-
-# Order of stages for jobs to perform in.
-stages:
-  # Jobs checking the environment requirements.
-  - check
-  # Jobs producing makefiles using CMake
-  - make
-  # Jobs for building the actual run target and possible dynamic libraries using.
-  - build
-  # Jobs for building tests using dynamic libraries of the build.
-  - build-test
-  # Jobs executing the build (unit-)tests.
-  - test
-  # Jobs for deploying of stored artifacts.
-  - deploy
+  SF_TEST_TARGET: "hello-world-test"
+  SF_RUN_TARGET: "hello-world"
 
 ################################ Prequel Checks ###############################
 
@@ -37,46 +23,46 @@ job-check:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu]
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu]
   stage: make
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
-    - ${DIR_MOUNT_GNU}/build.sh -m .
+    - ${SF_DIR_MOUNT_GNU}/build.sh -m .
 
 job-build-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: build
   needs: [job-make-gnu]
   dependencies: [job-make-gnu]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
+    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_RUN_TARGET}"
 
 job-build-test-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: build-test
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
+    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_TEST_TARGET}"
 
 job-test-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: test
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
+    - ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
 
 job-deploy-gnu:
-  extends: [.tpl-artifacts-gnu]
+  extends: [.tpl-comp-gnu,.tpl-artifacts-gnu,.tpl-deploy]
   stage: deploy
   needs: [job-build-gnu,job-test-gnu]
   dependencies: [job-build-gnu]
@@ -91,46 +77,46 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw]
+  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
-    - ${DIR_MOUNT_GW}/build.sh -wm .
+    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
 
 job-build-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build
   needs: [job-make-gw]
   dependencies: [job-make-gw]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
 
 job-build-test-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build-test
   needs: [job-make-gw,job-build-gw]
   dependencies: [job-make-gw,job-build-gw]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_TEST_TARGET}"
 
 job-test-gw:
-  extends: [.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-comp-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: test
   needs: [job-build-test-gw]
   dependencies: [job-build-test-gw]
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ./wine-exec.sh ${TEST_TARGET}.exe
+    - ./wine-exec.sh ${SF_TEST_TARGET}.exe
 
 job-deploy-gw:
-  extends: [.tpl-artifacts-gw]
+  extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
   stage: deploy
   needs: [job-build-gw,job-test-gw]
   dependencies: [job-build-gw]

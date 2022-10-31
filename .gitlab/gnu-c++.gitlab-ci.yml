@@ -1,0 +1,33 @@
+# Template for Linux GNU compiler only.
+.tpl-comp-gnu:
+  rules:
+    # Detect Linux architecture of runner for GNU compiler only. (Variable cannot be quoted in 'if:' !)
+    - if: $CI_RUNNER_EXECUTABLE_ARCH =~ "^linux/(arm64|amd64)$"
+
+# Template to mount source root on a fixed directory path for Linux GNU compiler.
+.tpl-bind-gnu:
+  before_script:
+    # Log to syslog to be able to see execution flow.
+    - logger --tag "${SF_LOG_TAG}" "Mounting '${SF_DIR_MOUNT_GNU}' => '$(pwd)'"
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${SF_DIR_MOUNT_GNU}" && bindfs ./ "${SF_DIR_MOUNT_GNU}"
+  after_script:
+    # Log to syslog to be able to see execution flow.
+    - logger --tag "${SF_LOG_TAG}" "Unmounting '${SF_DIR_MOUNT_GNU}' =>  '$(pwd)'"
+    # Unmount the bind directory.
+    - fusermount -u "${SF_DIR_MOUNT_GNU}"
+
+# Template to configure cache for CMake generated files for the GNU compiler.
+.tpl-cache-gnu:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
+
+# Template to define artifacts in the designated directory.
+.tpl-artifacts-gnu:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gnu"
+    expire_in: 2 days
+    paths:
+      - "${SF_DIR_BIN_GNU}"
