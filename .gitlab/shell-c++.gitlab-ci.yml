@@ -31,14 +31,14 @@ variables:
 # Template for Linux GNU compiler only.
 .tpl-gnu-comp:
   rules:
-    # Detect Linux architecture of runner for GNU compiler only.
-    - if: "${CI_RUNNER_EXECUTABLE_ARCH}" =~ "^linux/(arm64|amd64)$"
+    # Detect Linux architecture of runner for GNU compiler only. (Variable cannot be quoted in 'if:' !)
+    - if: $CI_RUNNER_EXECUTABLE_ARCH =~ "^linux/(arm64|amd64)$"
 
 # Template for Linux GW compiler only.
 .tpl-gw-comp:
   rules:
-    # Detect Linux architecture of runner for GW compiler only.
-    - if: "${CI_RUNNER_EXECUTABLE_ARCH}" == "linux/amd64"
+    # Detect Linux architecture of runner for GW compiler only. (Variable cannot be quoted in 'if:' !)
+    - if: $CI_RUNNER_EXECUTABLE_ARCH == "linux/amd64"
 
 # Template to reference to for the single script line only.
 .tpl-log-script:
