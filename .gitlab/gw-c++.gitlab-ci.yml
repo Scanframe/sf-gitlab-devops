@@ -2,7 +2,8 @@
 .tpl-comp-gw:
   rules:
     # Detect Linux architecture of runner for GW compiler only. (Variable cannot be quoted in 'if:' !)
-    - if: $CI_RUNNER_EXECUTABLE_ARCH == "linux/amd64"
+    # FIXME: Seems plain comparing a string with '==' is not working.
+    - if: $CI_RUNNER_EXECUTABLE_ARCH =~ "^linux/amd64$"
 
 # Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
