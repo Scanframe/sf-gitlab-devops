@@ -37,7 +37,7 @@ To be able to perform the builds the next packages need to be installed.
 ### Linux Packages
  
 ```bash
-apt-get install git cmake gcc-12 g++-12 mingw-w64 wine
+apt-get install git cmake gcc-12 g++-12 mingw-w64 bindfs wine
 ```
 
 ### GitLab Runner
