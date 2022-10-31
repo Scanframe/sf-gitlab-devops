@@ -42,8 +42,8 @@ variables:
 
 # Template to deploy only when having on the release branch.
 .tpl-deploy:
-  only:
-    - "${SF_RELEASE_BRANCH_NAME}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH_NAME
 
 # Template to reference to for the single script line only.
 .tpl-log-script:
