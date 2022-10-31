@@ -1,29 +1,16 @@
-include: 
-  local: ".gitlab/shell-c++.gitlab-ci.yml"
+include:
+  - local: ".gitlab/common-c++.gitlab-ci.yml"
+  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+  - local: ".gitlab/gw-c++.gitlab-ci.yml"
 
 default:
   tags:
     - cplusplus
 
-# 2 variables needed for this file.
+# 2 additional variables needed for this file.
 variables:
   SF_TEST_TARGET: "hello-world-test"
   SF_RUN_TARGET: "hello-world"
-
-# Order of stages for jobs to perform in.
-stages:
-  # Jobs checking the environment requirements.
-  - check
-  # Jobs producing makefiles using CMake
-  - make
-  # Jobs for building the actual run target and possible dynamic libraries using.
-  - build
-  # Jobs for building tests using dynamic libraries of the build.
-  - build-test
-  # Jobs executing the build (unit-)tests.
-  - test
-  # Jobs for deploying of stored artifacts.
-  - deploy
 
 ################################ Prequel Checks ###############################
 
@@ -36,7 +23,7 @@ job-check:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  extends: [.tpl-gw-comp,.tpl-bind-gnu,.tpl-cache-gnu]
+  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu]
   stage: make
   needs: [job-check]
   script:
@@ -90,7 +77,7 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: [.tpl-gw-comp,.tpl-gw-comp,.tpl-bind-gw,.tpl-cache-gw]
+  extends: [.tpl-comp-gw,.tpl-gw-comp,.tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
   script:
@@ -129,9 +116,9 @@ job-test-gw:
     - ./wine-exec.sh ${SF_TEST_TARGET}.exe
 
 job-deploy-gw:
-  extends: [.tpl-artifacts-gw]
+  extends: [.tpl-artifacts-gw,.tpl-deploy]
   stage: deploy
-  needs: [job-build-gw,job-test-gw,.tpl-deploy]
+  needs: [job-build-gw,job-test-gw]
   dependencies: [job-build-gw]
   environment: production
   script:
