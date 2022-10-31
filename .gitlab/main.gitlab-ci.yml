@@ -1,5 +1,5 @@
-include:
-  local: "shell-c++.gitlab-ci.yml"
+include: 
+  local: ".gitlab/shell-c++.gitlab-ci.yml"
 
 default:
   tags:
