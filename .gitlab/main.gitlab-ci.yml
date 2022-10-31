@@ -90,7 +90,7 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: [.tpl-gw-comp,.tpl-gw-comp,tpl-bind-gw,.tpl-cache-gw]
+  extends: [.tpl-gw-comp,.tpl-gw-comp,.tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
   script:
