@@ -1,20 +1,14 @@
 include: 
   local: ".gitlab/shell-c++.gitlab-ci.yml"
 
-.tpl-deploy:
-  only:
-    - "${SF_RELEASE_BRANCH_NAME}"
-
 default:
   tags:
     - cplusplus
 
-# Overriding the 2 variables.
+# 2 variables needed for this file.
 variables:
-  # Name of the branch that allows running deploying to production.
-  SF_RELEASE_BRANCH_NAME: "main"
-  TEST_TARGET: "hello-world-test"
-  RUN_TARGET: "hello-world"
+  SF_TEST_TARGET: "hello-world-test"
+  SF_RUN_TARGET: "hello-world"
 
 # Order of stages for jobs to perform in.
 stages:
@@ -42,13 +36,13 @@ job-check:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu]
+  extends: [.tpl-gw-comp,.tpl-bind-gnu,.tpl-cache-gnu]
   stage: make
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
-    - ${DIR_MOUNT_GNU}/build.sh -m .
+    - ${SF_DIR_MOUNT_GNU}/build.sh -m .
 
 job-build-gnu:
   extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
@@ -58,7 +52,7 @@ job-build-gnu:
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
+    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_RUN_TARGET}"
 
 job-build-test-gnu:
   extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
@@ -68,7 +62,7 @@ job-build-test-gnu:
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
+    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_TEST_TARGET}"
 
 job-test-gnu:
   extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
@@ -78,7 +72,7 @@ job-test-gnu:
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
+    - ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
 
 job-deploy-gnu:
   extends: [.tpl-artifacts-gnu,.tpl-deploy]
@@ -96,13 +90,13 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw]
+  extends: [.tpl-gw-comp,.tpl-gw-comp,tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
-    - ${DIR_MOUNT_GW}/build.sh -wm .
+    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
 
 job-build-gw:
   extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
@@ -112,7 +106,7 @@ job-build-gw:
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
 
 job-build-test-gw:
   extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
@@ -122,7 +116,7 @@ job-build-test-gw:
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_TEST_TARGET}"
 
 job-test-gw:
   extends: [.tpl-cache-gw,.tpl-artifacts-gw]
@@ -132,12 +126,12 @@ job-test-gw:
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ./wine-exec.sh ${TEST_TARGET}.exe
+    - ./wine-exec.sh ${SF_TEST_TARGET}.exe
 
 job-deploy-gw:
   extends: [.tpl-artifacts-gw]
   stage: deploy
-  needs: [job-build-gw,job-test-gw]
+  needs: [job-build-gw,job-test-gw,.tpl-deploy]
   dependencies: [job-build-gw]
   environment: production
   script:
