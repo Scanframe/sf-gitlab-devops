@@ -28,6 +28,25 @@ variables:
   DIR_MOUNT_GNU: "/tmp/build-gnu"
   DIR_MOUNT_GW: "/tmp/build-gw"
 
+# Job template to extend from like:
+# job_my:
+#   extends: .tpl-bind-gnu
+.tpl-bind-gnu:
+  before_script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
+  after_script:
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GNU}"
+
+.tpl-bind-gw:
+  before_script:
+    # Bind/Mount the current directory so the path is the same.
+    - mkdir -p "${DIR_MOUNT_GW}" && bindfs ./ "${DIR_MOUNT_GW}"
+  after_script:
+    # Unmount the bind directory.
+    - fusermount -u "${DIR_MOUNT_GW}"
+
 job-check:
   stage: check
   # Do not need the cache for this one.
@@ -41,6 +60,7 @@ job-check:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
+  extends: .tpl-bind-gnu
   stage: make
   needs: [job-check]
   cache:
@@ -48,14 +68,11 @@ job-make-gnu:
     paths:
       - cmake-build-*/
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GNU}/build.sh -m .
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-build-gnu:
+  extends: .tpl-bind-gnu
   stage: build
   needs: [job-make-gnu]
   dependencies: [job-make-gnu]
@@ -68,14 +85,11 @@ job-build-gnu:
     paths:
       - ${DIR_BIN_GNU}
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-build-test-gnu:
+  extends: .tpl-bind-gnu
   stage: build-test
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
@@ -88,14 +102,11 @@ job-build-test-gnu:
     paths:
       - ${DIR_BIN_GNU}
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-test-gnu:
+  extends: .tpl-bind-gnu
   stage: test
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
@@ -108,12 +119,8 @@ job-test-gnu:
     paths:
       - ${DIR_BIN_GNU}
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GNU}"
 
 job-deploy-gnu:
   stage: deploy
@@ -133,6 +140,7 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
+  extends: .tpl-bind-gw
   stage: make
   needs: [job-check]
   cache:
@@ -140,14 +148,11 @@ job-make-gw:
     paths:
       - cmake-build-*/
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GW}" && bindfs ./ "${DIR_MOUNT_GW}"
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GW}/build.sh -wm .
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GW}"
 
 job-build-gw:
+  extends: .tpl-bind-gw
   stage: build
   needs: [job-make-gw]
   dependencies: [job-make-gw]
@@ -160,14 +165,11 @@ job-build-gw:
     paths:
       - ${DIR_BIN_GW}
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GW}" && bindfs ./ "${DIR_MOUNT_GW}"
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GW}"
 
 job-build-test-gw:
+  extends: .tpl-bind-gw
   stage: build-test
   needs: [job-make-gw,job-build-gw]
   dependencies: [job-make-gw,job-build-gw]
@@ -180,12 +182,8 @@ job-build-test-gw:
     paths:
       - ${DIR_BIN_GW}
   script:
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GW}" && bindfs ./ "${DIR_MOUNT_GW}"
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GW}"
 
 job-test-gw:
   stage: test
