@@ -1,97 +1,12 @@
+include:
+  -local: .gitlab-ci.yml
+
 default:
   tags:
     - cplusplus
     - vbox
 
-# Order of stages for jobs to perform in.
-stages:
-  # Jobs checking the environment requirements.
-  - check
-  # Jobs producing makefiles using CMake
-  - make
-  # Jobs for building the actual run target and possible dynamic libraries using.
-  - build
-  # Jobs for building tests using dynamic libraries of the build.
-  - build-test
-  # Jobs executing the build (unit-)tests.
-  - test
-  # Jobs for deploying of stored artifacts.
-  - deploy
-
-variables:
-  TEST_TARGET: "hello-world-test"
-  RUN_TARGET: "hello-world"
-  # Fixed directory the source root is mounted to.
-  DIR_BIN_GNU: "bin/"
-  DIR_BIN_GW: "binwin/"
-  # Fixed directory the source root is mounted to.
-  DIR_MOUNT_GNU: "/tmp/build-gnu"
-  DIR_MOUNT_GW: "/tmp/build-gw"
-
-##
-## Job templates see: (https://docs.gitlab.com/ee/ci/yaml/yaml_optimization.html#use-extends-and-include-together)
-##
-
-# Template to dump all environment variables.
-.tpl-env-dump:
-  # Do not need the cache for this one.
-  cache: []
-  before_script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} => '$(pwd)'"
-    - echo "Working Directory=$(pwd)"
-    - echo "Environment Dump" && env
-  script:
-    - echo "..."
-
-# Template to mount source root on a fixed directory path for Linux GNU compiler.
-.tpl-bind-gnu:
-  before_script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Mounting '${DIR_MOUNT_GNU}' => '$(pwd)'"
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
-  after_script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Unmounting '${DIR_MOUNT_GNU}' =>  '$(pwd)'"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GNU}"
-
-# Template to mount source root on a fixed directory path for Linux GW compiler.
-.tpl-bind-gw:
-  before_script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Mounting '${DIR_MOUNT_GW}' =>  '$(pwd)'"
-    # Bind/Mount the current directory so the path is the same.
-    - mkdir -p "${DIR_MOUNT_GW}" && bindfs ./ "${DIR_MOUNT_GW}"
-  after_script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Unmounting '${DIR_MOUNT_GW}' =>  '$(pwd)'"
-    # Unmount the bind directory.
-    - fusermount -u "${DIR_MOUNT_GW}"
-
-# Template to configure cache for CMake.
-.tpl-cache-gnu:
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
-
-.tpl-cache-gw:
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-
-.tpl-artifacts-gnu:
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - ${DIR_BIN_GNU}
-
-.tpl-artifacts-gw:
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - ${DIR_BIN_GW}
-
-
-################################ Prequel Checks ###########################
+################################ Prequel Checks ###############################
 
 job-check:
   extends: .tpl-env-dump
@@ -106,21 +21,17 @@ job-make-gnu:
   stage: make
   needs: [job-check]
   script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
+    - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GNU}/build.sh -m .
 
 job-build-gnu:
-  extends: [.tpl-bind-gnu,.tpl-cache-gnu]
+  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: build
   needs: [job-make-gnu]
   dependencies: [job-make-gnu]
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - ${DIR_BIN_GNU}
   script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
+    - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
 
@@ -130,7 +41,7 @@ job-build-test-gnu:
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
   script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
+    - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
 
@@ -140,7 +51,7 @@ job-test-gnu:
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
   script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
+    - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
 
@@ -151,7 +62,7 @@ job-deploy-gnu:
   dependencies: [job-build-gnu]
   environment: production
   script:
-    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
+    - !reference [.tpl-log-script,script]
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
     - echo "May be rsync-ed to a production site?"
 
@@ -164,6 +75,7 @@ job-make-gw:
   stage: make
   needs: [job-check]
   script:
+    - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GW}/build.sh -wm .
 
@@ -173,6 +85,7 @@ job-build-gw:
   needs: [job-make-gw]
   dependencies: [job-make-gw]
   script:
+    - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
 
@@ -182,6 +95,7 @@ job-build-test-gw:
   needs: [job-make-gw,job-build-gw]
   dependencies: [job-make-gw,job-build-gw]
   script:
+    - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
 
@@ -191,6 +105,7 @@ job-test-gw:
   needs: [job-build-test-gw]
   dependencies: [job-build-test-gw]
   script:
+    - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ./wine-exec.sh ${TEST_TARGET}.exe
 
@@ -201,5 +116,6 @@ job-deploy-gw:
   dependencies: [job-build-gw]
   environment: production
   script:
+    - !reference [.tpl-log-script,script]
     - echo "Packaged in a installer or a zip-file?"
     - echo "May be rsync-ed to a production site?"
