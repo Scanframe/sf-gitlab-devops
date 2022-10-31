@@ -28,9 +28,21 @@ variables:
   DIR_MOUNT_GNU: "/tmp/build-gnu"
   DIR_MOUNT_GW: "/tmp/build-gw"
 
-# Job template to extend from like:
-# job_my:
-#   extends: .tpl-bind-gnu
+##
+## Job templates see: (https://docs.gitlab.com/ee/ci/yaml/yaml_optimization.html#use-extends-and-include-together)
+##
+
+# Template to dump all environment variables.
+.tpl-env-dump:
+  # Do not need the cache for this one.
+  cache: []
+  before_script:
+    - echo "Working Directory=$(pwd)"
+    - echo "Environment Dump" && env
+  script:
+    - echo "..."
+
+# Template to mount source root on a fixed directory path for Linux GNU compiler.
 .tpl-bind-gnu:
   before_script:
     # Bind/Mount the current directory so the path is the same.
@@ -39,6 +51,7 @@ variables:
     # Unmount the bind directory.
     - fusermount -u "${DIR_MOUNT_GNU}"
 
+# Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
   before_script:
     # Bind/Mount the current directory so the path is the same.
@@ -47,39 +60,51 @@ variables:
     # Unmount the bind directory.
     - fusermount -u "${DIR_MOUNT_GW}"
 
+# Template to configure cache for CMake.
+.tpl-cache-gnu:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
+    paths:
+      - cmake-build-*/
+
+.tpl-cache-gw:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
+    paths:
+      - cmake-build-*/
+
+.tpl-artifacts-gnu:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gnu"
+
+.tpl-artifacts-gw:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-gw"
+
+
+################################ Prequel Checks ###########################
+
 job-check:
+  extends: .tpl-env-dump
   stage: check
-  # Do not need the cache for this one.
-  cache: []
-  script:
-    - echo "Working Directory=$(pwd)"
-    - echo "Environment..." && env
 
 ################################ Linux GNU Compiler ###########################
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
-  extends: .tpl-bind-gnu
+  extends: [.tpl-bind-gnu,.tpl-cache-gnu]
   stage: make
   needs: [job-check]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
   script:
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GNU}/build.sh -m .
 
 job-build-gnu:
-  extends: .tpl-bind-gnu
+  extends: [.tpl-bind-gnu,.tpl-cache-gnu]
   stage: build
   needs: [job-make-gnu]
   dependencies: [job-make-gnu]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-gnu"
     paths:
@@ -89,47 +114,28 @@ job-build-gnu:
     - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
 
 job-build-test-gnu:
-  extends: .tpl-bind-gnu
+  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: build-test
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - ${DIR_BIN_GNU}
   script:
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
 
 job-test-gnu:
-  extends: .tpl-bind-gnu
+  extends: [.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
   stage: test
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - ${DIR_BIN_GNU}
   script:
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
 
 job-deploy-gnu:
+  extends: [.tpl-artifacts-gnu]
   stage: deploy
   needs: [job-build-gnu,job-test-gnu]
   dependencies: [job-build-gnu]
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gnu"
-    paths:
-      - ${DIR_BIN_GNU}
   environment: production
   script:
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
@@ -140,75 +146,45 @@ job-deploy-gnu:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: .tpl-bind-gw
+  extends: [.tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
   script:
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GW}/build.sh -wm .
 
 job-build-gw:
-  extends: .tpl-bind-gw
+  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build
   needs: [job-make-gw]
   dependencies: [job-make-gw]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - ${DIR_BIN_GW}
   script:
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
 
 job-build-test-gw:
-  extends: .tpl-bind-gw
+  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build-test
   needs: [job-make-gw,job-build-gw]
   dependencies: [job-make-gw,job-build-gw]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - ${DIR_BIN_GW}
   script:
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
 
 job-test-gw:
+  extends: [.tpl-cache-gw,.tpl-artifacts-gw]
   stage: test
   needs: [job-build-test-gw]
   dependencies: [job-build-test-gw]
-  cache:
-    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
-    paths:
-      - cmake-build-*/
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - ${DIR_BIN_GW}
   script:
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ./wine-exec.sh ${TEST_TARGET}.exe
 
 job-deploy-gw:
+  extends: [.tpl-artifacts-gw]
   stage: deploy
   needs: [job-build-gw,job-test-gw]
   dependencies: [job-build-gw]
-  artifacts:
-    name: "${CI_COMMIT_REF_NAME}-gw"
-    paths:
-      - ${DIR_BIN_GW}
   environment: production
   script:
     - echo "Packaged in a installer or a zip-file?"
