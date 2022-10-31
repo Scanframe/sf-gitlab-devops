@@ -45,9 +45,11 @@ variables:
 # Template to mount source root on a fixed directory path for Linux GNU compiler.
 .tpl-bind-gnu:
   before_script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Mounting '${DIR_MOUNT_GNU}'"
     # Bind/Mount the current directory so the path is the same.
     - mkdir -p "${DIR_MOUNT_GNU}" && bindfs ./ "${DIR_MOUNT_GNU}"
   after_script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Unmounting '${DIR_MOUNT_GNU}'"
     # Unmount the bind directory.
     - fusermount -u "${DIR_MOUNT_GNU}"
 
@@ -87,6 +89,8 @@ variables:
 job-check:
   extends: .tpl-env-dump
   stage: check
+  script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
 
 ################################ Linux GNU Compiler ###########################
 
@@ -97,6 +101,7 @@ job-make-gnu:
   stage: make
   needs: [job-check]
   script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
     # Execute the build script to CMake the makefiles.
     - ${DIR_MOUNT_GNU}/build.sh -m .
 
@@ -110,6 +115,7 @@ job-build-gnu:
     paths:
       - ${DIR_BIN_GNU}
   script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
     # Execute the build script to actually build the running target and libraries.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${RUN_TARGET}"
 
@@ -119,6 +125,7 @@ job-build-test-gnu:
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
   script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${DIR_MOUNT_GNU}/build.sh -b . "${TEST_TARGET}"
 
@@ -128,6 +135,7 @@ job-test-gnu:
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
   script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
 
@@ -138,54 +146,7 @@ job-deploy-gnu:
   dependencies: [job-build-gnu]
   environment: production
   script:
+    - logger "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA} Script"
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
     - echo "May be rsync-ed to a production site?"
 
-################################ Linux GW Compiler ############################
-
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Also wiping the cmake-build-??? directory.
-job-make-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw]
-  stage: make
-  needs: [job-check]
-  script:
-    # Execute the build script to CMake the makefiles.
-    - ${DIR_MOUNT_GW}/build.sh -wm .
-
-job-build-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: build
-  needs: [job-make-gw]
-  dependencies: [job-make-gw]
-  script:
-    # Execute the build script to actually build the running target and libraries.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${RUN_TARGET}"
-
-job-build-test-gw:
-  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: build-test
-  needs: [job-make-gw,job-build-gw]
-  dependencies: [job-make-gw,job-build-gw]
-  script:
-    # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${DIR_MOUNT_GW}/build.sh -wb . "${TEST_TARGET}"
-
-job-test-gw:
-  extends: [.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: test
-  needs: [job-build-test-gw]
-  dependencies: [job-build-test-gw]
-  script:
-    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ./wine-exec.sh ${TEST_TARGET}.exe
-
-job-deploy-gw:
-  extends: [.tpl-artifacts-gw]
-  stage: deploy
-  needs: [job-build-gw,job-test-gw]
-  dependencies: [job-build-gw]
-  environment: production
-  script:
-    - echo "Packaged in a installer or a zip-file?"
-    - echo "May be rsync-ed to a production site?"
