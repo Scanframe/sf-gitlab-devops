@@ -1,10 +1,30 @@
 include:
-  -local: .gitlab-ci.yml
+  local: "shell-c++.gitlab-ci.yml"
 
 default:
   tags:
     - cplusplus
     - vbox
+
+# Overriding the 2 variables.
+variables:
+  TEST_TARGET: "hello-world-test"
+  RUN_TARGET: "hello-world"
+
+# Order of stages for jobs to perform in.
+stages:
+  # Jobs checking the environment requirements.
+  - check
+  # Jobs producing makefiles using CMake
+  - make
+  # Jobs for building the actual run target and possible dynamic libraries using.
+  - build
+  # Jobs for building tests using dynamic libraries of the build.
+  - build-test
+  # Jobs executing the build (unit-)tests.
+  - test
+  # Jobs for deploying of stored artifacts.
+  - deploy
 
 ################################ Prequel Checks ###############################
 
