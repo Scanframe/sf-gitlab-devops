@@ -74,11 +74,24 @@ sudo gitlab-runner register --url https://git.scanframe.com/ --registration-toke
 
 **Making it RUN**
 
-It seems that the one of the **tags** (vbox, cplusplus) must correspond with one of the tags in the GitLab-Runner configuration.
+It seems that the one of the **tags** (vbox, cplusplus) must correspond with one of the tags in the 
+GitLab web-application Runner configuration.
 
 ```yaml
 default:
   tags:
-    - vbox
     - cplusplus
+    - vbox
 ```
+
+#### Passing files between jobs
+
+In C++ the CMake generation of makefiles is a separate job and results in a `cmake-build-xxxx-xxx` directories.<br>
+In this project the 2 final targets are build Linux and Windows.
+To have or transfer the files from one job to another which depends on them the **artifacts** system is used.
+
+_Somehow the **cache** system is not working since it deletes depended on directories it should actually cache._
+
+The artifacts are stored on the GitLab server in `/var/opt/gitlab/gitlab-rails/shared/artifacts/` 
+in some hashed names subdirectories. 
+

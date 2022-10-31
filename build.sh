@@ -1,9 +1,9 @@
 #!/bin/bash
 #set -x
 
-# Define some foreground colors values.
-if [[ "${COLORTERM}" != "truecolor" ]] ; then
-	fg_black=""
+# Define and use some foreground colors values when not running CI-jobs.
+if [[ ${CI} ]] ; then
+	fg_black="";
 	fg_red=""
 	fg_green=""
 	fg_yellow=""
@@ -28,11 +28,6 @@ else
 	fg_reset="$(tput sgr0)"
 fi
 
-# Get the bash script directory.
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-# Amount of CPU cores to use for compiling.
-CPU_CORES_TO_USE="$(($(nproc --all) -1))"
-
 # Writes to stderr.
 #
 function WriteLog()
@@ -56,6 +51,16 @@ function WriteLog()
 	fi
 }
 
+# Amount of CPU cores to use for compiling.
+CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+# Get the bash script directory.
+SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Change to the scripts directory to operated from.
+if ! cd "${SCRIPT_DIR}" ; then
+	WriteLog "Change to operation directory '${SCRIPT_DIR}' failed!"
+	exit 1;
+fi
+
 # Prints the help to stderr.
 #
 function ShowHelp()
@@ -77,14 +82,14 @@ function ShowHelp()
   The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
 
   Examples:
-    Build all projects: ${0} .
-    Same as above: ${0} . all
+    Make/Build all projects: ${0} -mb .
+    Same as above: ${0} -mb . all
     Clean all projects: ${0} . clean
     Install all projects: ${0} . install
     Show all projects to be build: ${0} . help
-    Build 'sf-misc' project in 'com' sub-dir only: ${0} . sf-misc
-    Build 'com' project and all sub-projects: ${0} com
-    Build 'rt-shared-lib' project and all sub-projects: ${0} rt-shared-lib
+    Build 'sf-misc' project in 'com' sub-dir only: ${0} -b . sf-misc
+    Build 'com' project and all sub-projects: ${0} -b com
+    Build 'rt-shared-lib' project and all sub-projects: ${0} -b rt-shared-lib
 	"
 }
 
@@ -116,7 +121,6 @@ function InstallPackages()
 }
 
 # Detect windows using the cygwin 'uname' command.
-
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]] ; then
 	WriteLog "Windows detected."
 	export SF_TARGET_SYSTEM="Windows"
@@ -133,6 +137,9 @@ else
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
 fi
+
+# Report the working directory
+WriteLog "Working from directory '${SCRIPT_DIR}'."
 
 # Initialize arguments and switches.
 FLAG_DEBUG=false
@@ -274,28 +281,32 @@ if [[ -n "${argument[1]}" ]]; then
 	TARGET="${argument[1]}"
 fi
 
-# When both flags are not set enable them both.
-if ! ${FLAG_CONFIG} && ! ${FLAG_BUILD} ; then
-	WriteLog 'Performing Config & Build in succession.'
-	FLAG_CONFIG=true
-	FLAG_BUILD=true
+# Check if wiping can be performed.
+if [[ "${TARGET}" == @(help|install) && ${FLAG_WIPE_DIR} ]] ;  then
+	FLAG_WIPE_DIR=false
+	WriteLog "Wiping clean with target '${TARGET}' not possible!"
 fi
 
 # When the Wipe flag is set.
 if ${FLAG_WIPE_DIR} ; then
-	WriteLog "Wiping clean build-dir '${BUILD_SUBDIR}'."
+	RM_CMD="rm --force --verbose --recursive --one-file-system --interactive=never"
+	RM_SUBDIR="${SCRIPT_DIR}"
+	if [[ -n "${TARGET}" && "${TARGET}" && "${TARGET}" != "all" ]] ; then
+		RM_SUBDIR="${RM_SUBDIR}/${TARGET}"
+	fi
+	WriteLog "Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'."
 	# Check if only build flag is specified.
 	if ! ${FLAG_CONFIG} && ${FLAG_BUILD} ; then
 		WriteLog "Only building is impossible after wipe!"
 		FLAG_BUILD=false
 	fi
-	# Check if the build directory really exists checking an expected subdir.
-	if [[ -d "${BUILD_SUBDIR}/.cmake" ]] ; then
-		if ${FLAG_DEBUG} ; then
-			WriteLog "@rm --verbose --recursive --one-file-system ${BUILD_SUBDIR}/*"
-		else
+	if ${FLAG_DEBUG} ; then
+		WriteLog "@${RM_CMD} ${RM_SUBDIR}/${BUILD_SUBDIR}/*"
+	else
+		# Check if the build directory really exists checking an expected subdir.
+		if [[ -d "${RM_SUBDIR}/${BUILD_SUBDIR}" ]] ; then
 			# shellcheck disable=SC2115
-			rm --verbose --recursive --one-file-system "${BUILD_SUBDIR}/"*
+			${RM_CMD} "${RM_SUBDIR}/${BUILD_SUBDIR}/"* > /dev/null
 		fi
 	fi
 fi
@@ -406,4 +417,3 @@ else
 		exec "${EXEC_SCRIPT}"
 	fi
 fi
-
