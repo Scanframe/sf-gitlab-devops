@@ -1,6 +1,10 @@
 include: 
   local: ".gitlab/shell-c++.gitlab-ci.yml"
 
+.tpl-deploy:
+  only:
+    - "${SF_RELEASE_BRANCH_NAME}"
+
 default:
   tags:
     - cplusplus
@@ -8,6 +12,8 @@ default:
 
 # Overriding the 2 variables.
 variables:
+  # Name of the branch that allows running deploying to production.
+  SF_RELEASE_BRANCH_NAME: "main"
   TEST_TARGET: "hello-world-test"
   RUN_TARGET: "hello-world"
 
@@ -76,7 +82,7 @@ job-test-gnu:
     - ${DIR_MOUNT_GNU}/${DIR_BIN_GNU}/${TEST_TARGET}.bin
 
 job-deploy-gnu:
-  extends: [.tpl-artifacts-gnu]
+  extends: [.tpl-artifacts-gnu,.tpl-deploy]
   stage: deploy
   needs: [job-build-gnu,job-test-gnu]
   dependencies: [job-build-gnu]
