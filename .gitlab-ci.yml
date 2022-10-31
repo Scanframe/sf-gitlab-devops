@@ -117,7 +117,7 @@ job-test-gnu:
 
 job-deploy-gnu:
   stage: deploy
-  needs: [job-build-gnu]
+  needs: [job-build-gnu,job-test-gnu]
   dependencies: [job-build-gnu]
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-gnu"
@@ -205,7 +205,7 @@ job-test-gw:
 
 job-deploy-gw:
   stage: deploy
-  needs: [job-build-gw]
+  needs: [job-build-gw,job-test-gw]
   dependencies: [job-build-gw]
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-gw"
