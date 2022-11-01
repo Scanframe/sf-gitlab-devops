@@ -81,7 +81,6 @@ GitLab web-application Runner configuration.
 default:
   tags:
     - cplusplus
-    - vbox
 ```
 
 #### Passing files between jobs
