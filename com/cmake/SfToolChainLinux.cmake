@@ -1,20 +1,24 @@
 # Notify that this file was loaded.
 message(STATUS "Configuring Linux for latest compiler version")
 
-# When passed here for the first time safe the directory location.
-if (DEFINED SfMacros_DIR)
-	set(Sf_FindLatestCompilerDir "${SfMacros_DIR}")
-endif()
+# Dirty way of getting the newest installed C compiler on the system.
+foreach(_Version RANGE 14 8 -1)
+	find_program(_Compiler "/usr/bin/gcc-${_Version}")
+	if (NOT _Compiler STREQUAL "_Compiler-NOTFOUND")
+		message(STATUS "Found compiler: ${_Compiler}")
+		set(CMAKE_C_COMPILER "${_Compiler}")
+		break()
+	endif()
+endforeach()
 
-function(Sf_FindLatestCompiler VarOut Prefix)
-	execute_process(COMMAND "bash" "${Sf_FindLatestCompilerDir}/LinuxCompiler.sh" "${Prefix}" OUTPUT_VARIABLE _Result RESULT_VARIABLE _ExitCode)
-	message(STATUS "(${Prefix}): ${_Result}")
-	# Validate the exit code.
-	if (_ExitCode GREATER "0")
-		message(FATAL_ERROR "Failed execution EitCode(${_ExitCode}) ... ")
-	endif ()
-	set(${VarOut} "${_Result}" PARENT_SCOPE)
-endfunction()
+# Dirty way of getting the newest installed C++ compiler on the system.
+foreach(_Version RANGE 14 8 -1)
+	find_program(_Compiler "/usr/bin/g++-${_Version}")
+	if (NOT _Compiler STREQUAL "_Compiler-NOTFOUND")
+		message(STATUS "Found compiler: ${_Compiler}")
+		set(CMAKE_CXX_COMPILER "${_Compiler}")
+		break()
+	endif()
+endforeach()
 
-Sf_FindLatestCompiler(CMAKE_C_COMPILER "gcc")
-Sf_FindLatestCompiler(CMAKE_CXX_COMPILER "g++")
+
