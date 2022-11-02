@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18)
 # Set the project name.
 project("hello-world" LANGUAGES CXX)
 
@@ -15,14 +15,11 @@ _SetOutputDirs()
 
 # Set the actual executable target.
 add_executable(${PROJECT_NAME})
-
 # Set the default compiler options for our own code only.
 _SetTargetDefaultCompileOptions()
 
 # RC-files only seem to be compiled when building using MingW.
-target_sources(${PROJECT_NAME} PRIVATE
-	main.cpp
-	)
+target_sources(${PROJECT_NAME} PRIVATE main.cpp)
 
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
