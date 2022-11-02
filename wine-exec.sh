@@ -28,8 +28,8 @@ fi
 DIR_BIN_WIN="$(realpath "${DIR_ROOT}/binwin")"
 # Location of MinGW DLLs.
 DIR_MINGW_DLL="/usr/x86_64-w64-mingw32/lib"
-# Location of MinGW DLLs 2.
-DIR_MINGW_DLL2="/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
+# Location of MinGW posix DLLs 2.
+DIR_MINGW_DLL2="$(ls -d /usr/lib/gcc/x86_64-w64-mingw32/*-posix | sort -V | tail -n 1)"
 # Wine command.
 WINE_BIN="wine64"
 
