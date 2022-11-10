@@ -17,54 +17,7 @@ variables:
 job-check:
   extends: .tpl-env-dump
   stage: check
+  rules:
+    - if: '$CI_RUNNER_EXECUTABLE_ARCH =~ "linux"'
+      when: on_success
 
-################################ Linux GNU Compiler ###########################
-
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Also wiping the cmake-build-??? directory.
-job-make-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu]
-  stage: make
-  needs: [job-check]
-  script:
-    - !reference [.tpl-log-script,script]
-    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
-    # Execute the build script to CMake the makefiles.
-    - ${SF_DIR_MOUNT_GNU}/build.sh -m .
-
-job-build-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
-  stage: build
-  needs: [job-make-gnu]
-  dependencies: [job-make-gnu]
-  script:
-    - !reference [.tpl-log-script,script]
-    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
-    # Execute the build script to actually build the running target and libraries.
-    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_RUN_TARGET}"
-
-
-################################ Linux GW Compiler ############################
-
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Also wiping the cmake-build-??? directory.
-job-make-gw:
-  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw]
-  stage: make
-  needs: [job-check]
-  script:
-    - !reference [.tpl-log-script,script]
-    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
-    # Execute the build script to CMake the makefiles.
-    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
-
-job-build-gw:
-  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: build
-  needs: [job-make-gw]
-  dependencies: [job-make-gw]
-  script:
-    - !reference [.tpl-log-script,script]
-    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
-    # Execute the build script to actually build the running target and libraries.
-    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
