@@ -18,6 +18,6 @@ job-check:
   extends: .tpl-env-dump
   stage: check
   rules:
-    - if: '$CI_RUNNER_EXECUTABLE_ARCH =~ "linux"'
+    - if: '$CI_RUNNER_EXECUTABLE_ARCH =~ "^linux"'
       when: on_success
 
