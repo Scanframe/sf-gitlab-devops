@@ -18,6 +18,6 @@ job-check:
   extends: .tpl-env-dump
   stage: check
   rules:
-    - if: '$CI_RUNNER_EXECUTABLE_ARCH =~ "^linux/amd63$"'
+    - if: '$CI_RUNNER_EXECUTABLE_ARCH == "linux/amd63"'
       when: on_success
 
