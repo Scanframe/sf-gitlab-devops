@@ -1,2 +1,1 @@
-Place holder for finding the directory from projects.
-Using by cmake function _LocateOutputDir()
+Placeholder for finding the directory from projects, using by CMake function Sf_LocateOutputDir().
