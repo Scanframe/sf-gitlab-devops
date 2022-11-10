@@ -2,7 +2,7 @@
 .tpl-comp-gnu:
   rules:
     # Detect Linux architecture of runner for GNU compiler only. (Variable cannot be quoted in 'if:' !)
-    - if: '"${CI_RUNNER_EXECUTABLE_ARCH}" =~ /linux\/(arm64|aarch64|amd64)$/'
+    - if: '"${CI_RUNNER_EXECUTABLE_ARCH}" =~ "linux/(arm64|aarch64|amd64)$"'
       when: on_success
 
 # Template to mount source root on a fixed directory path for Linux GNU compiler.
