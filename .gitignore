@@ -1,14 +1,9 @@
 **/.metadata
 **/.vscode
 **/.idea
-/bin*/*.bin
-/bin*/*.exe
-/bin*/*.so
-/bin*/*.so.*
-/bin*/*.a
-/bin*/*.dll
-/bin*/*.dll.a
-/bin*/man
+/bin/lnx64/*
+/bin/win64/*
+/bin/man/*
 /thirdp
 */*/*.user
 **/cmake-build-*
