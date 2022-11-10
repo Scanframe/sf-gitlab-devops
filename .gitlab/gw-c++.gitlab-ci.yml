@@ -5,6 +5,7 @@
     # FIXME: Seems plain comparing a string with '==' is not working.
   rules:
     - if: '"${CI_RUNNER_EXECUTABLE_ARCH}" == "linux/arm64"'
+      when: on_success
 
 # Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
