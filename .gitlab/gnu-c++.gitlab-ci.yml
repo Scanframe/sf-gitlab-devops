@@ -17,7 +17,7 @@
     # Unmount the bind directory.
     - fusermount -u "${SF_DIR_MOUNT_GNU}"
     # Remove directory after.
-    - rm "${SF_DIR_MOUNT_GNU}"
+    - rmdir "${SF_DIR_MOUNT_GNU}"
 
 # Template to configure cache for CMake generated files for the GNU compiler.
 .tpl-cache-gnu:
@@ -25,7 +25,6 @@
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gnu"
     paths:
       - cmake-build-*/
-      - ${SF_DIR_BIN_GNU}/*
 
 # Template to define artifacts in the designated directory.
 .tpl-artifacts-gnu:
