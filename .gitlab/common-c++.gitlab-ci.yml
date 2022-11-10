@@ -18,8 +18,8 @@ variables:
   # Name of the branch that allows running deploying to production.
   SF_RELEASE_BRANCH_NAME: "main"
   # Fixed directory the source root is mounted to.
-  SF_DIR_BIN_GNU: "bin/"
-  SF_DIR_BIN_GW: "binwin/"
+  SF_DIR_BIN_GNU: "bin/lnx64"
+  SF_DIR_BIN_GW: "bin/win64"
   # Fixed directory the source root is mounted to.
   SF_DIR_MOUNT_GNU: "/tmp/build-gnu-${CI_COMMIT_SHORT_SHA}"
   SF_DIR_MOUNT_GW: "/tmp/build-gw-${CI_COMMIT_SHORT_SHA}"

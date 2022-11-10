@@ -11,12 +11,16 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-_SetOutputDirs()
+Sf_SetOutputDirs()
 
 # Set the actual executable target.
-add_executable(${PROJECT_NAME})
-# Set the default compiler options for our own code only.
-_SetTargetDefaultCompileOptions()
+Sf_AddExecutable(${PROJECT_NAME})
+
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")
+
+# Add custom target to report resource stored versions.
+Sf_AddExifTarget("${PROJECT_NAME}")
 
 # RC-files only seem to be compiled when building using MingW.
 target_sources(${PROJECT_NAME} PRIVATE main.cpp)
@@ -25,6 +29,6 @@ target_sources(${PROJECT_NAME} PRIVATE main.cpp)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${PROJECT_NAME}")
+Sf_SetBinarySuffix("${PROJECT_NAME}")
 
 add_subdirectory(tests)

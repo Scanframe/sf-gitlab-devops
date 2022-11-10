@@ -10,10 +10,12 @@ set(TEST_LIBRARIES Catch2::Catch2)
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 
 # Tests need to be added as executables first
-add_executable(${TEST_TARGET}	main.cpp ${TEST_SOURCES})
+Sf_AddExecutable(${TEST_TARGET})
+
+target_sources(${TEST_TARGET} PRIVATE main.cpp ${TEST_SOURCES})
 
 # Sets the extension of the generated binary.
-_SetBinarySuffix("${TEST_TARGET}")
+Sf_SetBinarySuffix("${TEST_TARGET}")
 
 # Explicitly tell the compiled code the QT libraries are included.
 #target_compile_definitions(${TEST_TARGET} PRIVATE TARGET_QT)

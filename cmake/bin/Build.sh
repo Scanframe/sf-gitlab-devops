@@ -5,6 +5,7 @@
 if [[ -z "${SCRIPT_DIR}" ]] ; then
 	# Get the bash script directory.
 	SCRIPT_DIR="$(realpath "$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)/../..")"
+	exit 1
 fi
 
 # Define and use some foreground colors values when not running CI-jobs.
@@ -42,13 +43,9 @@ function WriteLog()
 	# shellcheck disable=SC2124
 	local LAST_ARG="${@: -1}"
 	local LAST_CH="${LAST_ARG: 0-1}"
-	case "${LAST_CH}" in
-		"!")
-			local COLOR="${fg_red}"
-			;;
-		".")
-			local COLOR="${fg_cyan}"
-			;;
+	local FIRST_CH="${LAST_ARG:0:1}"
+	# Set color based on first character of the string.
+	case "${FIRST_CH}" in
 		"-")
 			local COLOR="${fg_magenta}"
 			;;
@@ -57,6 +54,14 @@ function WriteLog()
 			;;
 		*)
 			local COLOR=""
+			;;
+	esac
+	case "${LAST_CH}" in
+		"!")
+			local COLOR="${fg_red}"
+			;;
+		".")
+			local COLOR="${fg_cyan}"
 			;;
 	esac
 	echo -n "${COLOR}" 1>&2;
@@ -68,7 +73,7 @@ function WriteLog()
 # Amount of CPU cores to use for compiling.
 CPU_CORES_TO_USE="$(($(nproc --all) -1))"
 
-# Change to the scripts directory to operated from.
+# Change to the scripts directory to operated from when script is called from a different location.
 if ! cd "${SCRIPT_DIR}" ; then
 	WriteLog "Change to operation directory '${SCRIPT_DIR}' failed!"
 	exit 1;
@@ -79,15 +84,18 @@ fi
 function ShowHelp()
 {
 	echo "Usage: ${0} [<options>] <sub-dir> [<target>]
-  -d : Debug: Show executed commands rather then executing them.
-  -p : Install prerequisite Linux packages using 'apt' for now.
-  -c : Cleans build targets first (adds build option '--clean-first')
-  -C : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
-  -t : Add tests to the build configuration.
-  -w : Cross compile Windows on Linux using MinGW.
-  -s : Build using Visual Studio
-  -m : Create build directory and makefiles only.
-  -b : Build target only.
+  -d, --debug    : Debug: Show executed commands rather then executing them.
+  -p, --packages : Install prerequisite Linux packages using 'apt' for now.
+  -c, --clean    : Cleans build targets first (adds build option '--clean-first')
+  -C, --wipe     : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
+  -t, --test     : Add tests to the build configuration.
+  -w, --windows  : Cross compile Windows on Linux using MinGW.
+  -s, --studio   : Build using Visual Studio
+  -m, --make     : Create build directory and makefiles only.
+  -b, --build    : Build target only.
+  -v, --verbose  : CMake verbose enabled during CMake make (level VERBOSE).
+  --clion        : Use CLion CMake tool and compilers (Windows).
+  --gitlab-ci    : Simulate CI server (sets CI_SERVER env var.).
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -113,12 +121,12 @@ function InstallPackages()
 	if [[ "${1}" == "Linux" ]] ; then
 		WriteLog "About to install required packages..."
 		if ! sudo apt install cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
-			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12; then
+			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12 exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi
 	elif [[ "${1}" == "Linux/Cross" ]] ; then
-		if ! sudo apt install mingw-w64 cmake doxygen graphviz ; then
+		if ! sudo apt install mingw-w64 cmake doxygen graphviz exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi
@@ -135,11 +143,11 @@ function InstallPackages()
 
 # Detect windows using the cygwin 'uname' command.
 if [[ "$(uname -s)" == "CYGWIN_NT"* ]] ; then
-	WriteLog "Windows detected."
+	WriteLog "- Windows detected"
 	export SF_TARGET_SYSTEM="Windows"
 	FLAG_WINDOWS=true
 	# Set the directory the local QT root.
-	LOCAL_QT_ROOT="P:\\Qt"
+	LOCAL_QT_ROOT="/cygdrive/p/Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .bat)"
 else
 	WriteLog "Linux detected."
@@ -151,14 +159,12 @@ else
 	chmod +x "${EXEC_SCRIPT}"
 fi
 
-# Report the working directory
-WriteLog "Working from directory '${SCRIPT_DIR}'."
-
 # Initialize arguments and switches.
 FLAG_DEBUG=false
 FLAG_CONFIG=false
 FLAG_BUILD=false
 FLAG_WIPE_DIR=false
+FLAG_CLION=false
 # Flag for cross compiling for Windows from Linux.
 FLAG_CROSS_WINDOWS=false
 # Flag for when using Visual Studio
@@ -176,84 +182,139 @@ declare -A CMAKE_DEFS
 CMAKE_DEFS['CMAKE_BUILD_TYPE']='Debug'
 # Default build dynamic libraries.
 CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
-
-# Parse all options and arguments.
-# ---------------------------------
-
-argument=()
-while [ $# -gt 0 ] && [ "$1" != "--" ]; do
-	while getopts "dhcCbtmwsp" opt; do
-		case $opt in
-			h)
-				ShowHelp
-				exit 0
-				;;
-			d)
-				FLAG_DEBUG=true
-				;;
-			p)
-				if [[ ${FLAG_CROSS_WINDOWS} ]] ; then
-					InstallPackages "${SF_TARGET_SYSTEM}/Cross"
-				else
-					InstallPackages "${SF_TARGET_SYSTEM}"
-				fi
-					exit 0
-				;;
-			C)
-				WriteLog "Wipe clean targeted build directory commenced."
-				# Set the flag to wipe the build directory first.
-				FLAG_WIPE_DIR=true
-				;;
-			c)
-				WriteLog "Clean first enabled"
-				BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
-				;;
-			m)
-				WriteLog "Create build directory and makefiles."
-				FLAG_CONFIG=true
-				;;
-			b)
-				WriteLog "Build the given target."
-				FLAG_BUILD=true
-				;;
-			t)
-				WriteLog "Include test builds."
-				CMAKE_DEFS['SF_BUILD_TESTING']='ON'
-				;;
-			w)
-				if ! ${FLAG_WINDOWS} ; then
-					WriteLog "Cross compile for Windows"
-					if [[ ! ${FLAG_WINDOWS} = true ]] ; then
-						FLAG_CROSS_WINDOWS=true
-					fi
-				else
-					WriteLog "Ignoring Cross compile when in Windows."
-				fi
-				;;
-			s)
-				if ${FLAG_WINDOWS} ; then
-					WriteLog "Using Visual Studio Compiler"
-					FLAG_VISUAL_STUDIO=true
-				else
-					WriteLog "Ignoring Visual Studio switch when in Linux."
-				fi
-				;;
-			\?)
-				ShowHelp
-			 	exit 1
-				;;
-	esac
-	done
-	shift $((OPTIND-1))
-	while [ $# -gt 0 ] && ! [[ "$1" =~ ^- ]]; do
-		argument=("${argument[@]}" "$1")
-		shift
-	done
-done
-if [ "$1" == "--" ]; then
-	shift
-	argument=("${argument[@]}" "$@")
+#
+CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
+# Parse options.
+TEMP=$(getopt -o 'dhcCbtmwspv' --long \
+	'clion,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
+	-n "$(basename "${0}")" -- "$@")
+# shellcheck disable=SC2181
+if [[ $? -ne 0 ]] ; then
+	ShowHelp
+	exit 1
 fi
+eval set -- "$TEMP" ; unset TEMP
+while true; do
+	case $1 in
+
+		--clion)
+			FLAG_CLION=true
+			shift 1
+			continue
+			;;
+
+		--gitlab-ci)
+			export CI_SERVER="yes"
+			shift 1
+			continue
+			;;
+
+		-h|--help)
+			ShowHelp
+			exit 0
+			;;
+
+		-d|--debug)
+			WriteLog "Debug enabled."
+			FLAG_DEBUG=true
+			shift 1
+			continue
+			;;
+
+		-v|--verbose)
+			WriteLog "- CMake verbose level set"
+			CMAKE_DEFS['CMAKE_MESSAGE_LOG_LEVEL']='VERBOSE'
+			shift 1
+			continue
+			;;
+
+		-p|--packages)
+			if [[ ${FLAG_CROSS_WINDOWS} ]] ; then
+				InstallPackages "${SF_TARGET_SYSTEM}/Cross"
+			else
+				InstallPackages "${SF_TARGET_SYSTEM}"
+			fi
+			exit 0
+			;;
+
+		-C|--wipe)
+			WriteLog "- Wipe clean targeted build directory commenced"
+			# Set the flag to wipe the build directory first.
+			FLAG_WIPE_DIR=true
+			shift 1
+			continue
+			;;
+
+		-c|--clean)
+			WriteLog "- Clean first enabled"
+			BUIlD_OPTIONS="${BUIlD_OPTIONS} --clean-first"
+			shift 1
+			continue
+			;;
+
+		-m|--make)
+			WriteLog "- Create build directory and makefiles"
+			FLAG_CONFIG=true
+			shift 1
+			continue
+			;;
+
+		-b|--build)
+			WriteLog "- Build the given target"
+			FLAG_BUILD=true
+			shift 1
+			continue
+			;;
+
+		-t,--test)
+			WriteLog "Include test builds."
+			CMAKE_DEFS['SF_BUILD_TESTING']='ON'
+			shift 1
+			continue
+			;;
+
+		-w|--windows)
+			if ! ${FLAG_WINDOWS} ; then
+				WriteLog "- Cross compile for Windows"
+				if [[ ! ${FLAG_WINDOWS} = true ]] ; then
+					FLAG_CROSS_WINDOWS=true
+				fi
+			else
+				WriteLog "Ignoring Cross compile when in Windows"
+			fi
+			shift 1
+			continue
+			;;
+
+		-s|--studio)
+			if ${FLAG_WINDOWS} ; then
+				WriteLog "- Using Visual Studio Compiler"
+				FLAG_VISUAL_STUDIO=true
+			else
+				WriteLog "-  Ignoring Visual Studio switch when in Linux"
+			fi
+			shift 1
+			continue
+			;;
+
+		'--')
+			shift
+			break
+		;;
+
+		*)
+			echo 'Internal error!' >&2
+			exit 1
+		;;
+	esac
+done
+
+# Get the arguments in an array.
+argument=()
+while [ $# -gt 0 ] && ! [[ "$1" =~ ^- ]]; do
+	argument=("${argument[@]}" "$1")
+	shift
+done
 
 # First argument is mandatory.
 if [[ -z "${argument[0]}" ]]; then
@@ -295,19 +356,19 @@ if [[ -n "${argument[1]}" ]]; then
 fi
 
 # Check if wiping can be performed.
-if [[ "${TARGET}" == @(help|install) && ${FLAG_WIPE_DIR} ]] ;  then
+if [[ "${TARGET}" == @(help|install) && ${FLAG_WIPE_DIR} == true ]] ;  then
 	FLAG_WIPE_DIR=false
 	WriteLog "Wiping clean with target '${TARGET}' not possible!"
 fi
 
 # When the Wipe flag is set.
 if ${FLAG_WIPE_DIR} ; then
+	WriteLog "- Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'"
 	RM_CMD="rm --verbose --recursive --one-file-system --interactive=never"
 	RM_SUBDIR="${SCRIPT_DIR}"
 	if [[ -n "${TARGET}" && "${TARGET}" && "${TARGET}" != "all" ]] ; then
 		RM_SUBDIR="${RM_SUBDIR}/${TARGET}"
 	fi
-	WriteLog "Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'."
 	# Check if only build flag is specified.
 	if ! ${FLAG_CONFIG} && ${FLAG_BUILD} ; then
 		WriteLog "Only building is impossible after wipe!"
@@ -326,16 +387,48 @@ fi
 
 # Configure Build generator depending .
 if ${FLAG_WINDOWS} ; then
-	CMAKE_BIN="${LOCAL_QT_ROOT}\Tools\CMake_64\bin\cmake.exe"
+	# Find Clion CMake executable.
+	if ${FLAG_CLION} ; then
+		# Try finding the CLion cmake in Windows.
+		# shellcheck disable=SC2154
+		CMAKE_BIN="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/cmake/win/bin/cmake.exe)"
+		# Check if the file exists.
+		if [[ ! -f "${CMAKE_BIN}" ]] ; then
+			WriteLog "CLion cmake was not found!"
+			exit 1
+		fi
+		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
+		PATH_PREFIX="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/mingw/bin)"
+	# Otherwise use QT's CMake executable.
+	else
+		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
+		# Check if the file exists.
+		if [[ ! -f "${CMAKE_BIN}" ]] ; then
+			WriteLog "QT cmake '${CMAKE_BIN}' was not found!"
+			exit 1
+		fi
+		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
+		# shellcheck disable=SC2012
+		PATH_PREFIX="$(ls -d "/cygdrive/"*"/Qt/Tools/mingw"*"/bin" | sort --version-sort | tail -n 1)"
+	fi
+	# Convert to windows path format.
+	CMAKE_BIN="$(cygpath -w "${CMAKE_BIN}")"
+	# Covert the prefix path to Windows format.
+	PATH_PREFIX="$(cygpath -w "${PATH_PREFIX}")"
+	# Assemble the Windows build directory.
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
+	# Covert the source path to Windows format.
+	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
+	# Visual Studio wants of course wants something else again.
 	if ${FLAG_VISUAL_STUDIO} ; then
 		BUILD_GENERATOR="CodeBlocks - NMake Makefiles"
 		# CMake binary bundled with MSVC but the default QT version is also ok.
 		CMAKE_BIN="%VSINSTALLDIR%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
 	else
-		BUILD_GENERATOR="MinGW Makefiles"
+		BUILD_GENERATOR="CodeBlocks - MinGW Makefiles"
 	fi
-	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
+	# Report used cmake and its version.
+	WriteLog "- CMake '${CMAKE_BIN}' $("$(cygpath -u "${CMAKE_BIN}")" --version | head -n 1)"
 else
 	# Try to use the CLion installed version of the cmake command.
 	CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
@@ -343,14 +436,13 @@ else
 		# Try to use the Qt installed version of the cmake command.
 		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake/bin/cmake"
 		if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
-			CMAKE_BIN="cmake"
+			CMAKE_BIN="$(which cmake)"
 		fi
 	fi
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
-	WriteLog "CMake '$(realpath ${CMAKE_BIN})' $(${CMAKE_BIN} --version | head -n 1)."
+	WriteLog "- CMake '$(realpath "${CMAKE_BIN}")' $(${CMAKE_BIN} --version | head -n 1)"
 fi
-
 
 # Build execution script depending on the OS.
 if ${FLAG_WINDOWS} ; then
@@ -368,9 +460,15 @@ if not defined VisualStudioVersion (
 )
 EOF
 		fi
+		echo -e "\n:: === General Section ==="
+		# Add the prefix to the path when non empty.
+		if [[ -n "${PATH_PREFIX}" ]] ; then
+			echo ":: Set path prefix for tools to be found."
+			echo "PATH=${PATH_PREFIX};%PATH%"
+		fi
 		# Configure
 		if ${FLAG_CONFIG} ; then
-			echo ":: CMake Configure"
+			echo -e "\n:: === CMake Configure Section ==="
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "-B \"${BUILD_DIR}\" ^"
 			echo "-G \"${BUILD_GENERATOR}\" ${CONFIG_OPTIONS} ^"
@@ -381,14 +479,14 @@ EOF
 		fi
 		# Build/Compile
 		if ${FLAG_BUILD} ; then
-			echo ":: CMake Build Target"
+			echo -e "\n:: === CMake Build Section ==="
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "--build \"${BUILD_DIR}\" ^"
 			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} ^"
 			if ! ${FLAG_VISUAL_STUDIO} ; then
 				echo "-- -j ${CPU_CORES_TO_USE}"
 			else
-				echo "-- "
+				echo "-- -j ${CPU_CORES_TO_USE}"
 			fi
 		fi
 	} >> "${EXEC_SCRIPT}"
@@ -397,20 +495,27 @@ else
 	{
 		# Set time stamp at beginning of file.
 		echo "# Timestamp: $(date '+%Y-%m-%dT%T.%N')"
+		echo -e "\n# === General Section ==="
+		# Add the prefix to the path when non empty.
+		if [[ -n "${PATH_PREFIX}" ]] ; then
+			echo "# Set path prefix for tools to be found."
+			# shellcheck disable=SC2154
+			echo "path=${PATH_PREFIX};${path}"
+		fi
 		# Configure
 		if ${FLAG_CONFIG} ; then
-			echo "# CMake Configure"
-			echo "\"${CMAKE_BIN}\" \\"
-			echo "	-B \"${BUILD_DIR}\" \\"
-			echo "	-G \"${BUILD_GENERATOR}\" ${CONFIG_OPTIONS} \\"
+			echo -e "\n# === CMake Configure Section ==="
+			echo "'${CMAKE_BIN}' \\"
+			echo "	-B '${BUILD_DIR}' \\"
+			echo "	-G '${BUILD_GENERATOR}' ${CONFIG_OPTIONS} \\"
 			for key in "${!CMAKE_DEFS[@]}" ; do
-				echo "	-D ${key}=\"${CMAKE_DEFS[${key}]}\" \\"
+				echo "	-D ${key}='${CMAKE_DEFS[${key}]}' \\"
 			done
 			echo "	\"${SOURCE_DIR}\""
 		fi
 		# Build/Compile
 		if ${FLAG_BUILD} ; then
-			echo "# CMake Build Target"
+			echo -e "\n# === CMake Build Section ==="
 			echo "\"${CMAKE_BIN}\" \\" ;
 			echo "	--build \"${BUILD_DIR}\" \\"
 			echo "	--target \"${TARGET}\" ${BUIlD_OPTIONS} \\"
@@ -422,10 +527,10 @@ fi
 # Execute the script or write it to the log out when debugging.
 if ${FLAG_DEBUG} ; then
 	WriteLog "=== Script content ${EXEC_SCRIPT} ==="
-	WriteLog "$(cat "${EXEC_SCRIPT}")"
+	echo "$(cat "${EXEC_SCRIPT}")\n\n"
 	WriteLog "$(printf '=%.0s' {1..45})"
 else
-	WriteLog "Executing generated script: '${EXEC_SCRIPT}'."
+	WriteLog "- Executing generated script: '${EXEC_SCRIPT}'"
 	if ${FLAG_WINDOWS} ; then
 		CMD /C "$(cygpath -w "${EXEC_SCRIPT}")"
 	else

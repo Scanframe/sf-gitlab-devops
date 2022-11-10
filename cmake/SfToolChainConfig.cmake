@@ -4,7 +4,7 @@ function(Sf_SetToolChain)
 	set(_CmakeFile "${CMAKE_CURRENT_BINARY_DIR}/.sf/SfToolChain.cmake")
 	file(WRITE "${_CmakeFile}" "#### Created by function '${CMAKE_CURRENT_FUNCTION}'\n")
 	# Check if this is a cross compile for windows.
-	if (NOT DEFINED SF_CROSS_WINDOWS)
+	if (NOT DEFINED SF_CROSS_WINDOWS OR "${SF_CROSS_WINDOWS}" STREQUAL "OFF")
 		foreach (_Version RANGE 14 8 -1)
 			find_program(_Compiler "/usr/bin/gcc-${_Version}")
 			if (NOT _Compiler STREQUAL "_Compiler-NOTFOUND")
@@ -28,9 +28,6 @@ function(Sf_SetToolChain)
 			message(FATAL_ERROR "Windows cross compiler not found. Missing package 'mingw-w64' ?")
 			return()
 		endif ()
-		# Set an environment variable to pass the location of the QT cmake directory to use for the cross-compile.
-		set(ENV{SF_QT_VERSION_CMAKE_DIR} "$ENV{HOME}/lib/QtWin/6.4.0/mingw_64/lib/cmake")
-
 		file(APPEND "${_CmakeFile}"
 "set(CMAKE_SYSTEM_NAME Windows)
 # Use mingw 64-bit compilers.

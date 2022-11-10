@@ -24,6 +24,7 @@
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-gw"
     paths:
       - cmake-build-*/
+      - ${SF_DIR_BIN_Gw}/*
 
 # Template to define artifacts in the designated directory.
 .tpl-artifacts-gw:
