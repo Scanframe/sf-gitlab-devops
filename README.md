@@ -35,9 +35,17 @@ Both using a CMake special tool-chain.
 To be able to perform the builds the next packages need to be installed.
 
 ### Linux Packages
- 
+
+#### Required
+
 ```bash
-apt-get install git cmake gcc-12 g++-12 mingw-w64 bindfs wine
+apt-get install git cmake gcc g++ mingw-w64 bindfs wine
+```
+
+#### Recommended
+
+```bash
+apt-get install gcc-12 g++-12
 ```
 
 ### GitLab Runner
@@ -81,6 +89,22 @@ GitLab web-application Runner configuration.
 default:
   tags:
     - cplusplus
+```
+
+**CA SSL Certificate Error**
+
+Somehow when there are problems with CA SSL certificates add the following.
+to file `/etc/gitlab-runner/config.toml`. 
+
+```toml
+[[runners]]
+environment = ["GIT_SSL_NO_VERIFY=true"]
+```
+
+Passing the location for binding the jobs when a fixed path is needed between jobs. 
+```toml
+[[runners]]
+environment = ["GIT_SSL_NO_VERIFY=true", "BIND_DIR=/home/gitlab-runner/binder"]
 ```
 
 #### Passing files between jobs

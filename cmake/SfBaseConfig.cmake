@@ -56,7 +56,7 @@ function(Sf_GetGitTagVersion _VarOut _SrcDir)
 	endif ()
 	# Check the exist code for an error.
 	if (_ExitCode GREATER 0)
-		message(NOTICE "Repository '${_SrcDir}' missing a version tag like v0.0.0 ?!")
+		message(STATUS "Repository '${_SrcDir}' not having a version tag like 'v0.0.0' ?!")
 		message(VERBOSE "${_GitExe} describe --tags --dirty --match v* ... Exited with (${_ExitCode}).")
 		message(VERBOSE "${_ErrorText}")
 		# Set an initial version to allow continuing.

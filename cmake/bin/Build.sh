@@ -72,6 +72,8 @@ function WriteLog()
 
 # Amount of CPU cores to use for compiling.
 CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+# Get the target OS.
+SF_TARGET_OS="$(uname -o)"
 
 # Change to the scripts directory to operated from when script is called from a different location.
 if ! cd "${SCRIPT_DIR}" ; then
@@ -118,45 +120,47 @@ function ShowHelp()
 #
 function InstallPackages()
 {
-	if [[ "${1}" == "Linux" ]] ; then
-		WriteLog "About to install required packages..."
-		if ! sudo apt install cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
-			libxkbfile-dev libvulkan-dev libssl-dev gcc-12 g++-12 exiftool ; then
+	WriteLog "About to install required packages for ($1)..."
+	if [[ "$1" == "GNU/Linux/x86_64" || "$1" == "GNU/Linux/arm64" || "$1" == "GNU/Linux/aarch64" ]] ; then
+		if ! sudo apt install --install-recommends cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
+			libxkbfile-dev libvulkan-dev libssl-dev exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi
-	elif [[ "${1}" == "Linux/Cross" ]] ; then
-		if ! sudo apt install mingw-w64 cmake doxygen graphviz exiftool ; then
+	elif [[ "$1" == "GNU/Linux/x86_64/Cross" ]] ; then
+		if ! sudo apt install --install-recommends mingw-w64 cmake doxygen graphviz wine exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
 		fi
-	elif [[ "${1}" == "Windows" ]] ; then
-		if ! cyg-apt install doxygen graphviz ; then
-			WriteLog "Failed to install 1 or more Cygwin packages!"
+	elif [[ "$1" == "Cygwin/x86_64" ]] ; then
+		if ! apt-cyg install doxygen graphviz perl-Image-ExifTool ; then
+			WriteLog "Failed to install 1 or more Cygwin packages (Try the Cygwin setup tool when elevation is needed) !"
 			exit 1
 		fi
 	else
 		# shellcheck disable=SC2128
-		WriteLog "Unknown '$1' environment selection passed to function '${FUNCNAME}'."
+		WriteLog "Unknown '$1' environment selection passed to function '${FUNCNAME}' !"
 	fi
 }
 
 # Detect windows using the cygwin 'uname' command.
-if [[ "$(uname -s)" == "CYGWIN_NT"* ]] ; then
-	WriteLog "- Windows detected"
-	export SF_TARGET_SYSTEM="Windows"
+if [[ "${SF_TARGET_OS}" == "Cygwin" ]] ; then
+	WriteLog "- Windows OS detected through Cygwin and Qt expected on drive 'P:'"
+	export SF_TARGET_OS="Cygwin"
 	FLAG_WINDOWS=true
 	# Set the directory the local QT root.
 	LOCAL_QT_ROOT="/cygdrive/p/Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .bat)"
-else
-	WriteLog "Linux detected."
-	export SF_TARGET_SYSTEM="Linux"
+elif [[ "${SF_TARGET_OS}" == "GNU/Linux" ]] ; then
+	WriteLog "- Linux detected ."
+	export SF_TARGET_OS="GNU/Linux"
 	FLAG_WINDOWS=false
 	# Set the directory the local QT root.
 	LOCAL_QT_ROOT="${HOME}/lib/Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
+else
+	WriteLog "Targeted OS '${SF_TARGET_OS}' not supported!"
 fi
 
 # Initialize arguments and switches.
@@ -229,10 +233,10 @@ while true; do
 			;;
 
 		-p|--packages)
-			if [[ ${FLAG_CROSS_WINDOWS} ]] ; then
-				InstallPackages "${SF_TARGET_SYSTEM}/Cross"
+			if [[ ${FLAG_CROSS_WINDOWS} == true ]] ; then
+				InstallPackages "${SF_TARGET_OS}/$(uname -m)/Cross"
 			else
-				InstallPackages "${SF_TARGET_SYSTEM}"
+				InstallPackages "${SF_TARGET_OS}/$(uname -m)"
 			fi
 			exit 0
 			;;
