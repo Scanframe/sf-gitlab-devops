@@ -7,17 +7,7 @@ default:
   tags:
     - cplusplus
 
-# 2 additional variables needed for this file.
-variables:
-  SF_TEST_TARGET: "hello-world-test"
-  SF_RUN_TARGET: "hello-world"
-
-################################ Prequel Checks ###############################
-
 job-check:
   extends: .tpl-env-dump
   stage: check
-  rules:
-    - if: '$CI_RUNNER_EXECUTABLE_ARCH == "linux/amd64"'
-      when: on_success
 
