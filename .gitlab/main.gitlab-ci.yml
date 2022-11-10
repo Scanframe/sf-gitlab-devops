@@ -28,6 +28,7 @@ job-make-gnu:
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
+    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
     # Execute the build script to CMake the makefiles.
     - ${SF_DIR_MOUNT_GNU}/build.sh -m .
 
@@ -38,39 +39,10 @@ job-build-gnu:
   dependencies: [job-make-gnu]
   script:
     - !reference [.tpl-log-script,script]
+    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
     # Execute the build script to actually build the running target and libraries.
     - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_RUN_TARGET}"
 
-job-build-test-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
-  stage: build-test
-  needs: [job-make-gnu,job-build-gnu]
-  dependencies: [job-make-gnu,job-build-gnu]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_TEST_TARGET}"
-
-job-test-gnu:
-  extends: [.tpl-comp-gnu,.tpl-bind-gnu,.tpl-cache-gnu,.tpl-artifacts-gnu]
-  stage: test
-  needs: [job-build-test-gnu]
-  dependencies: [job-build-test-gnu]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
-
-job-deploy-gnu:
-  extends: [.tpl-comp-gnu,.tpl-artifacts-gnu,.tpl-deploy]
-  stage: deploy
-  needs: [job-build-gnu,job-test-gnu]
-  dependencies: [job-build-gnu]
-  environment: production
-  script:
-    - !reference [.tpl-log-script,script]
-    - echo "Packaged in a Debian deb-file or maybe a zip-file?"
-    - echo "May be rsync-ed to a production site?"
 
 ################################ Linux GW Compiler ############################
 
@@ -82,6 +54,7 @@ job-make-gw:
   needs: [job-check]
   script:
     - !reference [.tpl-log-script,script]
+    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
     # Execute the build script to CMake the makefiles.
     - ${SF_DIR_MOUNT_GW}/build.sh -wm .
 
@@ -92,36 +65,6 @@ job-build-gw:
   dependencies: [job-make-gw]
   script:
     - !reference [.tpl-log-script,script]
+    - 'echo "${CI_RUNNER_EXECUTABLE_ARCH}"'
     # Execute the build script to actually build the running target and libraries.
     - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
-
-job-build-test-gw:
-  extends: [.tpl-comp-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: build-test
-  needs: [job-make-gw,job-build-gw]
-  dependencies: [job-make-gw,job-build-gw]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_TEST_TARGET}"
-
-job-test-gw:
-  extends: [.tpl-comp-gw,.tpl-cache-gw,.tpl-artifacts-gw]
-  stage: test
-  needs: [job-build-test-gw]
-  dependencies: [job-build-test-gw]
-  script:
-    - !reference [.tpl-log-script,script]
-    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ./bin/wine-exec.sh ${SF_TEST_TARGET}.exe
-
-job-deploy-gw:
-  extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
-  stage: deploy
-  needs: [job-build-gw,job-test-gw]
-  dependencies: [job-build-gw]
-  environment: production
-  script:
-    - !reference [.tpl-log-script,script]
-    - echo "Packaged in a installer or a zip-file?"
-    - echo "May be rsync-ed to a production site?"
