@@ -537,3 +537,8 @@ else
 		exec "${EXEC_SCRIPT}"
 	fi
 fi
+
+# Cleanup generate script afterwards.
+if [[ -f "${EXEC_SCRIPT}" ]] ; then
+	rm "${EXEC_SCRIPT}"
+fi
