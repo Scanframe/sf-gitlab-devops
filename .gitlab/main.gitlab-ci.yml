@@ -113,7 +113,7 @@ job-test-gw:
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ./wine-exec.sh ${SF_TEST_TARGET}.exe
+    - ./bin/wine-exec.sh ${SF_TEST_TARGET}.exe
 
 job-deploy-gw:
   extends: [.tpl-comp-gw,.tpl-artifacts-gw,.tpl-deploy]
