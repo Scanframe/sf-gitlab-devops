@@ -17,6 +17,8 @@
     - logger --tag "${SF_LOG_TAG}" "Unmounting '${SF_DIR_MOUNT_GW}' =>  '$(pwd)'"
     # Unmount the bind directory.
     - fusermount -u "${SF_DIR_MOUNT_GW}"
+    # Remove directory after.
+    - rm "${SF_DIR_MOUNT_GW}"
 
 # Template to configure cache for CMake generated files for the GW compiler.
 .tpl-cache-gw:
