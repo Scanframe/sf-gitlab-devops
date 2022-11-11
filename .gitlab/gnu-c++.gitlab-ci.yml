@@ -1,9 +1,3 @@
-# Template limiting runner selection to a linux and c++ only.
-.tpl-tags-gnu:
-  tags:
-    - linux
-    - cplusplus
-
 # Template to mount source root on a fixed directory path for Linux GNU compiler.
 .tpl-bind-gnu:
   before_script:

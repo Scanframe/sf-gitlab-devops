@@ -1,9 +1,3 @@
-# Template limiting runner selection to a linux and c++ only.
-.tpl-tags-gw:
-  tags:
-    - linux
-    - cplusplus
-
 # Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
   before_script:
