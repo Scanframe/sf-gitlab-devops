@@ -5,7 +5,7 @@ include:
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gw:
-  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw]
+  extends: [.tpl-bind-gw,.tpl-cache-gw]
   stage: make
   needs: [job-check]
   script:
@@ -14,7 +14,7 @@ job-make-gw:
     - ${SF_DIR_MOUNT_GW}/build.sh -wm .
 
 job-build-gw:
-  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build
   needs: [job-make-gw]
   dependencies: [job-make-gw]
@@ -24,7 +24,7 @@ job-build-gw:
     - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
 
 job-build-test-gw:
-  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
   stage: build-test
   needs: [job-make-gw,job-build-gw]
   dependencies: [job-make-gw,job-build-gw]
@@ -34,7 +34,7 @@ job-build-test-gw:
     - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_TEST_TARGET}"
 
 job-test-gw:
-  extends: [.tpl-tags-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  extends: [.tpl-cache-gw,.tpl-artifacts-gw]
   stage: test
   needs: [job-build-test-gw]
   dependencies: [job-build-test-gw]
@@ -44,7 +44,7 @@ job-test-gw:
     - ./bin/wine-exec.sh ${SF_TEST_TARGET}.exe
 
 job-deploy-gw:
-  extends: [.tpl-tags-gw,.tpl-artifacts-gw,.tpl-deploy]
+  extends: [.tpl-artifacts-gw,.tpl-deploy]
   stage: deploy
   needs: [job-build-gw,job-test-gw]
   dependencies: [job-build-gw]
