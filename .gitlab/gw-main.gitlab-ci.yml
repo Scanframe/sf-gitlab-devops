@@ -1,0 +1,55 @@
+include:
+  # Include job '.tpl-*' templates.
+  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+
+# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
+# Also wiping the cmake-build-??? directory.
+job-make-gw:
+  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw]
+  stage: make
+  needs: [job-check]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to CMake the makefiles.
+    - ${SF_DIR_MOUNT_GW}/build.sh -wm .
+
+job-build-gw:
+  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  stage: build
+  needs: [job-make-gw]
+  dependencies: [job-make-gw]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to actually build the running target and libraries.
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_RUN_TARGET}"
+
+job-build-test-gw:
+  extends: [.tpl-tags-gw,.tpl-bind-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  stage: build-test
+  needs: [job-make-gw,job-build-gw]
+  dependencies: [job-make-gw,job-build-gw]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Execute the build script to actually build the test target which uses the libraries from the build.
+    - ${SF_DIR_MOUNT_GW}/build.sh -wb . "${SF_TEST_TARGET}"
+
+job-test-gw:
+  extends: [.tpl-tags-gw,.tpl-cache-gw,.tpl-artifacts-gw]
+  stage: test
+  needs: [job-build-test-gw]
+  dependencies: [job-build-test-gw]
+  script:
+    - !reference [.tpl-log-script,script]
+    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
+    - ./bin/wine-exec.sh ${SF_TEST_TARGET}.exe
+
+job-deploy-gw:
+  extends: [.tpl-tags-gw,.tpl-artifacts-gw,.tpl-deploy]
+  stage: deploy
+  needs: [job-build-gw,job-test-gw]
+  dependencies: [job-build-gw]
+  environment: production
+  script:
+    - !reference [.tpl-log-script,script]
+    - echo "Packaged in a installer or a zip-file?"
+    - echo "May be rsync-ed to a production site?"

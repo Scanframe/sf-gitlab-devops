@@ -50,4 +50,3 @@ variables:
   script:
     # Log to syslog to be able to see execution flow.
     - logger --tag "${SF_LOG_TAG}" "Script => '$(pwd)'"
-

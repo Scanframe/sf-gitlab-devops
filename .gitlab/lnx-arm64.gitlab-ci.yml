@@ -1,0 +1,10 @@
+# Variables for Linux arm64 pipelines.
+variables:
+  SF_TARGET_ARCH: "arm64"
+  SF_TARGET_OS: "linux"
+
+#default:
+#  tags:
+#    - linux
+#    - "${SF_TARGET_OS}"
+

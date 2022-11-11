@@ -1,13 +1,47 @@
-include:
-  - local: ".gitlab/common-c++.gitlab-ci.yml"
-  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
-  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+workflow:
+  # Only run pipeline on protected branches.
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED
 
+include:
+  # Include variables for Linux amd64.
+  - local: ".gitlab/lnx-amd64.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
+  # Include variables for Linux arm64.
+  - local: ".gitlab/lnx-arm64.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-arm64$/'
+  # Include common jobs for all branches.
+  - local: ".gitlab/common-c++.gitlab-ci.yml"
+  # Include GNU compiler jobs for Linux for branches amd64 and arm64.
+  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-(arm64|amd64)$/'
+  # Include GW compiler jobs for Linux specific amd64 branches.
+  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
+
+# Additional variables needed for this file.
+variables:
+  SF_TEST_TARGET: "hello-world-test"
+  SF_RUN_TARGET: "hello-world"
+
+# Defaults for all jobs.
 default:
+  # Tags determine the selection of a runner.
   tags:
+    # Variables 'SF_TARGET_OS' and 'SF_TARGET_ARCH' depends on the include-file
+    # which on its turn depends on the commit branch name.
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
     - cplusplus
 
+# Obligatory in this setup of jobs depending on or needs it.
+# Reports the environment vars set for the job.
 job-check:
+  # Common template job.
   extends: .tpl-env-dump
   stage: check
 

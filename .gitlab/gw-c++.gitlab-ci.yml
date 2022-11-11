@@ -1,8 +1,8 @@
-# Template for Linux GW compiler only.
-.tpl-comp-gw:
-  rules:
-    - if: '"${CI_RUNNER_EXECUTABLE_ARCH}" == "linux/amd64"'
-      when: on_success
+# Template limiting runner selection to a linux and c++ only.
+.tpl-tags-gw:
+  tags:
+    - linux
+    - cplusplus
 
 # Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
