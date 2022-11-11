@@ -16,11 +16,11 @@ include:
   # Include common jobs for all branches.
   - local: ".gitlab/common-c++.gitlab-ci.yml"
   # Include GNU compiler jobs for Linux for branches amd64 and arm64.
-  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+  - local: ".gitlab/gnu-main.gitlab-ci.yml"
     rules:
       - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-(arm64|amd64)$/'
   # Include GW compiler jobs for Linux specific amd64 branches.
-  - local: ".gitlab/gw-c++.gitlab-ci.yml"
+  - local: ".gitlab/gw-main.gitlab-ci.yml"
     rules:
       - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
 
