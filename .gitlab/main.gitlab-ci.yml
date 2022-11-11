@@ -1,7 +1,8 @@
 workflow:
   # Only run pipeline on protected branches.
   rules:
-    - if: $CI_COMMIT_REF_PROTECTED
+    # Rule boolean needs to be evaluated this way ?!
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
 
 include:
   # Include variables for Linux amd64.
