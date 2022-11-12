@@ -395,14 +395,14 @@ if ${FLAG_WINDOWS} ; then
 	if ${FLAG_CLION} ; then
 		# Try finding the CLion cmake in Windows.
 		# shellcheck disable=SC2154
-		CMAKE_BIN="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/cmake/win/bin/cmake.exe)"
+		CMAKE_BIN="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/cmake/win/bin/cmake.exe)"
 		# Check if the file exists.
 		if [[ ! -f "${CMAKE_BIN}" ]] ; then
 			WriteLog "CLion cmake was not found!"
 			exit 1
 		fi
 		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
-		PATH_PREFIX="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion "*/bin/mingw/bin)"
+		PATH_PREFIX="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/mingw/bin)"
 	# Otherwise use QT's CMake executable.
 	else
 		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake_64/bin/cmake.exe"

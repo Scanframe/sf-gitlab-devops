@@ -9,7 +9,7 @@ find_package(SfBase CONFIG REQUIRED)
 # Package needed for adding function Sf_SetToolChain().
 find_package(SfToolChain CONFIG REQUIRED)
 # Install tool chain for Linux or Windows.
-Sf_SetToolChain()
+#Sf_SetToolChain()
 
 # Get the Git version number from the repository of this files directory.
 Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
@@ -31,7 +31,8 @@ set(SF_BUILD_QT ON)
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
+	# When using the clion compiler it gives an error.
+	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
 endif ()
 
 # Make sure builds do not wind up in the source directory.
