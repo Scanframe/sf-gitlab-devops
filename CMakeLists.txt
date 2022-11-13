@@ -33,6 +33,8 @@ if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
 	# When using the clion compiler it gives an error.
 	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
+	# Needed to be able to set debug breaks using MSVC
+	SET(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
 endif ()
 
 # Make sure builds do not wind up in the source directory.
