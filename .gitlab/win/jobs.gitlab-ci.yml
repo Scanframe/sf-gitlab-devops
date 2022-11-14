@@ -1,0 +1,15 @@
+include:
+  # Include MS Visual Studio compiler jobs for Windows specific amd64 branches.
+  - local: ".gitlab/win/mingw/jobs.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'  # Include MS Visual Studio compiler jobs for Windows specific amd64 branches.
+#  - local: ".gitlab/win/msvs/jobs.gitlab-ci.yml"
+#    rules:
+#      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'
+
+# Obligatory in this setup of jobs depending on or needs it.
+# Reports the environment vars set for the job.
+job-check-win:
+  # Common template job.
+  extends: .tpl-env-dump-win
+  stage: check

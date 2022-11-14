@@ -159,9 +159,24 @@ elif [[ "${SF_TARGET_OS}" == "GNU/Linux" ]] ; then
 	LOCAL_QT_ROOT="${HOME}/lib/Qt"
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
+# Windows Bash from Git install.
+elif [[ "${SF_TARGET_OS}" == "Msys" ]] ; then
+	WriteLog "- Windows OS detected through Msys and Qt expected on drive 'P:'"
+	export SF_TARGET_OS="Msys"
+	FLAG_WINDOWS=true
+	# Set the directory the local QT root.
+	LOCAL_QT_ROOT="/p/Qt"
+	EXEC_SCRIPT="$(mktemp --suffix .bat)"
 else
 	WriteLog "Targeted OS '${SF_TARGET_OS}' not supported!"
 fi
+
+# No arguments at show help and bailout.
+if [[ $# == 0 ]]; then
+	ShowHelp
+	exit 1
+fi
+
 
 # Initialize arguments and switches.
 FLAG_DEBUG=false
@@ -536,7 +551,7 @@ if ${FLAG_DEBUG} ; then
 else
 	WriteLog "- Executing generated script: '${EXEC_SCRIPT}'"
 	if ${FLAG_WINDOWS} ; then
-		CMD /C "$(cygpath -w "${EXEC_SCRIPT}")"
+		CMD "/C $(cygpath -w "${EXEC_SCRIPT}")"
 	else
 		exec "${EXEC_SCRIPT}"
 	fi

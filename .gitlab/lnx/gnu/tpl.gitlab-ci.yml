@@ -1,3 +1,10 @@
+# Some variables used to config this include-file.
+variables:
+  # Output directory.
+  SF_DIR_BIN_GNU: "bin/lnx64"
+  # Fixed directory the source root is mounted to.
+  SF_DIR_MOUNT_GNU: "${BIND_DIR}/${CI_COMMIT_SHORT_SHA}-gnu"
+
 # Template to mount source root on a fixed directory path for Linux GNU compiler.
 .tpl-bind-gnu:
   before_script:

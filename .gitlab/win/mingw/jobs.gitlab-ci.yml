@@ -1,0 +1,55 @@
+include:
+  # Include job '.tpl-*' templates.
+  - local: ".gitlab/win/mingw/tpl.gitlab-ci.yml"
+
+# Job for creating the make-file using the build.ps1 script calling CMake with appropriate arguments.
+# Also wiping the cmake-build-??? directory.
+job-make-mingw:
+  extends: [.tpl-bind-mingw,.tpl-cache-mingw]
+  stage: make
+  needs: [job-check-win]
+  script:
+    - !reference [.tpl-log-win-script,script]
+    # Execute the build script to CMake the makefiles.
+    - '& ${env:SF_DIR_MOUNT_MINGW}\build.ps1 --clion -m .'
+
+job-build-mingw:
+  extends: [.tpl-bind-mingw,.tpl-cache-mingw,.tpl-artifacts-mingw]
+  stage: build
+  needs: [job-make-mingw]
+  dependencies: [job-make-mingw]
+  script:
+    - !reference [.tpl-log-win-script,script]
+    # Execute the build script to actually build the running target and libraries.
+    - '& ${env:SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${env:SF_RUN_TARGET}'
+
+job-build-test-mingw:
+  extends: [.tpl-bind-mingw,.tpl-cache-mingw,.tpl-artifacts-mingw]
+  stage: build-test
+  needs: [job-make-mingw,job-build-mingw]
+  dependencies: [job-make-mingw,job-build-mingw]
+  script:
+    - !reference [.tpl-log-win-script,script]
+    # Execute the build script to actually build the test target which uses the libraries from the build.
+    - '& ${SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${env:SF_TEST_TARGET}'
+
+job-test-mingw:
+  extends: [.tpl-cache-mingw,.tpl-artifacts-mingw]
+  stage: test
+  needs: [job-build-test-mingw]
+  dependencies: [job-build-test-mingw]
+  script:
+    - !reference [.tpl-log-win-script,script]
+    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
+    - '& ${env:SF_DIR_BIN_MINGW}\${env:SF_TEST_TARGET}.exe'
+
+job-deploy-mingw:
+  extends: [.tpl-artifacts-mingw,.tpl-deploy]
+  stage: deploy
+  needs: [job-build-mingw,job-test-mingw]
+  dependencies: [job-build-mingw]
+  environment: production
+  script:
+    - !reference [.tpl-log-win-script,script]
+    - 'Write-Host "Packaged in a installer or a zip-file?"'
+    - 'Write-Host "May be rsync-ed to a production site?"'

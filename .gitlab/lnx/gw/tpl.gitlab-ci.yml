@@ -1,3 +1,10 @@
+# Some variables used to config this include-file.
+variables:
+  # Output directory.
+  SF_DIR_BIN_GW: "bin/win64"
+  # Fixed directory the source root is mounted to.
+  SF_DIR_MOUNT_GW: "${BIND_DIR}/${CI_COMMIT_SHORT_SHA}-gw"
+
 # Template to mount source root on a fixed directory path for Linux GW compiler.
 .tpl-bind-gw:
   before_script:

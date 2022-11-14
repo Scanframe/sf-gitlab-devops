@@ -1,0 +1,15 @@
+# Template to dump all environment variables.
+.tpl-env-dump-lnx:
+  # Do not need the cache for this one.
+  cache: []
+  before_script:
+    - echo "Working Directory=$(pwd)"
+    - echo "Environment Dump" && printenv
+  script:
+    - echo "..."
+
+# Template to reference to for the single Linux script line only.
+.tpl-log-lnx-script:
+  script:
+    # Log to syslog to be able to see execution flow.
+    - logger --tag "${SF_LOG_TAG}" "Script => '$(pwd)'"

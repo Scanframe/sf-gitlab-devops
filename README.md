@@ -118,3 +118,12 @@ _Somehow the **cache** system is not working since it deletes depended on direct
 The artifacts are stored on the GitLab server in `/var/opt/gitlab/gitlab-rails/shared/artifacts/` 
 in some hashed names subdirectories. 
 
+
+## Windows Runner Directory Tree
+
+```text
+C:\GitLab-Runner
+├───binder
+├───builds
+└───cache
+```

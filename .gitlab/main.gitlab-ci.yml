@@ -1,48 +1,48 @@
+include:
+  # Include variables for Linux amd64.
+  - local: ".gitlab/lnx/var-amd64.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
+  # Include variables for Linux arm64.
+  - local: ".gitlab/lnx/var-arm64.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-arm64$/'
+  # Include variables for Windows amd64.
+  - local: ".gitlab/win/var-amd64.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'
+  # Include template,variables and stages.
+  - local: ".gitlab/tpl.gitlab-ci.yml"
+    # Include Linux Jobs.
+  - local: ".gitlab/lnx/jobs.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-.+$/'
+    # Include Windows jobs.
+  - local: ".gitlab/win/jobs.gitlab-ci.yml"
+    rules:
+      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-.+$/'
+
 workflow:
   # Only run pipeline on protected branches.
   rules:
     # Rule boolean needs to be evaluated this way ?!
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
 
-include:
-  # Include variables for Linux amd64.
-  - local: ".gitlab/lnx-amd64.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
-  # Include variables for Linux arm64.
-  - local: ".gitlab/lnx-arm64.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-arm64$/'
-  # Include common jobs for all branches.
-  - local: ".gitlab/common-c++.gitlab-ci.yml"
-  # Include GNU compiler jobs for Linux for branches amd64 and arm64.
-  - local: ".gitlab/gnu-main.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-(arm64|amd64)$/'
-  # Include GW compiler jobs for Linux specific amd64 branches.
-  - local: ".gitlab/gw-main.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
-
-# Additional variables needed for this file.
+# Variables needed for this file.
 variables:
   SF_TEST_TARGET: "hello-world-test"
   SF_RUN_TARGET: "hello-world"
+  # Name of the branch that allows running deploying to production.
+  SF_RELEASE_BRANCH_NAME: "main"
+  # Logger tag value.
+  SF_LOG_TAG: "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA}"
+  # Expiration period before artifacts expire.
+  # FIXME: Currently variable expansion is bugged and is fixed. (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
+  SF_ARTIFACT_EXPIRE: "2 days"
 
-# Defaults for all jobs.
-default:
-  # Tags determine the selection of a runner.
-  tags:
-    # Variables 'SF_TARGET_OS' and 'SF_TARGET_ARCH' depends on the include-file
-    # which on its turn depends on the commit branch name.
-    - "${SF_TARGET_OS}"
-    - "${SF_TARGET_ARCH}"
-    - cplusplus
-
-# Obligatory in this setup of jobs depending on or needs it.
-# Reports the environment vars set for the job.
-job-check:
-  # Common template job.
-  extends: .tpl-env-dump
-  stage: check
-
+# Fulfills GitLabs mandated 1 job policy.
+job-mandatory:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "__never_run_this_one__"'
+  script:
+    - 'echo "Should never happen..."'

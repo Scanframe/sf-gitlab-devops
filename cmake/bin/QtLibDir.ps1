@@ -9,7 +9,7 @@
 
 Param
 (
-	# Directory to search through.
+# Directory to search through.
 	[string]$QtRootDir = "P:\Qt\"
 )
 
@@ -19,13 +19,21 @@ Process
 	$ExitCode = 1
 	# Holds all the possible Qt version directories.
 	$Versions = @()
-	# Iterate through the directories in the Qt root directory.
-	foreach($dir in @(Get-ChildItem -Path $QtRootDir -Directory "*"))
+	# Check if the directory exists.
+	if (Test-Path -PathType Container -Path $QtRootDir)
 	{
-		if ($dir.Basename -match "^[0-9]+\.[0-9]+\.[0-9]+$")
+		# Iterate through the directories in the Qt root directory.
+		foreach ($dir in @(Get-ChildItem -Path $QtRootDir -Directory "*"))
 		{
-			$Versions += $dir.Basename
+			if ($dir.Basename -match "^[0-9]+\.[0-9]+\.[0-9]+$")
+			{
+				$Versions += $dir.Basename
+			}
 		}
+	}
+	else
+	{
+		Write-Host "QT root directory '$QtRootDir' does not exist!"
 	}
 	# Continue
 	if ($Versions.count)
@@ -33,7 +41,7 @@ Process
 		# Sort ascending just in case.
 		$Versions = $Versions | sort
 		# Write to the output without a new line.
-		Write-Host -NoNewline $Versions[$Versions.count -1]
+		Write-Host -NoNewline $Versions[$Versions.count - 1]
 		# Set exit code to success.
 		$ExitCode = 0
 	}

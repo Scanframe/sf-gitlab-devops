@@ -1,15 +1,15 @@
 include:
   # Include job '.tpl-*' templates.
-  - local: ".gitlab/gnu-c++.gitlab-ci.yml"
+  - local: ".gitlab/lnx/gnu/tpl.gitlab-ci.yml"
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
 job-make-gnu:
   extends: [.tpl-bind-gnu,.tpl-cache-gnu]
   stage: make
-  needs: [job-check]
+  needs: [job-check-lnx]
   script:
-    - !reference [.tpl-log-script,script]
+    - !reference [.tpl-log-lnx-script,script]
     # Execute the build script to CMake the makefiles.
     - ${SF_DIR_MOUNT_GNU}/build.sh -m .
 
@@ -19,7 +19,7 @@ job-build-gnu:
   needs: [job-make-gnu]
   dependencies: [job-make-gnu]
   script:
-    - !reference [.tpl-log-script,script]
+    - !reference [.tpl-log-lnx-script,script]
     # Execute the build script to actually build the running target and libraries.
     - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_RUN_TARGET}"
 
@@ -29,7 +29,7 @@ job-build-test-gnu:
   needs: [job-make-gnu,job-build-gnu]
   dependencies: [job-make-gnu,job-build-gnu]
   script:
-    - !reference [.tpl-log-script,script]
+    - !reference [.tpl-log-lnx-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
     - ${SF_DIR_MOUNT_GNU}/build.sh -b . "${SF_TEST_TARGET}"
 
@@ -39,7 +39,7 @@ job-test-gnu:
   needs: [job-build-test-gnu]
   dependencies: [job-build-test-gnu]
   script:
-    - !reference [.tpl-log-script,script]
+    - !reference [.tpl-log-lnx-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
 
@@ -50,7 +50,7 @@ job-deploy-gnu:
   dependencies: [job-build-gnu]
   environment: production
   script:
-    - !reference [.tpl-log-script,script]
+    - !reference [.tpl-log-lnx-script,script]
     - echo "Packaged in a Debian deb-file or maybe a zip-file?"
     - echo "May be rsync-ed to a production site?"
 
