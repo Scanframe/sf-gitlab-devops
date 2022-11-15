@@ -16,8 +16,6 @@ function ProcessBuild
 	# Regular expression to get only the arguments part.
 	$RegEx = (-Join ("^.*", ([regex]::Escape($Invocation.MyCommand.Name)), "\s*"))
 	$Arguments = ($Invocation.Line) -replace $RegEx , ""
-	# Exit code initialized with failure.
-	$ExitCode = 1
 	# TODO: Make a decision.
 	[bool]$GitBash = $True
 	# Get the current username.
@@ -59,6 +57,11 @@ function ProcessBuild
 	}
 	# Execute the script.
 	& $BashBin -c "$BashScript $Arguments"
+	$ExitCode = $LASTEXITCODE
+	if ($ExitCode)
+	{
+		Write-Host "Bash or shell script failed execution!"
+	}
 	# Signal success or failure.
-	exit $ExitCode;
+	exit $ExitCode
 }
