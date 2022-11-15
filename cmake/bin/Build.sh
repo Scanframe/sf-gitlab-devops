@@ -92,12 +92,12 @@ function ShowHelp()
   -C, --wipe     : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
   -t, --test     : Add tests to the build configuration.
   -w, --windows  : Cross compile Windows on Linux using MinGW.
-  -s, --studio   : Build using Visual Studio
   -m, --make     : Create build directory and makefiles only.
   -b, --build    : Build target only.
   -v, --verbose  : CMake verbose enabled during CMake make (level VERBOSE).
   --clion        : Use CLion CMake tool and compilers (Windows).
-  --gitlab-ci    : Simulate CI server (sets CI_SERVER env var.).
+  --studio       : Build using Visual Studio
+  --gitlab-ci    : Simulate CI server by setting CI_SERVER environment variable (disables colors i.e.).
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -177,7 +177,6 @@ if [[ $# == 0 ]]; then
 	exit 1
 fi
 
-
 # Initialize arguments and switches.
 FLAG_DEBUG=false
 FLAG_CONFIG=false
@@ -204,7 +203,7 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 #
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
-TEMP=$(getopt -o 'dhcCbtmwspv' --long \
+TEMP=$(getopt -o 'dhcCbtmwpv' --long \
 	'clion,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
 	-n "$(basename "${0}")" -- "$@")
 # shellcheck disable=SC2181
@@ -234,7 +233,7 @@ while true; do
 			;;
 
 		-d|--debug)
-			WriteLog "Debug enabled."
+			WriteLog "- Script debugging is enabled"
 			FLAG_DEBUG=true
 			shift 1
 			continue
@@ -305,7 +304,7 @@ while true; do
 			continue
 			;;
 
-		-s|--studio)
+		--studio)
 			if ${FLAG_WINDOWS} ; then
 				WriteLog "- Using Visual Studio Compiler"
 				FLAG_VISUAL_STUDIO=true
@@ -472,7 +471,7 @@ if ${FLAG_WINDOWS} ; then
 		echo ":: Timestamp: $(date '+%Y-%m-%dT%T.%N')"
 		if ${FLAG_VISUAL_STUDIO} ; then	cat <<EOF
 if not defined VisualStudioVersion (
-	call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 -vcvars_ver=14.29
+	call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 -vcvars_ver=14.29
 	echo :: MSVC v%VisualStudioVersion% vars have been set now.
 ) else (
 	echo :: MSVC v%VisualStudioVersion% vars have been set before.
