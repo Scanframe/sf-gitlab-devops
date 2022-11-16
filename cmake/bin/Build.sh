@@ -122,7 +122,7 @@ function InstallPackages()
 {
 	WriteLog "About to install required packages for ($1)..."
 	if [[ "$1" == "GNU/Linux/x86_64" || "$1" == "GNU/Linux/arm64" || "$1" == "GNU/Linux/aarch64" ]] ; then
-		if ! sudo apt install --install-recommends cmake doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
+		if ! sudo apt install --install-recommends cmake gcc g++ doxygen graphviz libopengl0 libgl1-mesa-dev libxkbcommon-dev \
 			libxkbfile-dev libvulkan-dev libssl-dev exiftool ; then
 			WriteLog "Failed to install 1 or more packages!"
 			exit 1
