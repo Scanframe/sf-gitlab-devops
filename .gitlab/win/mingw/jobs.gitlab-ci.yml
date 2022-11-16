@@ -11,7 +11,7 @@ job-make-mingw:
   script:
     - !reference [.tpl-log-win-script,script]
     # Execute the build script to CMake the makefiles.
-    - '& ${env:SF_DIR_MOUNT_MINGW}\build.ps1 --clion -m .'
+    - '& ${SF_DIR_MOUNT_MINGW}\build.ps1 --clion -m .'
 
 job-build-mingw:
   extends: [.tpl-bind-mingw,.tpl-cache-mingw,.tpl-artifacts-mingw]
@@ -21,7 +21,7 @@ job-build-mingw:
   script:
     - !reference [.tpl-log-win-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - '& ${env:SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${env:SF_RUN_TARGET}'
+    - '& ${SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${SF_RUN_TARGET}'
 
 job-build-test-mingw:
   extends: [.tpl-bind-mingw,.tpl-cache-mingw,.tpl-artifacts-mingw]
@@ -31,7 +31,7 @@ job-build-test-mingw:
   script:
     - !reference [.tpl-log-win-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - '& ${SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${env:SF_TEST_TARGET}'
+    - '& ${SF_DIR_MOUNT_MINGW}\build.ps1 --clion -b . ${SF_TEST_TARGET}'
 
 job-test-mingw:
   extends: [.tpl-cache-mingw,.tpl-artifacts-mingw]
@@ -41,7 +41,7 @@ job-test-mingw:
   script:
     - !reference [.tpl-log-win-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - '& ${env:SF_DIR_BIN_MINGW}\${env:SF_TEST_TARGET}.exe'
+    - '& ${SF_DIR_BIN_MINGW}\${SF_TEST_TARGET}.exe'
 
 job-deploy-mingw:
   extends: [.tpl-artifacts-mingw,.tpl-deploy]

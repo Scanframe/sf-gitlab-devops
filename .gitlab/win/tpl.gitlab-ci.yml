@@ -13,4 +13,4 @@
 .tpl-log-win-script:
   script:
     # Log to Windows event log to be able to see execution flow.
-    - 'Write-EventLog -LogName "Application" -Source "gitlab-runner" -EventID 1000 -EntryType Information -Message ([System.String]::Concat("${env:SF_LOG_TAG} ", (Get-Location).Path))'
+    - 'Write-EventLog -LogName "Application" -Source "gitlab-runner" -EventID 1000 -EntryType Information -Message ([System.String]::Concat("${SF_LOG_TAG} ", (Get-Location).Path))'
