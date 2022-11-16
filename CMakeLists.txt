@@ -45,6 +45,7 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs()
 
-
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(app)
+# Add Doxygen manual project.
+add_subdirectory(manual)

@@ -1,6 +1,9 @@
 # Adds doxygen manual target to the project.
 #
-function(Sf_AddManual _Target _BaseDir _OutDir)
+# _Sources info is obtained using a GLOB function like:
+#     file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../*.h" "../*.md")
+#
+function(Sf_AddManual _Target _BaseDir _OutDir _SourceList)
 	# Add doxygen project when doxygen was found
 	find_package(Doxygen QUIET)
 	if (NOT Doxygen_FOUND)
@@ -17,13 +20,6 @@ function(Sf_AddManual _Target _BaseDir _OutDir)
 	set(DG_ImagePath "${DG_ImagePath} ${_Temp}")
 	# Enable when to change the output directory.
 	file(RELATIVE_PATH DG_OutputDir "${CMAKE_CURRENT_BINARY_DIR}" "${_OutDir}")
-	# Get the markdown files in this project directory.
-	file(GLOB _SourceList RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md")
-	# Get all the header files in the ../com module.
-	file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../com/*.h" "../com/*.md")
-	# Remove unwanted header file(s) ending on 'Private.h'.
-	list(FILTER _SourcesListTmp EXCLUDE REGEX ".*Private\\.h$")
-	list(APPEND _SourceList ${_SourceListTmp})
 	# Replace the list separator ';' with space in the list.
 	list(JOIN _SourceList " " DG_Source)
 	# Enable when generating Zen styling output.
