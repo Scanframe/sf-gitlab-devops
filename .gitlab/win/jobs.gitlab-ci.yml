@@ -3,7 +3,7 @@ include:
   - local: ".gitlab/win/mingw/jobs.gitlab-ci.yml"
     rules:
       - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'  # Include MS Visual Studio compiler jobs for Windows specific amd64 branches.
-#  - local: ".gitlab/win/msvs/jobs.gitlab-ci.yml"
+#  - local: ".gitlab/win/msvc/jobs.gitlab-ci.yml"
 #    rules:
 #      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'
 

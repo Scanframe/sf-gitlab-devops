@@ -1,53 +1,53 @@
 include:
   # Include job '.tpl-*' templates.
-  - local: ".gitlab/win/msvs/tpl.gitlab-ci.yml"
+  - local: ".gitlab/win/msvc/tpl.gitlab-ci.yml"
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Also wiping the cmake-build-??? directory.
-job-make-msvs:
-  extends: [.tpl-bind-msvs,.tpl-cache-msvs]
+job-make-msvc:
+  extends: [.tpl-bind-msvc,.tpl-cache-msvc]
   stage: make
   needs: [job-check-win]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to CMake the makefiles.
-    - ${SF_DIR_MOUNT_MSVS}/build.sh -wm .
+    - ${SF_DIR_MOUNT_MSVC}/build.sh -wm .
 
-job-build-msvs:
-  extends: [.tpl-bind-msvs,.tpl-cache-msvs,.tpl-artifacts-msvs]
+job-build-msvc:
+  extends: [.tpl-bind-msvc,.tpl-cache-msvc,.tpl-artifacts-msvc]
   stage: build
-  needs: [job-make-msvs]
-  dependencies: [job-make-msvs]
+  needs: [job-make-msvc]
+  dependencies: [job-make-msvc]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the running target and libraries.
-    - ${SF_DIR_MOUNT_MSVS}/build.sh -wb . "${SF_RUN_TARGET}"
+    - ${SF_DIR_MOUNT_MSVC}/build.sh -wb . "${SF_RUN_TARGET}"
 
-job-build-test-msvs:
-  extends: [.tpl-bind-msvs,.tpl-cache-msvs,.tpl-artifacts-msvs]
+job-build-test-msvc:
+  extends: [.tpl-bind-msvc,.tpl-cache-msvc,.tpl-artifacts-msvc]
   stage: build-test
-  needs: [job-make-msvs,job-build-msvs]
-  dependencies: [job-make-msvs,job-build-msvs]
+  needs: [job-make-msvc,job-build-msvc]
+  dependencies: [job-make-msvc,job-build-msvc]
   script:
     - !reference [.tpl-log-script,script]
     # Execute the build script to actually build the test target which uses the libraries from the build.
-    - ${SF_DIR_MOUNT_MSVS}/build.sh -wb . "${SF_TEST_TARGET}"
+    - ${SF_DIR_MOUNT_MSVC}/build.sh -wb . "${SF_TEST_TARGET}"
 
-job-test-msvs:
-  extends: [.tpl-cache-msvs,.tpl-artifacts-msvs]
+job-test-msvc:
+  extends: [.tpl-cache-msvc,.tpl-artifacts-msvc]
   stage: test
-  needs: [job-build-test-msvs]
-  dependencies: [job-build-test-msvs]
+  needs: [job-build-test-msvc]
+  dependencies: [job-build-test-msvc]
   script:
     - !reference [.tpl-log-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - ./bin/wine-exec.sh ${SF_TEST_TARGET}.exe
 
-job-deploy-msvs:
-  extends: [.tpl-artifacts-msvs,.tpl-deploy]
+job-deploy-msvc:
+  extends: [.tpl-artifacts-msvc,.tpl-deploy]
   stage: deploy
-  needs: [job-build-msvs,job-test-msvs]
-  dependencies: [job-build-msvs]
+  needs: [job-build-msvc,job-test-msvc]
+  dependencies: [job-build-msvc]
   environment: production
   script:
     - !reference [.tpl-log-script,script]

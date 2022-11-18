@@ -1,12 +1,12 @@
 # Some variables used to config this include-file.
 variables:
   # Output directory.
-  SF_DIR_BIN_MSVS: "bin/win64"
+  SF_DIR_BIN_MSVC: "bin/win64"
   # Fixed directory the source root is mounted to.
-  SF_DIR_MOUNT_MSVS: "${BIND_DIR}/${CI_COMMIT_SHORT_SHA}-msvs"
+  SF_DIR_MOUNT_MSVC: "${BIND_DIR}/${CI_COMMIT_SHORT_SHA}-msvc"
 
 # Template to mount source root on a fixed directory path for Linux GW compiler.
-.tpl-bind-msvs:
+.tpl-bind-msvc:
   before_script:
     # Log to syslog to be able to see execution flow.
     - logger --tag "${SF_LOG_TAG}" "Mounting '${SF_DIR_MOUNT_GW}' =>  '$(pwd)'"

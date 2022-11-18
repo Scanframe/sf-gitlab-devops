@@ -86,18 +86,18 @@ fi
 function ShowHelp()
 {
 	echo "Usage: ${0} [<options>] <sub-dir> [<target>]
-  -d, --debug    : Debug: Show executed commands rather then executing them.
-  -p, --packages : Install prerequisite Linux packages using 'apt' for now.
-  -c, --clean    : Cleans build targets first (adds build option '--clean-first')
-  -C, --wipe     : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
-  -t, --test     : Add tests to the build configuration.
-  -w, --windows  : Cross compile Windows on Linux using MinGW.
-  -m, --make     : Create build directory and makefiles only.
-  -b, --build    : Build target only.
-  -v, --verbose  : CMake verbose enabled during CMake make (level VERBOSE).
-  --clion        : Use CLion CMake tool and compilers (Windows).
-  --studio       : Build using Visual Studio
-  --gitlab-ci    : Simulate CI server by setting CI_SERVER environment variable (disables colors i.e.).
+  -d, --debug      : Debug: Show executed commands rather then executing them.
+  -p, --packages   : Install prerequisite Linux packages using 'apt' for now.
+  -c, --clean      : Cleans build targets first (adds build option '--clean-first')
+  -C, --wipe       : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
+  -t, --test       : Add tests to the build configuration.
+  -w, --windows    : Cross compile Windows on Linux using MinGW.
+  -m, --make       : Create build directory and makefiles only.
+  -b, --build      : Build target only.
+  -v, --verbose    : CMake verbose enabled during CMake make (level VERBOSE).
+  --toolset <name> : Preferred toolset in Windows (clion,qt,studio) where:
+                     qt = QT Group Framework, studio = Microsoft Visual Studio, clion = JetBrains CLion.
+  --gitlab-ci      : Simulate CI server by setting CI_SERVER environment variable (disables colors i.e.).
   Where <sub-dir> is:
     '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
     'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
@@ -145,28 +145,44 @@ function InstallPackages()
 
 # Detect windows using the cygwin 'uname' command.
 if [[ "${SF_TARGET_OS}" == "Cygwin" ]] ; then
-	WriteLog "- Windows OS detected through Cygwin and Qt expected on drive 'P:'"
+	WriteLog "- Windows OS detected through Cygwin shell"
 	export SF_TARGET_OS="Cygwin"
 	FLAG_WINDOWS=true
 	# Set the directory the local QT root.
-	LOCAL_QT_ROOT="/cygdrive/p/Qt"
+	# shellcheck disable=SC2012
+	LOCAL_QT_ROOT="$( (ls -d /cygdrive/?/Qt | tail -n 1) 2> /dev/null )"
+	if [[ -d "$LOCAL_QT_ROOT" ]] ; then
+		WriteLog "- Found QT in '${LOCAL_QT_ROOT}'"
+	fi
+	# Create temporary file for executing cmake.
+	EXEC_SCRIPT="$(mktemp --suffix .bat)"
+elif [[ "${SF_TARGET_OS}" == "Msys" ]] ; then
+	WriteLog "- Windows OS detected through Msys shell"
+	export SF_TARGET_OS="Msys"
+	FLAG_WINDOWS=true
+	# Set the directory the local QT root.
+	# shellcheck disable=SC2012
+	LOCAL_QT_ROOT="$( (ls -d /?/Qt | tail -n 1) 2> /dev/null )"
+	if [[ -d "$LOCAL_QT_ROOT" ]] ; then
+		WriteLog "- Found QT in '${LOCAL_QT_ROOT}'"
+	fi
+	# Create temporary file for executing cmake.
 	EXEC_SCRIPT="$(mktemp --suffix .bat)"
 elif [[ "${SF_TARGET_OS}" == "GNU/Linux" ]] ; then
-	WriteLog "- Linux detected ."
+	WriteLog "- Linux detected"
 	export SF_TARGET_OS="GNU/Linux"
 	FLAG_WINDOWS=false
 	# Set the directory the local QT root.
 	LOCAL_QT_ROOT="${HOME}/lib/Qt"
+	# Check if it exists.
+	if [[ -d "${LOCAL_QT_ROOT}" ]] ; then
+		WriteLog "- QT found in '${LOCAL_QT_ROOT}'"
+	else
+		LOCAL_QT_ROOT=""
+	fi
+	# Create temporary file for executing cmake.
 	EXEC_SCRIPT="$(mktemp --suffix .sh)"
 	chmod +x "${EXEC_SCRIPT}"
-# Windows Bash from Git install.
-elif [[ "${SF_TARGET_OS}" == "Msys" ]] ; then
-	WriteLog "- Windows OS detected through Msys and Qt expected on drive 'P:'"
-	export SF_TARGET_OS="Msys"
-	FLAG_WINDOWS=true
-	# Set the directory the local QT root.
-	LOCAL_QT_ROOT="/p/Qt"
-	EXEC_SCRIPT="$(mktemp --suffix .bat)"
 else
 	WriteLog "Targeted OS '${SF_TARGET_OS}' not supported!"
 fi
@@ -182,11 +198,24 @@ FLAG_DEBUG=false
 FLAG_CONFIG=false
 FLAG_BUILD=false
 FLAG_WIPE_DIR=false
-FLAG_CLION=false
 # Flag for cross compiling for Windows from Linux.
 FLAG_CROSS_WINDOWS=false
-# Flag for when using Visual Studio
-FLAG_VISUAL_STUDIO=false
+# Selected toolset where empty is to auto select.
+TOOLSET=""
+# Order of preference
+TOOLSET_ORDER="qt clion studio native"
+# Toolset cmake binary and directory.
+declare -A TOOLSET_NAME
+declare -A TOOLSET_CMAKE
+# Actual order of preference is reversed due the bash array.
+TOOLSET_NAME['clion']="JetBrains CLion accompanied MinGW"
+TOOLSET_NAME['qt']="QT Platform accompanied MinGW"
+TOOLSET_NAME['native']="Microsoft Visual Studio accompanied MSVC"
+TOOLSET_NAME['studio']="Microsoft Visual Studio accompanied MSVC"
+# Directory location of the toolsets.
+declare -A TOOLSET_DIR
+# Shell command to call before make or build.
+declare -A TOOLSET_PRE
 # Initialize the config options.
 CONFIG_OPTIONS="-L"
 CONFIG_OPTIONS=""
@@ -204,7 +233,7 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
 TEMP=$(getopt -o 'dhcCbtmwpv' --long \
-	'clion,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
+	'toolset:,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
 	-n "$(basename "${0}")" -- "$@")
 # shellcheck disable=SC2181
 if [[ $? -ne 0 ]] ; then
@@ -215,9 +244,14 @@ eval set -- "$TEMP" ; unset TEMP
 while true; do
 	case $1 in
 
-		--clion)
-			FLAG_CLION=true
-			shift 1
+		--toolset)
+			TOOLSET="$2"
+			if [[ "${TOOLSET}" =~ [^(clion|qt|studio)$] ]] ; then
+				WriteLog "Toolset selection '${TOOLSET}' invalid!"
+				ShowHelp
+				exit 1
+			fi
+			shift 2
 			continue
 			;;
 
@@ -304,17 +338,6 @@ while true; do
 			continue
 			;;
 
-		--studio)
-			if ${FLAG_WINDOWS} ; then
-				WriteLog "- Using Visual Studio Compiler"
-				FLAG_VISUAL_STUDIO=true
-			else
-				WriteLog "-  Ignoring Visual Studio switch when in Linux"
-			fi
-			shift 1
-			continue
-			;;
-
 		'--')
 			shift
 			break
@@ -350,8 +373,8 @@ BUILD_SUBDIR="cmake-build-${CMAKE_DEFS['CMAKE_BUILD_TYPE'],,}"
 #
 # When Windows is the OS running Cygwin.
 if ${FLAG_WINDOWS} = true ; then
-	# Set the build-dir for the cross compile.
-	if ${FLAG_VISUAL_STUDIO} = true ; then
+	# Set the build-dir for the compiler based on toolset in Windows.
+	if [[  "${TOOLSET}" == "studio" ]] ; then
 		BUILD_SUBDIR="${BUILD_SUBDIR}-msvc"
 	else
 		BUILD_SUBDIR="${BUILD_SUBDIR}-mingw"
@@ -398,50 +421,74 @@ if ${FLAG_WIPE_DIR} ; then
 		# Check if the build directory really exists checking an expected subdir.
 		if [[ -d "${RM_SUBDIR}/${BUILD_SUBDIR}" ]] ; then
 			# Remove all content from the build directory also the hidden ones skipping '.' and '..'
-			${RM_CMD} "${RM_SUBDIR}/${BUILD_SUBDIR}/"..?* "${RM_SUBDIR}/${BUILD_SUBDIR}/".[!.]* "${RM_SUBDIR}/${BUILD_SUBDIR}/"* > /dev/null
+			${RM_CMD} "${RM_SUBDIR}/${BUILD_SUBDIR}/"..?* "${RM_SUBDIR}/${BUILD_SUBDIR}/".[!.]* "${RM_SUBDIR}/${BUILD_SUBDIR}/"* > /dev/null 2>&1
 		fi
 	fi
 fi
 
-# Configure Build generator depending .
+# Configure cmake location.
 if ${FLAG_WINDOWS} ; then
-	# Find Clion CMake executable.
-	if ${FLAG_CLION} ; then
-		# Try finding the CLion cmake in Windows.
-		# shellcheck disable=SC2154
-		CMAKE_BIN="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/cmake/win/bin/cmake.exe)"
-		# Check if the file exists.
-		if [[ ! -f "${CMAKE_BIN}" ]] ; then
-			WriteLog "CLion cmake was not found!"
-			exit 1
-		fi
-		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
-		PATH_PREFIX="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/mingw/bin)"
-	# Otherwise use QT's CMake executable.
+	# Try adding CLion cmake.
+	# shellcheck disable=SC2154
+	TOOLSET_CMAKE['native']="$(which cmake)"
+	# shellcheck disable=SC2154
+	TOOLSET_DIR['native']="/usr/bin"
+	TOOLSET_PRE['native']=""
+	# shellcheck disable=SC2154
+	# shellcheck disable=SC2012
+	TOOLSET_CMAKE['clion']="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/cmake/win/bin/cmake.exe 2> /dev/null | tail -n 1)"
+	# shellcheck disable=SC2012
+	TOOLSET_DIR['clion']="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/mingw/bin | tail -n 1)"
+	TOOLSET_PRE['clion']=""
+	# Try adding QT cmake.
+	TOOLSET_CMAKE["qt"]="$(ls -d "${LOCAL_QT_ROOT}/Tools/CMake_64/bin/cmake.exe" 2> /dev/null)"
+	# shellcheck disable=SC2012
+	TOOLSET_DIR['qt']="$(ls -d "${LOCAL_QT_ROOT}/Tools/mingw"*"/bin" | sort --version-sort | tail -n 1)"
+	TOOLSET_PRE['qt']=""
+	# Try adding Visual Studio cmake.
+	TOOLSET_CMAKE['studio']="$(ls -d "$(cygpath -u "${ProgramW6432}")/Microsoft Visual Studio/"*/*"/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" 2> /dev/null )"
+	# Toolset directory for Visual studio is set using a batch file provided by visual studio.
+	# shellcheck disable=SC2012
+	TOOLSET_DIR['studio']="/usr/bin"
+	TOOLSET_PRE['studio']="if not defined VisualStudioVersion ( call \"$(cygpath -w "$(ls -d "$(cygpath -u "${ProgramW6432}")/Microsoft Visual Studio/"*/*"/VC/Auxiliary/Build/vcvarsall.bat")")\" x64 -vcvars_ver=14 )"
+	# Show debug info on found toolsets.
+	if ${FLAG_DEBUG} ; then
+		for key in "${!TOOLSET_NAME[@]}" ; do
+			WriteLog "= TOOLSET_CMAKE[${key}]=${TOOLSET_CMAKE[${key}]}"
+			WriteLog "= TOOLSET_DIR[${key}]=${TOOLSET_DIR[${key}]}"
+			WriteLog "= TOOLSET_PRE[${key}]=${TOOLSET_PRE[${key}]}"
+		done
+	fi
+	# When not set select the toolset select the first that is set according the preferred toolset order.
+	if [[ -z "${TOOLSET}" ]] ; then
+		for key in ${TOOLSET_ORDER} ; do
+			# Check if this entry was found.
+			if [[ -n "${TOOLSET_CMAKE[${key}]}" ]] ; then
+				WriteLog "- Selecting toolset: ${TOOLSET_NAME[${key}]}"
+				TOOLSET="${key}"
+				break
+			fi
+		done
 	else
-		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
-		# Check if the file exists.
-		if [[ ! -f "${CMAKE_BIN}" ]] ; then
-			WriteLog "QT cmake '${CMAKE_BIN}' was not found!"
+		# Check if the obligatory toolset is present.
+		if [[ -z "${TOOLSET_CMAKE[${TOOLSET}]}" ]] ; then
+			# shellcheck disable=SC2154
+			WriteLog "Requested toolset '${TOOLSET}' is not available!"
 			exit 1
 		fi
-		# Also set the path prefix so the CLion compilers are selected together with the CMake executable.
-		# shellcheck disable=SC2012
-		PATH_PREFIX="$(ls -d "/cygdrive/"*"/Qt/Tools/mingw"*"/bin" | sort --version-sort | tail -n 1)"
 	fi
 	# Convert to windows path format.
-	CMAKE_BIN="$(cygpath -w "${CMAKE_BIN}")"
-	# Covert the prefix path to Windows format.
-	PATH_PREFIX="$(cygpath -w "${PATH_PREFIX}")"
+	CMAKE_BIN="$(cygpath -w "${TOOLSET_CMAKE[${TOOLSET}]}")"
+	# Convert the prefix path to Windows format.
+	PATH_PREFIX="$(cygpath -w "${TOOLSET_DIR[${TOOLSET}]}")"
 	# Assemble the Windows build directory.
 	BUILD_DIR="$(cygpath -aw "${SCRIPT_DIR}/${BUILD_SUBDIR}")"
-	# Covert the source path to Windows format.
+	# Convert the source path to Windows format.
 	SOURCE_DIR="$(cygpath -aw "${SOURCE_DIR}")"
 	# Visual Studio wants of course wants something else again.
-	if ${FLAG_VISUAL_STUDIO} ; then
+	if [[ "${TOOLSET}" == "studio" ]] ; then
 		BUILD_GENERATOR="CodeBlocks - NMake Makefiles"
-		# CMake binary bundled with MSVC but the default QT version is also ok.
-		CMAKE_BIN="%VSINSTALLDIR%\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe"
+		#BUILD_GENERATOR="CodeBlocks - Ninja"
 	else
 		BUILD_GENERATOR="CodeBlocks - MinGW Makefiles"
 	fi
@@ -469,18 +516,12 @@ if ${FLAG_WINDOWS} ; then
 		echo '@echo off'
 		# Set time stamp at beginning of file.
 		echo ":: Timestamp: $(date '+%Y-%m-%dT%T.%N')"
-		if ${FLAG_VISUAL_STUDIO} ; then	cat <<EOF
-if not defined VisualStudioVersion (
-	call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64 -vcvars_ver=14.29
-	echo :: MSVC v%VisualStudioVersion% vars have been set now.
-) else (
-	echo :: MSVC v%VisualStudioVersion% vars have been set before.
-)
-EOF
+		if [[ "${TOOLSET}" == "studio"  && ($FLAG_CONFIG == true || $FLAG_BUILD == true) ]] ; then
+			echo "${TOOLSET_PRE[${TOOLSET}]}"
 		fi
 		echo -e "\n:: === General Section ==="
 		# Add the prefix to the path when non empty.
-		if [[ -n "${PATH_PREFIX}" ]] ; then
+		if [[ -n "${PATH_PREFIX}" && "${TOOLSET}" != "studio" ]] ; then
 			echo ":: Set path prefix for tools to be found."
 			echo "PATH=${PATH_PREFIX};%PATH%"
 		fi
@@ -501,10 +542,12 @@ EOF
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "--build \"${BUILD_DIR}\" ^"
 			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} ^"
-			if ! ${FLAG_VISUAL_STUDIO} ; then
-				echo "-- -j ${CPU_CORES_TO_USE}"
+			if [[ "${TOOLSET}" != "studio" ]] ; then
+				echo "--parallel ${CPU_CORES_TO_USE}"
+				echo "" #"-- -j ${CPU_CORES_TO_USE}"
 			else
-				echo "-- -j ${CPU_CORES_TO_USE}"
+				echo "--parallel ${CPU_CORES_TO_USE}"
+#				echo "-- /CGTHREADS:${CPU_CORES_TO_USE}"
 			fi
 		fi
 	} >> "${EXEC_SCRIPT}"
@@ -545,6 +588,7 @@ fi
 # Execute the script or write it to the log out when debugging.
 if ${FLAG_DEBUG} ; then
 	WriteLog "=== Script content ${EXEC_SCRIPT} ==="
+	# shellcheck disable=SC2028
 	echo "$(cat "${EXEC_SCRIPT}")\n\n"
 	WriteLog "$(printf '=%.0s' {1..45})"
 else

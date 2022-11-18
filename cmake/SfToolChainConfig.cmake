@@ -43,6 +43,27 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 # Search programs in the host environment
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 ")
+
+		# Cygwin compilers.
+		if (False)
+			file(APPEND "${_CmakeFile}"
+"set(CMAKE_SYSTEM_NAME Windows)
+# Use mingw 64-bit compilers on Cygwin.
+set(CMAKE_C_COMPILER \"i686-w64-mingw32-gcc\")
+set(CMAKE_CXX_COMPILER \"i686-w64-mingw32-c++\")
+set(CMAKE_RC_COMPILER \"i686-w64-mingw32-windres\")
+set(CMAKE_RANLIB \"i686-w64-mingw32-ranlib\")
+set(CMAKE_FIND_ROOT_PATH \"/usr/bin\")
+# Adjust the default behavior of the find commands:
+# search headers and libraries in the target environment
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+# Search programs in the host environment
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+")
+		endif ()
+
+
 	endif ()
 
 		set(CMAKE_TOOLCHAIN_FILE "${_CmakeFile}" PARENT_SCOPE)

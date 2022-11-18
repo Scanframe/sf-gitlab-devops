@@ -64,7 +64,7 @@ default:
     ├── mingw
     │   ├── jobs.gitlab-ci.yml
     │   └── tpl.gitlab-ci.yml
-    ├── msvs
+    ├── msvc
     │   ├── jobs.gitlab-ci.yml
     │   └── tpl.gitlab-ci.yml
     ├── jobs.gitlab-ci.yml
