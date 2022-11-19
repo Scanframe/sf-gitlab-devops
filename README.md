@@ -170,7 +170,7 @@ For installing Cygwin and configuring see this [manual](https://wiki.scanframe.c
 
 Download the [GitLab-Runner](https://docs.gitlab.com/runner/install/windows.html) application.
 
-Since it is going to be running as a service the file was moved into "%ProgramFiles%\GitLab\Runner" where 
+The binary is placed in `C:\gitlab-runner` where 
 also the configuration file `config.toml` will reside. 
 
 ###### Optional 
@@ -320,18 +320,18 @@ concurrent = 3
 [[runners]]
 executor = "shell"
 shell = "powershell"
-builds_dir="C:\\GitLab-Runner\\builds"
-cache_dir="C:\\GitLab-Runner\\cache"
+builds_dir="C:\\gitlab-runner\\builds"
+cache_dir="C:\\gitlab-runner\\cache"
 ```
 
 Installing the GitLab-Runner service as the **User** in the developers VM image preinstall Windows is as follows.
 
 ```powershell
-gitlab-runner-windows-amd64.exe install --working-directory "C:\GitLab-Runner" --user User --password "<user-password>" 
+gitlab-runner.exe install --working-directory "C:\gitLab-runner" --user User --password "<user-password>" 
 ```
 But first create this directory tree. 
 ```text
-C:\GitLab-Runner
+C:\gitlab-runner
 ├───binder
 ├───builds
 └───cache

@@ -1,10 +1,10 @@
 **/.metadata
-**/.vscode
 **/.idea
+**/.vscode
+**/.vs
 /bin/lnx64/*
 /bin/win64/*
 /bin/man/*
-/thirdp
 */*/*.user
 **/cmake-build-*
 **/CMakeLists.txt.user

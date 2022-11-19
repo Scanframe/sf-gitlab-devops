@@ -31,7 +31,7 @@ set(SF_BUILD_QT ON)
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
-	# When using the clion compiler it gives an error.
+	# When using the CLion's MinGW compiler it gives an error.
 	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
 	# Needed to be able to set debug breaks using MSVC
 	SET(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
@@ -42,7 +42,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 find_package(SfCompiler CONFIG REQUIRED)
 
-# Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
+# Set the 3 CMAKE_?????_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
