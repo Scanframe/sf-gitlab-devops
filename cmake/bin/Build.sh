@@ -90,7 +90,8 @@ function ShowHelp()
   -p, --packages   : Install prerequisite Linux packages using 'apt' for now.
   -c, --clean      : Cleans build targets first (adds build option '--clean-first')
   -C, --wipe       : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
-  -t, --test       : Add tests to the build configuration.
+  -x, --extra      : Add extra apps for exploration during development by setting the custom SF_BUILD_TESTING to 'ON'.
+  -t, --test       : Runs the ctest application in the cmake-build-* directory.
   -w, --windows    : Cross compile Windows on Linux using MinGW.
   -m, --make       : Create build directory and makefiles only.
   -b, --build      : Build target only.
@@ -197,6 +198,7 @@ fi
 FLAG_DEBUG=false
 FLAG_CONFIG=false
 FLAG_BUILD=false
+FLAG_TEST=false
 FLAG_WIPE_DIR=false
 # Flag for cross compiling for Windows from Linux.
 FLAG_CROSS_WINDOWS=false
@@ -232,8 +234,8 @@ CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
 #
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
-TEMP=$(getopt -o 'dhcCbtmwpv' --long \
-	'toolset:,help,debug,verbose,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
+TEMP=$(getopt -o 'dhcCbtmwpvx' --long \
+	'toolset:,help,debug,verbose,extra,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
 	-n "$(basename "${0}")" -- "$@")
 # shellcheck disable=SC2181
 if [[ $? -ne 0 ]] ; then
@@ -318,9 +320,16 @@ while true; do
 			continue
 			;;
 
-		-t,--test)
-			WriteLog "Include test builds."
+		-x|--extra)
+			WriteLog "- Including test/extra builds using custom 'SF_BUILD_TESTING' flag"
 			CMAKE_DEFS['SF_BUILD_TESTING']='ON'
+			shift 1
+			continue
+			;;
+
+		-t|--test)
+			WriteLog "- Running tests enabled"
+			FLAG_TEST=true
 			shift 1
 			continue
 			;;
@@ -344,7 +353,7 @@ while true; do
 		;;
 
 		*)
-			echo 'Internal error!' >&2
+			echo "Internal error on argument (${1}) !" >&2
 			exit 1
 		;;
 	esac
@@ -479,6 +488,8 @@ if ${FLAG_WINDOWS} ; then
 	fi
 	# Convert to windows path format.
 	CMAKE_BIN="$(cygpath -w "${TOOLSET_CMAKE[${TOOLSET}]}")"
+	# Convert to windows path format.
+	CTEST_BIN="$(cygpath -w "${TOOLSET_CTEST[${TOOLSET}]}")"
 	# Convert the prefix path to Windows format.
 	PATH_PREFIX="$(cygpath -w "${TOOLSET_DIR[${TOOLSET}]}")"
 	# Assemble the Windows build directory.
@@ -494,19 +505,24 @@ if ${FLAG_WINDOWS} ; then
 	fi
 	# Report used cmake and its version.
 	WriteLog "- CMake '${CMAKE_BIN}' $("$(cygpath -u "${CMAKE_BIN}")" --version | head -n 1)"
+	WriteLog "- CMake '${CTEST_BIN}' $("$(cygpath -u "${CTEST_BIN}")" --version | head -n 1)"
 else
 	# Try to use the CLion installed version of the cmake command.
 	CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
+	CTEST_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/ctest"
 	if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
 		# Try to use the Qt installed version of the cmake command.
 		CMAKE_BIN="${LOCAL_QT_ROOT}/Tools/CMake/bin/cmake"
+		CTEST_BIN="${LOCAL_QT_ROOT}/Tools/CMake/bin/ctest"
 		if ! command -v "${CMAKE_BIN}" &> /dev/null ; then
 			CMAKE_BIN="$(which cmake)"
+			CTEST_BIN="$(which ctest)"
 		fi
 	fi
 	BUILD_DIR="${SCRIPT_DIR}/${BUILD_SUBDIR}"
 	BUILD_GENERATOR="CodeBlocks - Unix Makefiles"
 	WriteLog "- CMake '$(realpath "${CMAKE_BIN}")' $(${CMAKE_BIN} --version | head -n 1)"
+	WriteLog "- CTest '$(realpath "${CTEST_BIN}")' $(${CTEST_BIN} --version | head -n 1)"
 fi
 
 # Build execution script depending on the OS.
@@ -542,13 +558,13 @@ if ${FLAG_WINDOWS} ; then
 			echo "\"${CMAKE_BIN}\" ^"
 			echo "--build \"${BUILD_DIR}\" ^"
 			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} ^"
-			if [[ "${TOOLSET}" != "studio" ]] ; then
-				echo "--parallel ${CPU_CORES_TO_USE}"
-				echo "" #"-- -j ${CPU_CORES_TO_USE}"
-			else
-				echo "--parallel ${CPU_CORES_TO_USE}"
-#				echo "-- /CGTHREADS:${CPU_CORES_TO_USE}"
-			fi
+			echo "--parallel ${CPU_CORES_TO_USE}"
+		fi
+		# Run all declared Tests with ctest
+		if ${FLAG_TEST} ; then
+			echo -e "\n:: === CTest Section ==="
+			echo "\"${CTEST_BIN}\" ^"
+			echo "--test-dir \"${BUILD_DIR}\""
 		fi
 	} >> "${EXEC_SCRIPT}"
 else
@@ -567,10 +583,10 @@ else
 		if ${FLAG_CONFIG} ; then
 			echo -e "\n# === CMake Configure Section ==="
 			echo "'${CMAKE_BIN}' \\"
-			echo "	-B '${BUILD_DIR}' \\"
-			echo "	-G '${BUILD_GENERATOR}' ${CONFIG_OPTIONS} \\"
+			echo "-B '${BUILD_DIR}' \\"
+			echo "-G '${BUILD_GENERATOR}' ${CONFIG_OPTIONS} \\"
 			for key in "${!CMAKE_DEFS[@]}" ; do
-				echo "	-D ${key}='${CMAKE_DEFS[${key}]}' \\"
+				echo "-D ${key}='${CMAKE_DEFS[${key}]}' \\"
 			done
 			echo "	\"${SOURCE_DIR}\""
 		fi
@@ -578,9 +594,15 @@ else
 		if ${FLAG_BUILD} ; then
 			echo -e "\n# === CMake Build Section ==="
 			echo "\"${CMAKE_BIN}\" \\" ;
-			echo "	--build \"${BUILD_DIR}\" \\"
-			echo "	--target \"${TARGET}\" ${BUIlD_OPTIONS} \\"
-			echo "	-- -j ${CPU_CORES_TO_USE}"
+			echo "--build \"${BUILD_DIR}\" \\"
+			echo "--target \"${TARGET}\" ${BUIlD_OPTIONS} \\"
+			echo "--parallel ${CPU_CORES_TO_USE}"
+		fi
+		# Run all declared Tests with ctest
+		if ${FLAG_TEST} ; then
+			echo -e "\n# === CTest Section ==="
+			echo "\"${CTEST_BIN}\" \\"
+			echo "--test-dir \"${BUILD_DIR}\""
 		fi
 	} >> "${EXEC_SCRIPT}"
 fi

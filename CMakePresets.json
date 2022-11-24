@@ -1,0 +1,164 @@
+{
+	"version": 3,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 22,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"name": "tpl-lnx-debug",
+			"hidden": true,
+			"displayName": "Debug Linux Template",
+			"description": "Debug config Linux template.",
+			"generator": "CodeBlocks - Unix Makefiles",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_COLOR_DIAGNOSTICS": "ON",
+				"BUILD_SHARED_LIBS": "ON"
+			},
+			"environment": {
+				"PATH": "$env{HOME}/lib/clion/bin/ninja/linux:$penv{PATH}"
+			}
+		},
+		{
+			"name": "tpl-win-debug",
+			"hidden": true,
+			"displayName": "Debug Windows Template",
+			"description": "Debug config Windows template.",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"CMAKE_COLOR_DIAGNOSTICS": "ON",
+				"BUILD_SHARED_LIBS": "ON"
+			}
+		},
+		{
+			"name": "Debug-GNU",
+			"hidden": false,
+			"displayName": "Debug GNU Compiler on Linux",
+			"description": "Debug config GNU compiler on Linux",
+			"inherits": ["tpl-lnx-debug"],
+			"binaryDir": "${sourceDir}/cmake-build-debug-gnu"
+		},
+		{
+			"name": "Debug-GW",
+			"hidden": false,
+			"displayName": "Debug MinGW Compiler on Linux",
+			"description": "Debug config for cross Windows MinGW compiler on Linux",
+			"inherits": ["tpl-lnx-debug"],
+			"binaryDir": "${sourceDir}/cmake-build-debug-gw",
+			"cacheVariables": {
+				"SF_CROSS_WINDOWS": "ON"
+			}
+		},
+		{
+			"name": "Debug-MinGW",
+			"hidden": false,
+			"displayName": "Debug Linux MinGW Compiler on Windows",
+			"description": "Debug config for cross Windows MinGW compiler on Windows",
+			"inherits": ["tpl-win-debug"],
+			"generator": "CodeBlocks - MinGW Makefiles",
+			"binaryDir": "${sourceDir}/cmake-build-debug-mingw"
+		},
+		{
+			"name": "Debug-MSVC",
+			"hidden": false,
+			"displayName": "Debug Linux MinGW Compiler on Windows",
+			"description": "Debug config for cross Windows MinGW compiler on Windows",
+			"inherits": ["tpl-win-debug"],
+			"generator": "CodeBlocks - NMake Makefiles",
+			"binaryDir": "${sourceDir}/cmake-build-debug-msvc"
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "build-tpl",
+			"hidden": true,
+			"cleanFirst": false,
+			"verbose": false,
+			"jobs": 4
+		},
+		{
+			"name": "Debug-GNU",
+			"hidden": false,
+			"displayName": "Debug build Linux GNU Compiler",
+			"description": "Debug build with GNU compiler on Linux",
+			"configurePreset": "Debug-GNU",
+			"inherits": ["build-tpl"]
+		},
+		{
+			"name": "Debug-GW",
+			"hidden": false,
+			"displayName": "Debug build Linux MinGW Compiler",
+			"description": "Debug build MinGW Windows cross compiler on Linux",
+			"configurePreset": "Debug-GW",
+			"inherits": ["build-tpl"]
+		},
+		{
+			"name": "Debug-MinGW",
+			"hidden": false,
+			"displayName": "Debug build Windows MinGW Compiler",
+			"description": "Debug build for MinGW compiler on Windows",
+			"configurePreset": "Debug-MinGW",
+			"inherits": ["build-tpl"]
+		},
+		{
+			"name": "Debug-MSVC",
+			"hidden": false,
+			"displayName": "Debug build Windows MSVC Compiler",
+			"description": "Debug build for MSVC compiler on Windows",
+			"configurePreset": "Debug-MSVC",
+			"inherits": ["build-tpl"]
+		}
+	],
+	"testPresets": [
+		{
+			"name": "Debug-GNU",
+			"hidden": false,
+			"configurePreset": "Debug-GNU",
+			"output": {
+				"outputOnFailure": true
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		},
+		{
+			"name": "Debug-GW",
+			"hidden": false,
+			"configurePreset": "Debug-GW",
+			"output": {
+				"outputOnFailure": true
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		},
+		{
+			"name": "Debug-MinGW",
+			"hidden": false,
+			"configurePreset": "Debug-MinGW",
+			"output": {
+				"outputOnFailure": true
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		},
+		{
+			"name": "Debug-MSVC",
+			"hidden": false,
+			"configurePreset": "Debug-MSVC",
+			"output": {
+				"outputOnFailure": true
+			},
+			"execution": {
+				"noTestsAction": "error",
+				"stopOnFailure": true
+			}
+		}
+	]
+}
