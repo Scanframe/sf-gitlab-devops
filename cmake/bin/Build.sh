@@ -209,6 +209,7 @@ TOOLSET_ORDER="qt clion studio native"
 # Toolset cmake binary and directory.
 declare -A TOOLSET_NAME
 declare -A TOOLSET_CMAKE
+declare -A TOOLSET_CTEST
 # Actual order of preference is reversed due the bash array.
 TOOLSET_NAME['clion']="JetBrains CLion accompanied MinGW"
 TOOLSET_NAME['qt']="QT Platform accompanied MinGW"
@@ -447,15 +448,19 @@ if ${FLAG_WINDOWS} ; then
 	# shellcheck disable=SC2012
 	TOOLSET_CMAKE['clion']="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/cmake/win/bin/cmake.exe 2> /dev/null | tail -n 1)"
 	# shellcheck disable=SC2012
+	TOOLSET_CTEST['clion']="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/cmake/win/bin/ctest.exe 2> /dev/null | tail -n 1)"
+	# shellcheck disable=SC2012
 	TOOLSET_DIR['clion']="$(ls -d "$(cygpath -u "${ProgramW6432}")/JetBrains/CLion"*/bin/mingw/bin | tail -n 1)"
 	TOOLSET_PRE['clion']=""
 	# Try adding QT cmake.
 	TOOLSET_CMAKE["qt"]="$(ls -d "${LOCAL_QT_ROOT}/Tools/CMake_64/bin/cmake.exe" 2> /dev/null)"
+	TOOLSET_CTEST["qt"]="$(ls -d "${LOCAL_QT_ROOT}/Tools/CMake_64/bin/ctest.exe" 2> /dev/null)"
 	# shellcheck disable=SC2012
 	TOOLSET_DIR['qt']="$(ls -d "${LOCAL_QT_ROOT}/Tools/mingw"*"/bin" | sort --version-sort | tail -n 1)"
 	TOOLSET_PRE['qt']=""
 	# Try adding Visual Studio cmake.
 	TOOLSET_CMAKE['studio']="$(ls -d "$(cygpath -u "${ProgramW6432}")/Microsoft Visual Studio/"*/*"/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe" 2> /dev/null )"
+	TOOLSET_CTEST['studio']="$(ls -d "$(cygpath -u "${ProgramW6432}")/Microsoft Visual Studio/"*/*"/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/ctest.exe" 2> /dev/null )"
 	# Toolset directory for Visual studio is set using a batch file provided by visual studio.
 	# shellcheck disable=SC2012
 	TOOLSET_DIR['studio']="/usr/bin"
@@ -464,6 +469,7 @@ if ${FLAG_WINDOWS} ; then
 	if ${FLAG_DEBUG} ; then
 		for key in "${!TOOLSET_NAME[@]}" ; do
 			WriteLog "= TOOLSET_CMAKE[${key}]=${TOOLSET_CMAKE[${key}]}"
+			WriteLog "= TOOLSET_CTEST[${key}]=${TOOLSET_CTEST[${key}]}"
 			WriteLog "= TOOLSET_DIR[${key}]=${TOOLSET_DIR[${key}]}"
 			WriteLog "= TOOLSET_PRE[${key}]=${TOOLSET_PRE[${key}]}"
 		done
@@ -505,7 +511,7 @@ if ${FLAG_WINDOWS} ; then
 	fi
 	# Report used cmake and its version.
 	WriteLog "- CMake '${CMAKE_BIN}' $("$(cygpath -u "${CMAKE_BIN}")" --version | head -n 1)"
-	WriteLog "- CMake '${CTEST_BIN}' $("$(cygpath -u "${CTEST_BIN}")" --version | head -n 1)"
+	WriteLog "- CTest '${CTEST_BIN}' $("$(cygpath -u "${CTEST_BIN}")" --version | head -n 1)"
 else
 	# Try to use the CLion installed version of the cmake command.
 	CMAKE_BIN="${HOME}/lib/clion/bin/cmake/linux/bin/cmake"
