@@ -3,8 +3,8 @@ if ("${CMAKE_PROJECT_NAME}" STREQUAL "${PROJECT_NAME}")
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	# Do not export all by default in Linux.
 	if (NOT WIN32)
-		# Catch2 cannot handle compiler switch below.
-		#add_definitions("-fvisibility=hidden")
+		# Catch2 cannot handle compiler switch below when flag 'BUILD_SHARED_LIBS' is enabled presumably.
+		add_definitions("-fvisibility=hidden")
 	endif ()
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		# Generate an error on undefined (imported) symbols on dynamic libraries

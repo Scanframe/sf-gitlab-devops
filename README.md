@@ -131,8 +131,8 @@ For this project 2 virtual machines are needed and optional a Raspberry Pi.
 
 ##### Runner & Workstation
 
-To compile on your working station the repository **./build.sh** script offers an **-p | --packages** option 
-which installs all needed packages for this project to be able to compile.
+To compile on your working station the repository **./build.sh** script offers an **-r | --required** option 
+which installs all required packages for this project to be able to compile.
 
 ```bash
 # Install the git command 

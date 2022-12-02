@@ -8,6 +8,7 @@
     * [The Configure Step](#the-configure-step)
     * [The Build Step](#the-build-step)
   * [Build The Whole Project in Short](#build-the-whole-project-in-short)
+  * [Running CTest](#running-ctest)
 <!-- TOC -->
 
 ## Introduction

@@ -75,18 +75,13 @@ if ! cd "${SCRIPT_DIR}" ; then
 	exit 1;
 fi
 
-# Amount of CPU cores to use for compiling.
-CPU_CORES_TO_USE="$(($(nproc --all) -1))"
-# Get the target OS.
-SF_TARGET_OS="$(uname -o)"
-
 # Prints the help to stderr.
 #
 function ShowHelp()
 {
 	echo "Usage: ${0} [<options>] <sub-dir> [<target>]
   -d, --debug      : Debug: Show executed commands rather then executing them.
-  -p, --packages   : Install prerequisite Linux packages using 'apt' for now.
+  -r, --required   : Install required Linux packages using debian package manager.
   -c, --clean      : Cleans build targets first (adds build option '--clean-first')
   -C, --wipe       : Wipe clean the targeted cmake-build-<build-type>-<compiler-type>
   -x, --extra      : Add extra apps for exploration during development by setting the custom SF_BUILD_TESTING to 'ON'.
@@ -98,9 +93,8 @@ function ShowHelp()
   --toolset <name> : Preferred toolset in Windows (clion,qt,studio) where:
                      qt = QT Group Framework, studio = Microsoft Visual Studio, clion = JetBrains CLion.
   --gitlab-ci      : Simulate CI server by setting CI_SERVER environment variable (disables colors i.e.).
-  Where <sub-dir> is:
-    '.', 'com', 'rt-shared-lib/app', 'rt-shared-lib/iface',
-    'rt-shared-lib/impl-a', 'rt-shared-lib', 'custom-ui-plugin'
+  Where <sub-dir> is the directory used as build root for the CMakeLists.txt in it.
+  This is usually the current directory '.'.
   When the <target> argument is omitted it defaults to 'all'.
   The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
 
@@ -109,12 +103,16 @@ function ShowHelp()
     Same as above: ${0} -mb . all
     Clean all projects: ${0} . clean
     Install all projects: ${0} . install
-    Show all projects to be build: ${0} . help
-    Build 'sf-misc' project in 'com' sub-dir only: ${0} -b . sf-misc
-    Build 'com' project and all sub-projects: ${0} -b com
-    Build 'rt-shared-lib' project and all sub-projects: ${0} -b rt-shared-lib
+    Show all projects to be build in the current directory: ${0} . help
+    Build 'com' sub-project in the current directory: ${0} -b . com
+    Build all projects in the 'com' directory: ${0} -b com
 	"
 }
+
+# Amount of CPU cores to use for compiling.
+CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+# Get the target OS.
+SF_TARGET_OS="$(uname -o)"
 
 # Install needed packages depending in the Windows(cygwin) or Linux environment it is called from.
 #
@@ -140,6 +138,19 @@ function InstallPackages()
 	else
 		# shellcheck disable=SC2128
 		WriteLog "Unknown '$1' environment selection passed to function '${FUNCNAME}' !"
+	fi
+}
+
+# Returns the version number of the git version tag.
+#
+function GetGitTagVersion()
+{
+	local tag;
+	tag="$(git describe --tags --dirty --match "v*")"
+	if [[ $? && ! "${tag}" =~ ^v([0-9]+\.[0-9]+\.[0-9]).* ]] ; then
+		echo "0.0.0"
+	else
+		echo "${BASH_REMATCH[1]}"
 	fi
 }
 
@@ -199,27 +210,22 @@ FLAG_CONFIG=false
 FLAG_BUILD=false
 FLAG_TEST=false
 FLAG_WIPE_DIR=false
+FLAG_PACKAGE=false
 # Flag for cross compiling for Windows from Linux.
 FLAG_CROSS_WINDOWS=false
+
 # Selected toolset where empty is to auto select.
 TOOLSET=""
-# Order of preference
-TOOLSET_ORDER="qt clion studio native"
 # Toolset cmake binary and directory.
 declare -A TOOLSET_NAME
 declare -A TOOLSET_CMAKE
 declare -A TOOLSET_CTEST
-# Actual order of preference is reversed due the bash array.
-TOOLSET_NAME['clion']="JetBrains CLion accompanied MinGW"
-TOOLSET_NAME['qt']="QT Platform accompanied MinGW"
-TOOLSET_NAME['native']="Microsoft Visual Studio accompanied MSVC"
-TOOLSET_NAME['studio']="Microsoft Visual Studio accompanied MSVC"
 # Directory location of the toolsets.
 declare -A TOOLSET_DIR
 # Shell command to call before make or build.
 declare -A TOOLSET_PRE
+
 # Initialize the config options.
-CONFIG_OPTIONS="-L"
 CONFIG_OPTIONS=""
 # Initialize the build options.
 BUIlD_OPTIONS=
@@ -234,8 +240,8 @@ CMAKE_DEFS['__disabled__BUILD_SHARED_LIBS']='ON'
 # Color buildsystem messages by default.
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
-TEMP=$(getopt -o 'dhcCbtmwpvx' --long \
-	'toolset:,help,debug,verbose,extra,packages,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
+TEMP=$(getopt -o 'dhcCbtmwrvx' --long \
+	'toolset:,help,debug,verbose,extra,required,wipe,clean,make,build,test,windows,studio,gitlab-ci' \
 	-n "$(basename "${0}")" -- "$@")
 # shellcheck disable=SC2181
 if [[ $? -ne 0 ]] ; then
@@ -278,11 +284,13 @@ while true; do
 		-v|--verbose)
 			WriteLog "- CMake verbose level set"
 			CMAKE_DEFS['CMAKE_MESSAGE_LOG_LEVEL']='VERBOSE'
+			# Makes add_custom command show its command output.
+			CMAKE_DEFS['VERBOSE']='1'
 			shift 1
 			continue
 			;;
 
-		-p|--packages)
+		-r|--required)
 			if [[ ${FLAG_CROSS_WINDOWS} == true ]] ; then
 				InstallPackages "${SF_TARGET_OS}/$(uname -m)/Cross"
 			else
@@ -337,9 +345,7 @@ while true; do
 		-w|--windows)
 			if ! ${FLAG_WINDOWS} ; then
 				WriteLog "- Cross compile for Windows"
-				if [[ ! ${FLAG_WINDOWS} = true ]] ; then
-					FLAG_CROSS_WINDOWS=true
-				fi
+				FLAG_CROSS_WINDOWS=true
 			else
 				WriteLog "Ignoring Cross compile when in Windows"
 			fi
@@ -382,9 +388,9 @@ BUILD_SUBDIR="cmake-build-${CMAKE_DEFS['CMAKE_BUILD_TYPE'],,}"
 # Assemble CMake build directory depending on OS and passed options.
 #
 # When Windows is the OS running Cygwin.
-if ${FLAG_WINDOWS} = true ; then
+if ${FLAG_WINDOWS} ; then
 	# Set the build-dir for the compiler based on toolset in Windows.
-	if [[  "${TOOLSET}" == "studio" ]] ; then
+	if [[ "${TOOLSET}" == "studio" ]] ; then
 		BUILD_SUBDIR="${BUILD_SUBDIR}-msvc"
 	else
 		BUILD_SUBDIR="${BUILD_SUBDIR}-mingw"
@@ -438,9 +444,16 @@ fi
 
 # Configure cmake location.
 if ${FLAG_WINDOWS} ; then
+	# Order of preference
+	TOOLSET_ORDER="qt clion studio native"
+	# Actual order of preference is reversed due the bash array.
+	TOOLSET_NAME['native']="Native Cygwin compiler"
+	TOOLSET_NAME['clion']="JetBrains CLion accompanied MinGW"
+	TOOLSET_NAME['qt']="QT Platform accompanied MinGW"
+	TOOLSET_NAME['studio']="Microsoft Visual Studio accompanied MSVC"
 	# Try adding CLion cmake.
-	# shellcheck disable=SC2154
 	TOOLSET_CMAKE['native']="$(which cmake)"
+	TOOLSET_CTEST['native']="$(which ctest)"
 	# shellcheck disable=SC2154
 	TOOLSET_DIR['native']="/usr/bin"
 	TOOLSET_PRE['native']=""

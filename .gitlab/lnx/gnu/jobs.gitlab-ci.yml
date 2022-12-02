@@ -41,7 +41,9 @@ job-test-gnu:
   script:
     - !reference [.tpl-log-lnx-script,script]
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
+    #- ${SF_DIR_MOUNT_GNU}/${SF_DIR_BIN_GNU}/${SF_TEST_TARGET}.bin
+    # Run the test defined in the CMake files.
+    - ${SF_DIR_MOUNT_GNU}/build.sh -t .
 
 job-deploy-gnu:
   extends: [.tpl-artifacts-gnu,.tpl-deploy]

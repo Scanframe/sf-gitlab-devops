@@ -22,6 +22,7 @@ project("devops-trial"
 	VERSION "${SF_VERSION}"
 	DESCRIPTION "Scanframe DevOps Trial App"
 	HOMEPAGE_URL "https://git.scanframe.com/trial/devops.git"
+	LANGUAGES C CXX
 	)
 
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
@@ -50,6 +51,8 @@ Sf_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(app)
+# Add debian package build target.
+add_subdirectory(package)
 # Add Doxygen manual project.
 add_subdirectory(manual)
 
