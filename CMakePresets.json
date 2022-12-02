@@ -15,7 +15,7 @@
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug",
 				"CMAKE_COLOR_DIAGNOSTICS": "ON",
-				"BUILD_SHARED_LIBS": "ON"
+				"__disabled__BUILD_SHARED_LIBS": "ON"
 			},
 			"environment": {
 				"PATH": "$env{HOME}/lib/clion/bin/ninja/linux:$penv{PATH}"
@@ -28,8 +28,8 @@
 			"description": "Debug config Windows template.",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug",
-				"CMAKE_COLOR_DIAGNOSTICS": "ON",
-				"BUILD_SHARED_LIBS": "ON"
+				"__disabled__BUILD_SHARED_LIBS": "ON",
+				"CMAKE_COLOR_DIAGNOSTICS": "ON"
 			}
 		},
 		{

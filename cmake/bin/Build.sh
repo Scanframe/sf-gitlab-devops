@@ -1,13 +1,6 @@
 #!/bin/bash
 #set -x
 
-# When the script directory is not set then
-if [[ -z "${SCRIPT_DIR}" ]] ; then
-	# Get the bash script directory.
-	SCRIPT_DIR="$(realpath "$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)/../..")"
-	exit 1
-fi
-
 # Define and use some foreground colors values when not running CI-jobs.
 if [[ ${CI} ]] ; then
 	fg_black="";
@@ -70,16 +63,22 @@ function WriteLog()
 	echo -n "${fg_reset}" 1>&2;
 }
 
-# Amount of CPU cores to use for compiling.
-CPU_CORES_TO_USE="$(($(nproc --all) -1))"
-# Get the target OS.
-SF_TARGET_OS="$(uname -o)"
+# When the script directory is not set then
+if [[ -z "${SCRIPT_DIR}" ]] ; then
+	WriteLog "Environment variable 'SCRIPT_DIR' not set!"
+	exit 1
+fi
 
 # Change to the scripts directory to operated from when script is called from a different location.
 if ! cd "${SCRIPT_DIR}" ; then
 	WriteLog "Change to operation directory '${SCRIPT_DIR}' failed!"
 	exit 1;
 fi
+
+# Amount of CPU cores to use for compiling.
+CPU_CORES_TO_USE="$(($(nproc --all) -1))"
+# Get the target OS.
+SF_TARGET_OS="$(uname -o)"
 
 # Prints the help to stderr.
 #
@@ -230,9 +229,9 @@ TARGET="all"
 declare -A CMAKE_DEFS
 # Default profile is debug.
 CMAKE_DEFS['CMAKE_BUILD_TYPE']='Debug'
-# Default build dynamic libraries.
-CMAKE_DEFS['BUILD_SHARED_LIBS']='ON'
-#
+# Default build dynamic libraries (in Windows the qt toolset causes a runtime error with the Catch2 DLL).
+CMAKE_DEFS['__disabled__BUILD_SHARED_LIBS']='ON'
+# Color buildsystem messages by default.
 CMAKE_DEFS['CMAKE_COLOR_DIAGNOSTICS']='ON'
 # Parse options.
 TEMP=$(getopt -o 'dhcCbtmwpvx' --long \
@@ -374,10 +373,11 @@ if [[ -z "${argument[0]}" ]]; then
 	exit 1
 fi
 
-# Initialize variables.
+# Initialize variable for the source sub directory.
 SOURCE_DIR="${argument[0]}"
 # Initialize the first part of the build directory depending on the build type (Debug, Release etc.).
 BUILD_SUBDIR="cmake-build-${CMAKE_DEFS['CMAKE_BUILD_TYPE'],,}"
+
 #
 # Assemble CMake build directory depending on OS and passed options.
 #
@@ -417,8 +417,8 @@ if ${FLAG_WIPE_DIR} ; then
 	WriteLog "- Wiping clean build-dir '${RM_SUBDIR}/${BUILD_SUBDIR}'"
 	RM_CMD="rm --verbose --recursive --one-file-system --interactive=never"
 	RM_SUBDIR="${SCRIPT_DIR}"
-	if [[ -n "${TARGET}" && "${TARGET}" && "${TARGET}" != "all" ]] ; then
-		RM_SUBDIR="${RM_SUBDIR}/${TARGET}"
+	if [[ -n "${SOURCE_DIR}" && "${SOURCE_DIR}" && "${SOURCE_DIR}" != "." ]] ; then
+		RM_SUBDIR="${RM_SUBDIR}/${SOURCE_DIR}"
 	fi
 	# Check if only build flag is specified.
 	if ! ${FLAG_CONFIG} && ${FLAG_BUILD} ; then
