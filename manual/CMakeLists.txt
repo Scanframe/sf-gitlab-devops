@@ -14,6 +14,6 @@ if (SfDoxyGen_FOUND)
 	list(FILTER _SourcesListTmp EXCLUDE REGEX ".*Private\\.h$")
 	# Append the list with headers.
 	list(APPEND _SourceList ${_SourceListTmp})
-	# Adds the actual manual target.
-	Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
+	# Adds the actual manual target .
+	Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}" "v1.2023.0")
 endif ()

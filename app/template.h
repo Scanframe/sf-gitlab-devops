@@ -2,7 +2,7 @@
 /**
  * Just a file and namespace to demonstrate the Doxygen manual generation.
  *
- * [Go to the Main page](@ref mainpage)
+ * [Go to the Main page](@ref main)
  */
 namespace MySpace
 {

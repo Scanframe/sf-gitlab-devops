@@ -3,7 +3,7 @@
 
 # Define and use some foreground colors values when not running CI-jobs.
 if [[ ${CI} ]] ; then
-	fg_black="";
+	fg_black=""
 	fg_red=""
 	fg_green=""
 	fg_yellow=""
@@ -35,7 +35,7 @@ function WriteLog()
 	# shellcheck disable=SC2034
 	# shellcheck disable=SC2124
 	local LAST_ARG="${@: -1}"
-	local LAST_CH="${LAST_ARG: 0-1}"
+	local LAST_CH="${LAST_ARG:0-1}"
 	local FIRST_CH="${LAST_ARG:0:1}"
 	# Set color based on first character of the string.
 	case "${FIRST_CH}" in
@@ -57,10 +57,10 @@ function WriteLog()
 			local COLOR="${fg_cyan}"
 			;;
 	esac
-	echo -n "${COLOR}" 1>&2;
+	echo -n "${COLOR}" 1>&2
 	# shellcheck disable=SC2068
-	echo ${@} 1>&2;
-	echo -n "${fg_reset}" 1>&2;
+	echo ${@} 1>&2
+	echo -n "${fg_reset}" 1>&2
 }
 
 # When the script directory is not set then
@@ -72,7 +72,7 @@ fi
 # Change to the scripts directory to operated from when script is called from a different location.
 if ! cd "${SCRIPT_DIR}" ; then
 	WriteLog "Change to operation directory '${SCRIPT_DIR}' failed!"
-	exit 1;
+	exit 1
 fi
 
 # Prints the help to stderr.
@@ -248,7 +248,8 @@ if [[ $? -ne 0 ]] ; then
 	ShowHelp
 	exit 1
 fi
-eval set -- "$TEMP" ; unset TEMP
+eval set -- "$TEMP"
+unset TEMP
 while true; do
 	case $1 in
 

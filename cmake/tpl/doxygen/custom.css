@@ -20,6 +20,10 @@ body  div.contents div.fragment > div.line {
 	line-height: 1.5;
 }
 
+div .plantumlgraph
+{
+	text-align: left;
+}
 
 @media screen and (min-width: 700px)
 {
