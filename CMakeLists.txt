@@ -1,11 +1,8 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 
-# Make it so our own packages are found.
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-
-# Enable the tests added with add_test.
-enable_testing()
+# Make it so our own packages are found and also the ones in the sub-module library.
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
 
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)
@@ -24,6 +21,12 @@ project("devops-trial"
 	HOMEPAGE_URL "https://git.scanframe.com/trial/devops.git"
 	LANGUAGES C CXX
 	)
+
+# Enable the tests added with add_test.
+enable_testing()
+
+# Include CDash dashboard testing module
+include(CTest)
 
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
@@ -50,9 +53,10 @@ find_package(SfCompiler CONFIG REQUIRED)
 Sf_SetOutputDirs()
 
 # Add Sub Projects in the right order of dependency.
-add_subdirectory(app)
+add_subdirectory(src)
 # Add debian package build target.
 add_subdirectory(package)
-# Add Doxygen manual project.
-add_subdirectory(manual)
+# Add Doxygen document project.
+add_subdirectory(doc)
+
 

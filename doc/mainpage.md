@@ -2,7 +2,7 @@
 
 Generated from code by [Doxygen](https://www.doxygen.nl/) (_[GitHub](https://github.com/doxygen/doxygen.git)_).
 
-View or clone this project from [GitHub](https://github.com/Scanframe/gitlab-devops).
+View or clone this project from [GitHub](https://github.com/Scanframe/sf-gitlab-devops).
 
 ## Markdown Pages
 

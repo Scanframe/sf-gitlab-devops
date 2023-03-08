@@ -2,8 +2,6 @@
 
 TEST_CASE("sf::StringSplit", "[generic][strings]")
 {
-	using Catch::Matchers::Equals;
-
 	SECTION("Strings")
 	{
 		std::vector<std::string> sl;

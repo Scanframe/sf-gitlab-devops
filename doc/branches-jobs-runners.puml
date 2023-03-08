@@ -3,6 +3,7 @@
 !theme plain
 
 <style>
+	FontName Noto Sans
 	FontSize 12
 	Root
 	{
@@ -11,7 +12,6 @@
 		Margin 20
 		HorizontalAlignment Left
 	}
-	' scope to sequenceDiagram elements
 	Frame {
 		' define a new style, using CSS class syntax
 			FontColor Black
@@ -22,7 +22,6 @@
 			'[From top left to bottom right <&fullscreen-enter>]
 		}
 	}
-
 	Rectangle
 	{
 		.Tags,
