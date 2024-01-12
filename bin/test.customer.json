@@ -1,0 +1,24 @@
+{
+	"name": {
+		"first": "Prins",
+		"middle": "van",
+		"last": "Oranje"
+	},
+	"billing_address": {
+		"street_address": "Noordeinde 68",
+		"postal_code": "2514GL",
+		"city": "'s-Gravenhage",
+		"state": "Zuid-Holland"
+	},
+	"shipping_address": {
+		"street_address": "Molenstraat 27",
+		"postal_code": "2513BJ",
+		"city": "'s-Gravenhage",
+		"state": "Zuid-Hoilland"
+	},
+	"parcel_size": {
+		"height": 200,
+		"width": 80,
+		"depth": 30
+	}
+}

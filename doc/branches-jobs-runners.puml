@@ -1,0 +1,107 @@
+@startuml branches-job-runners
+
+!theme plain
+
+<style>
+	FontName Noto Sans
+	FontSize 12
+	Root
+	{
+'		BackgroundColor transparent
+		Padding 0
+		Margin 20
+		HorizontalAlignment Left
+	}
+	Frame {
+		' define a new style, using CSS class syntax
+			FontColor Black
+			LineColor Gray
+			' Transparency is also possible
+			'BackgroundColor #52A0DC55
+			BackgroundColor #F9F9F9-#E9E9E9
+			'[From top left to bottom right <&fullscreen-enter>]
+		}
+	}
+	Rectangle
+	{
+		.Tags,
+		{
+			' Green gradient
+			BackgroundColor #77BC65-#069A2E
+			RoundCorner 20
+		}
+		.Branch
+		{
+			' Blue gradient
+			BackgroundColor #91BEEE-#5983B0
+			DiagonalCorner 5
+		}
+	}
+	File
+	{
+		' Gold gradient
+		BackgroundColor #FFDE59-#B47804
+	}
+	Arrow
+	{
+		LineColor DarkRed
+		LineThickness 2
+		FontColor DarkRed
+		'FontStyle Bold
+	}
+}
+</style>
+
+' Not otherwise stylable.
+skinparam TitleFontStyle Bold
+skinparam TitleFontSize 20
+
+skinparam LineType PolyLine
+'skinparam LineType Ortho
+
+left to right direction
+'top to bottom direction
+
+title Branches/Jobs/Runners
+
+frame "Branches" {
+	rectangle "*-lnx-amd64" <<Branch>> as lnx_amd64
+	rectangle "*-lnx-arm64" <<Branch>> as lnx_arm64
+	rectangle "*-win-amd64" <<Branch>> as win_amd64
+}
+
+frame "Pipeline Jobs" {
+	frame "GNU Compiler" as gnu {
+		file "lnx/gw/jobs.gitlab-ci.yml" as gnu_jobs
+	}
+	frame "GW Compiler" as gw {
+		file "lnx/gnu/jobs.gitlab-ci.yml" as gw_jobs
+	}
+	frame "MinGW Compiler" as mingw {
+		file "lnx/mingw/jobs.gitlab-ci.yml" as mingw_jobs
+	}
+}
+
+frame "Runners" {
+	frame "Linux VM" as lnx_vm {
+		rectangle "* cplusplus\n* amd64\n* linux" <<Tags>>
+	}
+	frame "Windows VM" as win_vm {
+		rectangle "* cplusplus\n* amd64\n* windows" <<Tags>>
+	}
+	frame "Raspberry Pi" as rpi {
+		rectangle "* cplusplus\n* arm64\n* linux" <<Tags>>
+	}
+}
+
+lnx_amd64 -->> gnu_jobs : "Triggers"
+lnx_amd64 -->> gw_jobs : "Triggers"
+lnx_arm64 -->> gnu_jobs : "Triggers"
+win_amd64 -->> mingw_jobs : "Triggers"
+
+gnu_jobs ..> lnx_vm : "Matches"
+gw_jobs ..> lnx_vm : "Matches"
+mingw_jobs ..> win_vm : "Matches"
+gnu_jobs ..> rpi : "Matches"
+
+@enduml

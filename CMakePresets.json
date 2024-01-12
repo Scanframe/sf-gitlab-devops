@@ -7,115 +7,197 @@
 	},
 	"configurePresets": [
 		{
-			"name": "tpl-lnx-debug",
+			"name": ".cfg",
 			"hidden": true,
-			"displayName": "Debug Linux Template",
-			"description": "Debug config Linux template.",
-			"generator": "CodeBlocks - Unix Makefiles",
+			"generator": "Ninja",
 			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "Debug",
-				"CMAKE_COLOR_DIAGNOSTICS": "ON",
-				"__disabled__BUILD_SHARED_LIBS": "ON"
-			},
-			"environment": {
-				"PATH": "$env{HOME}/lib/clion/bin/ninja/linux:$penv{PATH}"
+				"CMAKE_COLOR_DIAGNOSTICS": {
+					"type": "BOOL",
+					"value": "ON"
+				},
+				"CMAKE_MESSAGE_LOG_LEVEL": {
+					"type": "STRING",
+					"value": "VERBOSE"
+				},
+				"CMAKE_BUILD_TYPE": {
+					"type": "STRING",
+					"value": "Debug"
+				},
+				"Catch2_VERSION": {
+					"type": "STRING",
+					"value": "v3.2.0"
+				},
+				"SF_BUILD_QT": {
+					"type": "BOOL",
+					"value": "OFF"
+				},
+				"SF_BUILD_TESTING": {
+					"type": "BOOL",
+					"value": "OFF"
+				},
+				"SF_CROSS_WINDOWS": {
+					"type": "BOOL",
+					"value": "OFF"
+				},
+				"Vulkan_INCLUDE_DIR": {
+					"type": "STRING",
+					"value": "${sourceDir}"
+				}
 			}
 		},
 		{
-			"name": "tpl-win-debug",
+			"name": ".cfg-lnx",
+			"inherits": [".cfg"],
+			"hidden": true,
+			"displayName": "Debug Linux Template",
+			"description": "Debug config Linux template.",
+			"environment": {
+				"PATH": "$env{HOME}/lib/clion/bin/ninja/linux:$penv{PATH}"
+			},
+			"cacheVariables": {
+				"SF_BUILD_TESTING": {
+					"type": "BOOL",
+					"value": "ON"
+				},
+				"SF_CROSS_WINDOWS": {
+					"type": "BOOL",
+					"value": "OFF"
+				}
+			}
+		},
+		{
+			"name": ".cfg-win",
+			"inherits": [".cfg"],
 			"hidden": true,
 			"displayName": "Debug Windows Template",
 			"description": "Debug config Windows template.",
 			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "Debug",
-				"__disabled__BUILD_SHARED_LIBS": "ON",
-				"CMAKE_COLOR_DIAGNOSTICS": "ON"
+				"SF_BUILD_TESTING": {
+					"type": "BOOL",
+					"value": "OFF"
+				},
+				"SF_CROSS_WINDOWS": {
+					"type": "BOOL",
+					"value": "ON"
+				}
+			},
+			"environment": {
+				"PATH": "${sourceDir}\\cmake\\lib\\bin;$penv{PATH}"
 			}
 		},
 		{
-			"name": "Debug-GNU",
+			"name": "gnu-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug GNU Compiler on Linux",
 			"description": "Debug config GNU compiler on Linux",
-			"inherits": ["tpl-lnx-debug"],
-			"binaryDir": "${sourceDir}/cmake-build-debug-gnu"
+			"inherits": [".cfg-lnx"],
+			"binaryDir": "${sourceDir}/cmake-build/debug-gnu"
 		},
 		{
-			"name": "Debug-GW",
+			"name": "gw-amd64-debug",
 			"hidden": false,
-			"displayName": "Debug MinGW Compiler on Linux",
-			"description": "Debug config for cross Windows MinGW compiler on Linux",
-			"inherits": ["tpl-lnx-debug"],
-			"binaryDir": "${sourceDir}/cmake-build-debug-gw",
-			"cacheVariables": {
-				"SF_CROSS_WINDOWS": "ON"
-			}
+			"displayName": "Debug GW Compiler on Linux",
+			"description": "Debug config for cross Windows GW compiler on Linux.",
+			"inherits": [".cfg-win"],
+			"binaryDir": "${sourceDir}/cmake-build/debug-gw"
 		},
 		{
-			"name": "Debug-MinGW",
+			"name": "mingw-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug Linux MinGW Compiler on Windows",
-			"description": "Debug config for cross Windows MinGW compiler on Windows",
-			"inherits": ["tpl-win-debug"],
+			"description": "Debug config for cross Windows MinGW compiler on Windows.",
+			"inherits": [".cfg-win"],
 			"generator": "CodeBlocks - MinGW Makefiles",
-			"binaryDir": "${sourceDir}/cmake-build-debug-mingw"
+			"binaryDir": "${sourceDir}/cmake-build/debug-mingw"
 		},
 		{
-			"name": "Debug-MSVC",
+			"name": "msvc-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug Linux MinGW Compiler on Windows",
-			"description": "Debug config for cross Windows MinGW compiler on Windows",
-			"inherits": ["tpl-win-debug"],
+			"description": "Debug config for cross Windows MinGW compiler on Windows.",
+			"inherits": [".cfg-win"],
 			"generator": "CodeBlocks - NMake Makefiles",
-			"binaryDir": "${sourceDir}/cmake-build-debug-msvc"
+			"binaryDir": "${sourceDir}/cmake-build/debug-msvc"
 		}
 	],
 	"buildPresets": [
 		{
-			"name": "build-tpl",
+			"name": ".build",
 			"hidden": true,
 			"cleanFirst": false,
 			"verbose": false,
 			"jobs": 4
 		},
 		{
-			"name": "Debug-GNU",
+			"name": "gnu-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug build Linux GNU Compiler",
-			"description": "Debug build with GNU compiler on Linux",
-			"configurePreset": "Debug-GNU",
-			"inherits": ["build-tpl"]
+			"description": "Debug build with GNU compiler on Linux.",
+			"configurePreset": "gnu-amd64-debug",
+			"inherits": [".build"],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			},
+			"targets": [
+				"hello-world"
+			]
 		},
 		{
-			"name": "Debug-GW",
+			"name": "gw-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug build Linux MinGW Compiler",
-			"description": "Debug build MinGW Windows cross compiler on Linux",
-			"configurePreset": "Debug-GW",
-			"inherits": ["build-tpl"]
+			"description": "Debug build MinGW Windows cross compiler on Linux.",
+			"configurePreset": "gw-amd64-debug",
+			"inherits": [".build"],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			},
+			"targets": [
+				"hello-world"
+			]
 		},
 		{
-			"name": "Debug-MinGW",
+			"name": "mingw-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug build Windows MinGW Compiler",
-			"description": "Debug build for MinGW compiler on Windows",
-			"configurePreset": "Debug-MinGW",
-			"inherits": ["build-tpl"]
+			"description": "Debug build for MinGW compiler on Windows.",
+			"configurePreset": "mingw-amd64-debug",
+			"inherits": [".build"],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			},
+			"targets": [
+				"hello-world"
+			]
 		},
 		{
-			"name": "Debug-MSVC",
+			"name": "msvc-amd64-debug",
 			"hidden": false,
 			"displayName": "Debug build Windows MSVC Compiler",
-			"description": "Debug build for MSVC compiler on Windows",
-			"configurePreset": "Debug-MSVC",
-			"inherits": ["build-tpl"]
+			"description": "Debug build for MSVC compiler on Windows.",
+			"configurePreset": "msvc-amd64-debug",
+			"inherits": [".build"],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			},
+			"targets": [
+				"hello-world"
+			]
 		}
 	],
 	"testPresets": [
 		{
-			"name": "Debug-GNU",
+			"name": "gnu-amd64-debug",
 			"hidden": false,
-			"configurePreset": "Debug-GNU",
+			"configurePreset": "gnu-amd64-debug",
 			"output": {
 				"outputOnFailure": true
 			},
@@ -125,9 +207,9 @@
 			}
 		},
 		{
-			"name": "Debug-GW",
+			"name": "gw-amd64-debug",
 			"hidden": false,
-			"configurePreset": "Debug-GW",
+			"configurePreset": "gw-amd64-debug",
 			"output": {
 				"outputOnFailure": true
 			},
@@ -137,9 +219,9 @@
 			}
 		},
 		{
-			"name": "Debug-MinGW",
+			"name": "mingw-amd64-debug",
 			"hidden": false,
-			"configurePreset": "Debug-MinGW",
+			"configurePreset": "mingw-amd64-debug",
 			"output": {
 				"outputOnFailure": true
 			},
@@ -149,9 +231,9 @@
 			}
 		},
 		{
-			"name": "Debug-MSVC",
+			"name": "msvc-amd64-debug",
 			"hidden": false,
-			"configurePreset": "Debug-MSVC",
+			"configurePreset": "msvc-amd64-debug",
 			"output": {
 				"outputOnFailure": true
 			},

@@ -6,5 +6,5 @@
 /bin/win64/*
 /bin/man/*
 */*/*.user
-**/cmake-build-*
+**/cmake-build/*
 **/CMakeLists.txt.user

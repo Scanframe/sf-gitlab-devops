@@ -31,10 +31,10 @@ With CMake the make directory is created in a **configuration** step which also
 downloads external projects/repositories.
 <br>External projects like [Catch2](https://github.com/catchorg/Catch2.git) which is used here.
 
-To see what cmake (CMakePresets.json) offers regarding configuration presets use the following command.
+To see what cmake (CMakePresets.json) offers regarding build presets use the following command.
 
 ```bash
-cmake --list-presets
+cmake --list-presets=build
 ```  
 
 The result of items in depends on the generator a `cmake` binary has built-in when compiled.

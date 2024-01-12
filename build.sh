@@ -1,6 +1,6 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/cmake/bin/Build.sh"
+source "${SCRIPT_DIR}/cmake/lib/bin/Build.sh"
 
 
