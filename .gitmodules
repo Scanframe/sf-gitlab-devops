@@ -1,0 +1,4 @@
+[submodule "cmake/lib"]
+	path = cmake/lib
+	url = https://git.scanframe.com/library/cmake-lib.git
+	branch = main

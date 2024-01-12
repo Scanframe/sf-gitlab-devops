@@ -1,7 +1,5 @@
 # GitLab DevOps Trial Project/Repository
 
-_To this project a gitlab-runner is to be configured for using a self-hosted minio server for caching._
-
 ## Content
 
 <!-- TOC -->
@@ -17,24 +15,24 @@ _To this project a gitlab-runner is to be configured for using a self-hosted min
     * [GitLab-Runner & Developer Station](#gitlab-runner--developer-station)
       * [Linux Packages](#linux-packages)
         * [Runner & Workstation](#runner--workstation)
-        * [GitLab-Runner Only](#gitlab-runner-only)
+        * [GitLab-Runner Only](#gitlab-runner-only-)
       * [Windows Packages](#windows-packages)
-        * [Runner & Workstation](#runner--workstation)
+        * [Runner & Workstation](#runner--workstation-1)
         * [GitLab-Runner Only](#gitlab-runner-only)
-          * [Optional](#optional)
-    * [Server Services (Linux)](#server-services--linux-)
-      * [GitLab (CE) Server (LXC-container)](#gitlab--ce--server--lxc-container-)
-      * [Apache Proxy Server (Optional for public access)](#apache-proxy-server--optional-for-public-access-)
+          * [Optional](#optional-)
+    * [Server Services (Linux)](#server-services-linux)
+      * [GitLab (CE) Server (LXC-container)](#gitlab-ce-server-lxc-container)
   * [GitLab Runner Installation](#gitlab-runner-installation)
       * [Installation](#installation)
       * [Registration](#registration)
         * [Making it Run](#making-it-run)
-        * [Error: CA SSL Certificate](#error--ca-ssl-certificate)
-        * [Additional Configuration](#additional-configuration)
-          * [Linux](#linux)
+        * [Error: CA SSL Certificate](#error-ca-ssl-certificate-)
+        * [Additional Configuration](#additional-configuration-)
+          * [Linux](#linux-)
           * [Windows](#windows)
-      * [Passing Working files between jobs (cache)](#passing-working-files-between-jobs--cache-)
-      * [Resulting files between jobs (cache)](#resulting-files-between-jobs--cache-)
+      * [Passing Working files between jobs (cache)](#passing-working-files-between-jobs-cache)
+      * [Resulting files between jobs (cache)](#resulting-files-between-jobs-cache)
+  * [Doxygen Code Manual](#doxygen-code-manual)
   * [MinIO AWS S3 API Compatible Cache Service](#minio-aws-s3-api-compatible-cache-service)
 <!-- TOC -->
 
@@ -200,51 +198,6 @@ _(GitLab has update almost every other day.)_
 
 A paid **[GitLab.com](https://gitlab.com)** account where CI.CD pipelines are enabled is also possible.
 
-#### Apache Proxy Server (Optional for public access) 
-
-The host server for the LXC-containers uses an Apache WebServer which deals with the SSL certificates 
-from **[acme.sh](https://github.com/acmesh-official/acme.sh)** which are used by the https proxy to 
-the GitLab Web-application in the LXC-container.<br>
-On how to do that check **[this](https://app.scanframe.com/?page=help-linux#acme-letsencrypt-certificates.md)**.
-
-Incomplete Apache configuration include-file for the GitLab LXC-container where all 
-variables are set before including this one.
-
-```apacheconf
-# Https configuration.
-<IfModule ssl_module>
-  <VirtualHost *:443>
-    ServerName ${DOMAIN}
-    LogLevel info
-    ErrorLog ${APACHE_LOG_DIR}/git-error.log
-    CustomLog ${APACHE_LOG_DIR}/git-access.log clf
-    # SSL Certificates
-    SSLEngine On
-    SSLCertificateFile "${BASE_DIR}/ssl-certs/${DOMAIN}-cert.pem"
-    SSLCertificateKeyFile "${BASE_DIR}/ssl-certs/${DOMAIN}-key.pem"
-    SSLCertificateChainFile "${BASE_DIR}/ssl-certs/${DOMAIN}-letsencrypt.pem"
-    # SSL Protocol and CypherSuite only allowing valid cyphers.
-    Include "${CONFIG_DIR}/conf/ssl-proto-cypher.conf"
-    ## RequestHeader set X-Forwarded-Proto "https"
-    <Proxy *>
-      Order deny,allow
-      Allow from all
-    </Proxy>
-    ## SSLProxyEngine On
-    ProxyRequests Off
-    ServerSignature Off
-    ProxyPreserveHost On
-    AllowEncodedSlashes NoDecode
-    <Location />
-      Order deny,allow
-      Allow from all
-      ProxyPass http://${COINTAINER_IP}:80/
-      ProxyPassReverse http://${COINTAINER_IP}:80/
-    </Location>
-    </VirtualHost>
-</IfModule>
-```
-
 ## GitLab Runner Installation
 
 #### Installation
@@ -362,25 +315,25 @@ Look at [Doxygen](https://www.doxygen.nl/) website for the syntax in C++ header 
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 # Set the global project name.
-project("manual")
+project("doc")
 # Add doxygen project when SfDoxyGen was found.
 # On Windows this is only possible when doxygen is installed in Cygwin.
 find_package(SfDoxyGen QUIET)
 if (SfDoxyGen_FOUND)
-  # Get the markdown files in this project directory including the README.md.
-  file(GLOB _SourceList RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md" "../*.md")
-  message("${_SourceList}")
-  # Get all the header files from the application.
-  file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../app/*.h" "../app/*.md")
-  # Remove unwanted header file(s) ending on 'Private.h'.
-  list(FILTER _SourcesListTmp EXCLUDE REGEX ".*Private\\.h$")
-  # Append the list with headers.
-  list(APPEND _SourceList ${_SourceListTmp})
-  # Adds the actual manual target.
-  Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
+	# Get the markdown files in this project directory including the README.md.
+	file(GLOB _SourceList RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md" "../*.md")
+	message("${_SourceList}")
+	# Get all the header files from the application.
+	file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../app/*.h" "../app/*.md")
+	# Remove unwanted header file(s) ending on 'Private.h'.
+	list(FILTER _SourcesListTmp EXCLUDE REGEX ".*Private\\.h$")
+	# Append the list with headers.
+	list(APPEND _SourceList ${_SourceListTmp})
+	# Adds the actual manual target.
+	Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
 endif ()
 ```
 
 ## MinIO AWS S3 API Compatible Cache Service
 
-_To be implemented jet._
+> _To be implemented jet._
