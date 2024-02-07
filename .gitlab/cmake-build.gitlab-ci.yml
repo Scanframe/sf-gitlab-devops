@@ -50,6 +50,7 @@ stages:
   - git config --global --add safe.directory '*'
   - git fetch --tags && git submodule foreach --recursive git fetch --tags
   - git tag --list && git submodule foreach --recursive git tag --list
+  - git describe --tags --dirty
 
 # Anchor for single Linux script line only.
 .log-script: &log-script

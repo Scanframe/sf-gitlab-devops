@@ -41,6 +41,7 @@ stages:
   - git config --global --add safe.directory '*'
   - git fetch --tags && git submodule foreach --recursive git fetch --tags
   - git tag --list && git submodule foreach --recursive git tag --list
+  - git describe --tags --dirty
 
 .report-before: &before_script
   - 'echo "Working Directory=$(pwd)"'
