@@ -39,9 +39,9 @@ stages:
 # Fetch tags also for submodules and report them all.
 .fetch-tags-script: &fetch-tags
   - git config --global --add safe.directory '*'
-  - git fetch --tags && git submodule foreach --recursive git fetch --tags
+  - git fetch --tags --force && git submodule foreach --recursive git fetch --tags  --force
   - git tag --list && git submodule foreach --recursive git tag --list
-  - git describe --tags --dirty
+  - git describe --tags --dirty || echo "Could not git describe current repo hash."
 
 .report-before: &before_script
   - 'echo "Working Directory=$(pwd)"'
