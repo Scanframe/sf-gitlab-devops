@@ -47,6 +47,7 @@ stages:
 
 # Fetch tags also for submodules and report them all.
 .fetch-tags-script: &fetch-tags
+  - git config --global --add safe.directory '*'
   - git fetch --tags && git submodule foreach --recursive git fetch --tags
   - git tag --list && git submodule foreach --recursive git tag --list
 
