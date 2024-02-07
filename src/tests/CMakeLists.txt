@@ -24,9 +24,7 @@ Sf_SetTargetSuffix("${TEST_TARGET}")
 # Should be linked to the main library, as well as the Catch2 testing and nlohmann_json library.
 target_link_libraries(${TEST_TARGET} PRIVATE Catch2::Catch2 nlohmann_json::nlohmann_json)
 
-# If you register a test, then ctest and make test will run it.
+# If you register a test, then ctest and cmake test will run it.
 # You can also run examples and check the output, as well.
-# Command can be a target
-add_test(NAME "${TEST_TARGET}-test${_TestBinSuffix}" COMMAND "${TEST_TARGET}")
-
+add_test(NAME "con-${TEST_TARGET}" COMMAND "${TEST_TARGET}")
 

@@ -1,48 +1,95 @@
-include:
-  # Include variables for Linux amd64.
-  - local: ".gitlab/lnx/var-amd64.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-amd64$/'
-  # Include variables for Linux arm64.
-  - local: ".gitlab/lnx/var-arm64.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-arm64$/'
-  # Include variables for Windows amd64.
-  - local: ".gitlab/win/var-amd64.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-amd64$/'
-  # Include template,variables and stages.
-  - local: ".gitlab/tpl.gitlab-ci.yml"
-    # Include Linux Jobs.
-  - local: ".gitlab/lnx/jobs.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-lnx-.+$/'
-    # Include Windows jobs.
-  - local: ".gitlab/win/jobs.gitlab-ci.yml"
-    rules:
-      - if: '$CI_COMMIT_BRANCH =~ /^.+-win-.+$/'
+variables:
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+  # Tags for selecting a runner.
+  SF_TARGET_ARCH: "amd64"
+  SF_TARGET_OS: "linux"
+  # Name of the branch that allows running deploying to production. (set from CI/CD settings)
+  #SF_RELEASE_BRANCH: "main"
 
 workflow:
   # Only run pipeline on protected branches.
   rules:
-    # Rule boolean needs to be evaluated this way ?!
-    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+    # No pipeline when commit message starts with an exclamation mark '!'.
+    - if: '$SF_SIGNAL == "skip"'
+      when: never
+    # Run pipeline for a merge_requests updates.
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Prevent double pipeline when having this workflow.
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: always
+    - when: never
 
-# Variables needed for this file.
-variables:
-  SF_TEST_TARGET: "hello-world-test"
-  SF_RUN_TARGET: "hello-world"
-  # Name of the branch that allows running deploying to production.
-  SF_RELEASE_BRANCH_NAME: "main"
-  # Logger tag value.
-  SF_LOG_TAG: "=== ${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA}"
-  # Expiration period before artifacts expire.
-  # FIXME: Currently variable expansion is bugged and is fixed. (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
-  SF_ARTIFACT_EXPIRE: "2 days"
+stages:
+  - check
+  - toolchain
 
-# Fulfills GitLabs mandated 1 job policy.
-job-mandatory:
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "__never_run_this_one__"'
+# Defaults for all jobs.
+default:
+  # Tags determine the selection of a runner.
+  tags:
+    - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
+
+# Reports the environment variables for debugging.
+check-env:
+  stage: check
   script:
-    - 'echo "Should never happen..."'
+    - echo "Working Directory=$(pwd)"
+    - echo "Environment Dump" && printenv
+
+# Does a cache and artifact check.
+cache-test:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Run when signal is test.
+    - if: '$SF_SIGNAL == "test"'
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "toolchain-value"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/lnx64"
+
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cache-test.gitlab-ci.yml
+
+linux-gnu:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    - when: always
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "gnu"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/lnx64"
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cmake-build.gitlab-ci.yml
+
+linux-gw:
+  stage: toolchain
+  needs: [check-env]
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    - when: always
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "gw"
+    SF_BUILD_TYPE: "debug"
+    SF_DIR_BIN: "bin/win64"
+  trigger:
+    forward:
+      yaml_variables: true
+    include: .gitlab/cmake-build.gitlab-ci.yml

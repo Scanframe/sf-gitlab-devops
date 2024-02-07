@@ -1,0 +1,129 @@
+# Variables needed for this file.
+variables:
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+  # Fixed base directory the source root is mounted to between jobs for each toolchain.
+  SF_DIR_MOUNT: "/tmp/binder/${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
+
+# Required for trigger pipelines so run always.
+workflow:
+  rules:
+    - when: always
+
+# Order of stages for jobs to perform in.
+stages:
+  - first-check
+  - create
+  - second-check
+  - deploy
+
+# Template to configure cache for CMake generated files for the compiler.
+.cache:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
+    paths:
+      - cmake-build/*
+    policy: pull-push
+
+# Template to deploy only when having on the release branch.
+.deploy:
+  rules:
+    - if: '$SF_SIGNAL == "test"'
+      when: manual
+    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $SF_RELEASE_BRANCH'
+      when: never
+    - when: manual
+
+.report-before: &before_script
+  - 'echo "Working Directory=$(pwd)"'
+  - 'echo "Environment Dump" && printenv'
+  - 'ls -la cmake-build/* || echo "Before: Directory does NOT exist."'
+.report-after: &after_script
+  - 'ls -la cmake-build/* || echo "After: Directory does NOT exist."'
+
+# Template to define artifacts in the designated directory.
+.artifacts:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    # Expiration period before artifacts expire.
+    # FIXME: Currently variable expansion is not possible and is fixed.
+    # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
+    expire_in: 1 days
+    paths:
+      - ${SF_DIR_BIN}/*
+    exclude:
+      - ${SF_DIR_BIN}/**/.gitkeep
+
+# Script to mount source root on a fixed directory path for cmake.
+.bind-script: &bind-script
+  - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
+
+# Template to unmount source root on a fixed directory path for cmake.
+.unbind-script: &unbind-script
+  - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
+
+# Defaults for all jobs.
+default:
+  # Tags determine the selection of a runner.
+  tags:
+    # Variables 'SF_TARGET_OS' and 'SF_TARGET_ARCH' depends on the include-file
+    # which on its turn depends on the commit branch name.
+    - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
+
+step-pull:
+  stage: first-check
+  extends:
+    - .cache
+  cache:
+    policy: pull
+  script:
+    - *before_script
+    - 'cat cmake-build/my-file.txt || echo "File does not exist."'
+    - *after_script
+
+step-push:
+  stage: create
+  extends:
+    - .cache
+    - .artifacts
+  needs: [step-pull]
+  cache:
+    policy: push
+  script:
+    - *before_script
+    - 'mkdir -p "cmake-build"'
+    - 'echo "My cached-file $(date +%Y-%m-%dT%T.%N)" > "cmake-build/my-file.txt"'
+    - 'echo "My Artifact-file $(date +%Y-%m-%dT%T.%N)" > "${SF_DIR_BIN}/my-artifact.txt"'
+    - *after_script
+
+step-check:
+  stage: second-check
+  needs: [step-push]
+  extends:
+    - .cache
+    - .artifacts
+  cache:
+    policy: pull
+  script:
+    - *bind-script
+    - 'cat cmake-build/my-file.txt || echo "Cache-file does not exist."'
+    - 'cat "${SF_DIR_BIN}/my-artifact.txt" || echo "Artifact-File does not exist."'
+    - 'mountpoint "${SF_DIR_MOUNT}" && echo "Mounted \o/" || echo "Not Mounted !!!"'
+    - *unbind-script
+
+step-deploy:
+  stage: deploy
+  needs: [step-push]
+  extends:
+    - .cache
+    - .artifacts
+    - .deploy
+  cache:
+    policy: pull
+  script:
+    - 'echo "#### Deploy ####" '
+

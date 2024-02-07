@@ -74,7 +74,7 @@
 			"cacheVariables": {
 				"SF_BUILD_TESTING": {
 					"type": "BOOL",
-					"value": "OFF"
+					"value": "ON"
 				},
 				"SF_CROSS_WINDOWS": {
 					"type": "BOOL",
@@ -86,38 +86,38 @@
 			}
 		},
 		{
-			"name": "gnu-amd64-debug",
+			"name": "gnu-debug",
 			"hidden": false,
 			"displayName": "Debug GNU Compiler on Linux",
 			"description": "Debug config GNU compiler on Linux",
 			"inherits": [".cfg-lnx"],
-			"binaryDir": "${sourceDir}/cmake-build/debug-gnu"
+			"binaryDir": "${sourceDir}/cmake-build/gnu-debug"
 		},
 		{
-			"name": "gw-amd64-debug",
+			"name": "gw-debug",
 			"hidden": false,
 			"displayName": "Debug GW Compiler on Linux",
 			"description": "Debug config for cross Windows GW compiler on Linux.",
 			"inherits": [".cfg-win"],
-			"binaryDir": "${sourceDir}/cmake-build/debug-gw"
+			"binaryDir": "${sourceDir}/cmake-build/gw-debug"
 		},
 		{
-			"name": "mingw-amd64-debug",
+			"name": "mingw-debug",
 			"hidden": false,
 			"displayName": "Debug Linux MinGW Compiler on Windows",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
 			"inherits": [".cfg-win"],
 			"generator": "CodeBlocks - MinGW Makefiles",
-			"binaryDir": "${sourceDir}/cmake-build/debug-mingw"
+			"binaryDir": "${sourceDir}/cmake-build/mingw-debug"
 		},
 		{
-			"name": "msvc-amd64-debug",
+			"name": "msvc-debug",
 			"hidden": false,
 			"displayName": "Debug Linux MinGW Compiler on Windows",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
 			"inherits": [".cfg-win"],
 			"generator": "CodeBlocks - NMake Makefiles",
-			"binaryDir": "${sourceDir}/cmake-build/debug-msvc"
+			"binaryDir": "${sourceDir}/cmake-build/msvc-debug"
 		}
 	],
 	"buildPresets": [
@@ -129,11 +129,11 @@
 			"jobs": 4
 		},
 		{
-			"name": "gnu-amd64-debug",
+			"name": "gnu-debug",
 			"hidden": false,
 			"displayName": "Debug build Linux GNU Compiler",
 			"description": "Debug build with GNU compiler on Linux.",
-			"configurePreset": "gnu-amd64-debug",
+			"configurePreset": "gnu-debug",
 			"inherits": [".build"],
 			"condition": {
 				"type": "equals",
@@ -141,15 +141,18 @@
 				"rhs": "Linux"
 			},
 			"targets": [
-				"hello-world"
+				"hello-world",
+				"hello-world-qt",
+				"devops-trial-test",
+				"document"
 			]
 		},
 		{
-			"name": "gw-amd64-debug",
+			"name": "gw-debug",
 			"hidden": false,
 			"displayName": "Debug build Linux MinGW Compiler",
 			"description": "Debug build MinGW Windows cross compiler on Linux.",
-			"configurePreset": "gw-amd64-debug",
+			"configurePreset": "gw-debug",
 			"inherits": [".build"],
 			"condition": {
 				"type": "equals",
@@ -157,15 +160,17 @@
 				"rhs": "Linux"
 			},
 			"targets": [
-				"hello-world"
+				"hello-world",
+				"hello-world-qt",
+				"devops-trial-test"
 			]
 		},
 		{
-			"name": "mingw-amd64-debug",
+			"name": "mingw-debug",
 			"hidden": false,
 			"displayName": "Debug build Windows MinGW Compiler",
 			"description": "Debug build for MinGW compiler on Windows.",
-			"configurePreset": "mingw-amd64-debug",
+			"configurePreset": "mingw-debug",
 			"inherits": [".build"],
 			"condition": {
 				"type": "equals",
@@ -177,11 +182,11 @@
 			]
 		},
 		{
-			"name": "msvc-amd64-debug",
+			"name": "msvc-debug",
 			"hidden": false,
 			"displayName": "Debug build Windows MSVC Compiler",
 			"description": "Debug build for MSVC compiler on Windows.",
-			"configurePreset": "msvc-amd64-debug",
+			"configurePreset": "msvc-debug",
 			"inherits": [".build"],
 			"condition": {
 				"type": "equals",
@@ -189,57 +194,88 @@
 				"rhs": "Windows"
 			},
 			"targets": [
-				"hello-world"
+				"hello-world",
+				"hello-world-qt"
 			]
 		}
 	],
 	"testPresets": [
 		{
-			"name": "gnu-amd64-debug",
+			"name": "gnu-debug",
 			"hidden": false,
-			"configurePreset": "gnu-amd64-debug",
+			"displayName": "Debug test Linux GNU Compiler",
+			"description": "Debug test with GNU compiler on Linux.",
+			"configurePreset": "gnu-debug",
 			"output": {
 				"outputOnFailure": true
 			},
 			"execution": {
 				"noTestsAction": "error",
 				"stopOnFailure": true
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
 			}
 		},
 		{
-			"name": "gw-amd64-debug",
+			"name": "gw-debug",
 			"hidden": false,
-			"configurePreset": "gw-amd64-debug",
+			"displayName": "Debug test Linux MinGW Compiler",
+			"description": "Debug test MinGW Windows cross compiler on Linux.",
+			"configurePreset": "gw-debug",
 			"output": {
-				"outputOnFailure": true
+				"outputOnFailure": true,
+				"shortProgress": true,
+				"verbosity": "extra"
 			},
 			"execution": {
 				"noTestsAction": "error",
 				"stopOnFailure": true
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
-			"name": "mingw-amd64-debug",
+			"name": "mingw-debug",
 			"hidden": false,
-			"configurePreset": "mingw-amd64-debug",
+			"displayName": "Debug test Windows MinGW Compiler",
+			"description": "Debug test for MinGW compiler on Windows.",
+			"configurePreset": "mingw-debug",
 			"output": {
 				"outputOnFailure": true
 			},
 			"execution": {
 				"noTestsAction": "error",
 				"stopOnFailure": true
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
-			"name": "msvc-amd64-debug",
+			"name": "msvc-debug",
 			"hidden": false,
-			"configurePreset": "msvc-amd64-debug",
+			"displayName": "Debug test Windows MSVC Compiler",
+			"description": "Debug test for MSVC compiler on Windows.",
+			"configurePreset": "msvc-debug",
 			"output": {
 				"outputOnFailure": true
 			},
 			"execution": {
 				"noTestsAction": "error",
 				"stopOnFailure": true
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		}
 	]

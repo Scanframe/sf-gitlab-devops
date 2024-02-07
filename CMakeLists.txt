@@ -46,7 +46,20 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_?????_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs("bin")
 
+# Configure the rpath.
+if (SF_BUILD_QT STREQUAL "ON")
+	# When the Qt directory is available append it.
+	Sf_GetQtVersionDirectory(_QtVer)
+	if (NOT _QtVer STREQUAL "")
+		Sf_SetRPath("\${ORIGIN}:\${ORIGIN}/lib:${_QtVer}/gcc_64/lib")
+	endif ()
+else ()
+	Sf_SetRPath("\${ORIGIN}:\${ORIGIN}/lib")
+endif ()
+
 if (SF_BUILD_TESTING)
+	# Prevents Catch2 from adding targets.
+	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.
 	enable_testing()
 	# Include CDash dashboard testing module
@@ -59,3 +72,4 @@ add_subdirectory(src)
 add_subdirectory(package)
 # Add Doxygen document project.
 add_subdirectory(doc)
+

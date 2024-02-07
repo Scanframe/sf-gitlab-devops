@@ -1,4 +1,0 @@
-# Variables for Linux amd64 pipelines.
-variables:
-  SF_TARGET_ARCH: "amd64"
-  SF_TARGET_OS: "linux"
