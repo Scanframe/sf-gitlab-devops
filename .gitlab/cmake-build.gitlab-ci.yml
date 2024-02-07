@@ -45,6 +45,11 @@ stages:
   script:
     - echo "..."
 
+# Fetch tags also for submodules and report them all.
+.fetch-tags-script: &fetch-tags
+  - git fetch --tags && git submodule foreach --recursive git fetch --tags
+  - git tag --list && git submodule foreach --recursive git tag --list
+
 # Anchor for single Linux script line only.
 .log-script: &log-script
   # Log to syslog to be able to see execution flow.
@@ -107,6 +112,8 @@ job-check:
   # Common template job.
   extends: .env-dump
   stage: check-env
+  script:
+    - *fetch-tags
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Wiping build directory is not needed since the push policy.
