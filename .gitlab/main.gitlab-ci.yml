@@ -46,10 +46,12 @@ cache-test:
   needs: [check-env]
   rules:
     # Run when signal is test.
-    - if: '$SF_SIGNAL == "test"'
+    - if: '$SF_SIGNAL != "test"'
+      when: never
+    - when: always
   variables:
     # Set the toolchain to use.
-    SF_TOOLCHAIN: "toolchain-value"
+    SF_TOOLCHAIN: "toolchain"
     SF_BUILD_TYPE: "debug"
     SF_DIR_BIN: "bin/lnx64"
 
