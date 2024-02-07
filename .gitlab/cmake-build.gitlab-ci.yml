@@ -1,0 +1,167 @@
+# Variables needed for this file.
+variables:
+  # Logger tag value.
+  #SF_TARGET_ARCH: "amd64"
+  #SF_TARGET_OS: "linux"
+  # CMake toolchain the preset-name with.
+  #SF_TOOLCHAIN: "gnu"
+  # CMake build type to construct the preset-name with.
+  #SF_BUILD_TYPE: "debug"
+  # Output directory relative to the working directory.
+  #SF_DIR_BIN: "bin/lnx64"
+  # Logger used tag.
+  # Name of the branch that allows running deploying to production.
+  #SF_RELEASE_BRANCH: "main"
+  SF_LOG_TAG: "===${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA}"
+  # Fixed base directory the source root is mounted to between jobs for each toolchain.
+  SF_DIR_MOUNT: "/tmp/binder/${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+
+# Required for trigger pipelines so run always.
+workflow:
+  rules:
+    - when: always
+
+# Order of stages for jobs to perform in.
+stages:
+  # Jobs checking the environment requirements.
+  - check-env
+  # Jobs producing makefiles using CMake presets.
+  - cmake-cfg
+  # Jobs for building all cmake preset targets.
+  - cmake-build
+  # Jobs executing the build unittests using the CTest configurations.
+  - ctest
+  # Jobs deploying of artifacts.
+  - cpack
+
+# Template to dump all environment variables.
+.env-dump:
+  # Do not need the cache for this one.
+  cache: []
+  before_script:
+    - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv
+  script:
+    - echo "..."
+
+# Anchor for single Linux script line only.
+.log-script: &log-script
+  # Log to syslog to be able to see execution flow.
+  - logger --tag "${SF_LOG_TAG}-${SF_TOOLCHAIN}" "Script => '$(pwd)'"
+
+# Script to mount source root on a fixed directory path for cmake.
+.bind-script: &bind-script
+  - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
+
+# Template to unmount source root on a fixed directory path for cmake.
+.unbind-script: &unbind-script
+  - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
+
+# Template to configure cache for CMake generated files for the compiler.
+.cache:
+  cache:
+    key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
+    paths:
+      - "cmake-build/*"
+    policy: pull-push
+
+# Template to define artifacts in the designated directory.
+.artifacts:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    # Expiration period before artifacts expire.
+    # FIXME: Currently variable expansion is not possible and is fixed.
+    # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
+    expire_in: 2 days
+    paths:
+      - ${SF_DIR_BIN}/*
+    exclude:
+      - ${SF_DIR_BIN}/**/.gitkeep
+
+# Template to deploy only when on the protected release branch.
+.deploy:
+  rules:
+    # For testing the 'deploy' step.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+    # Skip when this is not a protected branch.
+    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
+      when: never
+    # Skip when this is not the configured release branch.
+    - if: '$CI_COMMIT_BRANCH != $SF_RELEASE_BRANCH'
+      when: never
+    - when: manual
+
+# Defaults for all jobs.
+default:
+  # Tags determine the selection of a runner.
+  tags:
+    - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
+
+# Obligatory in this setup of jobs depending on or needs it.
+# Reports the environment variables set for the all jobs.
+job-check:
+  # Common template job.
+  extends: .env-dump
+  stage: check-env
+
+# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
+# Wiping build directory is not needed since the push policy.
+job-make:
+  stage: cmake-cfg
+  needs:
+    - job: job-check
+  extends: [.cache]
+  cache:
+    policy: push
+  script:
+    - *log-script
+    - *bind-script
+    # Execute the build script to CMake the makefiles.
+    - '"${SF_DIR_MOUNT}/build.sh" --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - *unbind-script
+
+job-build:
+  stage: cmake-build
+  needs:
+    - job: job-make
+  extends: [.cache, .artifacts]
+  cache:
+    policy: pull
+  script:
+    - *log-script
+    - *bind-script
+    # Execute the build script to actually build the running target and libraries.
+    - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - *unbind-script
+
+job-test:
+  stage: ctest
+  extends: [.cache, .artifacts]
+  needs:
+    - job: job-build
+  cache:
+    policy: pull
+  script:
+    - *log-script
+    - *bind-script
+    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
+    - '"${SF_DIR_MOUNT}/build.sh" --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - *unbind-script
+  rules:
+    # Only GNU toolchain can be tested at the moment.
+    - if: '$SF_TOOLCHAIN == "gnu"'
+      when: always
+    - when: never
+
+job-deploy:
+  stage: cpack
+  extends: [.deploy, .artifacts]
+  needs:
+    - job: job-build
+  script:
+    - *log-script
+    - echo "Packaged in a Debian deb-file or maybe a zip-file?"
