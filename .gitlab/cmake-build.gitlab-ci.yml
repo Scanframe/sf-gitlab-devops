@@ -128,6 +128,7 @@ job-make:
     policy: push
   script:
     - *log-script
+    - *fetch-tags
     - *bind-script
     # Execute the build script to CMake the makefiles.
     - '"${SF_DIR_MOUNT}/build.sh" --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
