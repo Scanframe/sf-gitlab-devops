@@ -13,8 +13,11 @@ workflow:
     # No pipeline when commit message starts with an exclamation mark '!'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
-    # Run pipeline for a merge_requests updates.
+    # Run pipeline initiated by a merge request event.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Run pipeline initiated by the web application.
+    - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
     # Prevent double pipeline when having this workflow.
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
