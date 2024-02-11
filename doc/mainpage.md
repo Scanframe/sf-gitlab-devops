@@ -31,7 +31,7 @@ To get a file like this select all items in the page wit `Ctrl+A` then export th
 with menu `File | Export` and in the save dialog put a checkmark at **Selection** &#10004; option.
 When not, the whole page is put in the resulting SVG-file which means a lot of white space around it.   
 
-![Module hierarchy](branches-jobs-runners.svg)
+![Module hierarchy](ci-pipeline.svg "Pipeline & triggers.")
 
 ### PlantUML
 
