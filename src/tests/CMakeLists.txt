@@ -26,5 +26,5 @@ target_link_libraries(${TEST_TARGET} PRIVATE Catch2::Catch2 nlohmann_json::nlohm
 
 # If you register a test, then ctest and cmake test will run it.
 # You can also run examples and check the output, as well.
-add_test(NAME "con-${TEST_TARGET}" COMMAND "${TEST_TARGET}")
+add_test(NAME "${TEST_TARGET}" COMMAND "${TEST_TARGET}")
 
