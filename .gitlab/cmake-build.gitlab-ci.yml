@@ -33,8 +33,10 @@ stages:
   - cmake-build
   # Jobs executing the build unittests using the CTest configurations.
   - ctest
-  # Jobs deploying of artifacts.
+  # Jobs packing the generated artifacts.
   - cpack
+  # Deploy generated packages.
+  - deploy
 
 # Template to dump all environment variables.
 .env-dump:
@@ -85,6 +87,7 @@ stages:
       - ${SF_DIR_BIN}/*
     exclude:
       - ${SF_DIR_BIN}/**/.gitkeep
+      - ${SF_DIR_BIN}/_CPack_Packages
 
 # Template to deploy only when on the protected release branch.
 .deploy:
@@ -167,8 +170,20 @@ job-test:
       when: always
     - when: never
 
-job-deploy:
+job-pack:
   stage: cpack
+  extends: [.cache, .artifacts]
+  needs:
+    - job: job-build
+  script:
+    - *log-script
+    - *bind-script
+    # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
+    - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - *unbind-script
+
+job-deploy:
+  stage: deploy
   extends: [.deploy, .artifacts]
   needs:
     - job: job-build

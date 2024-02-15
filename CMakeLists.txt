@@ -26,8 +26,7 @@ project("devops-trial"
 add_custom_target("exif" ALL)
 
 # Enables including Qt libraries when building (libraries).
-set(SF_BUILD_QT ON)
-#set(SF_BUILD_QT OFF)
+set(SF_BUILD_QT ON #[[ON or OFF]])
 
 # Use faster linker for Windows maybe?
 if (WIN32)
@@ -41,6 +40,9 @@ endif ()
 # Make sure builds do not wind up in the source directory.
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
+
+# Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
+set(CMAKE_CXX_STANDARD 20)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_?????_OUTPUT_DIRECTORY variables.
@@ -68,8 +70,9 @@ endif ()
 
 # Add Sub Projects in the right order of dependency.
 add_subdirectory(src)
-# Add debian package build target.
-add_subdirectory(package)
 # Add Doxygen document project.
 add_subdirectory(doc)
+# Add debian package build target.
+#add_subdirectory(package)
+include(cpack/CPackConfig.cmake)
 
