@@ -10,3 +10,4 @@
 */*/*.user
 **/cmake-build*/*
 **/CMakeLists.txt.user
+CMakeUserPresets.json

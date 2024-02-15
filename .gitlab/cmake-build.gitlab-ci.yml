@@ -3,6 +3,8 @@ variables:
   # Logger tag value.
   #SF_TARGET_ARCH: "amd64"
   #SF_TARGET_OS: "linux"
+  # Directory for generated packages.
+  #SF_DIR_PKG: "bin/pkg"
   # CMake toolchain the preset-name with.
   #SF_TOOLCHAIN: "gnu"
   # CMake build type to construct the preset-name with.
@@ -85,6 +87,7 @@ stages:
     expire_in: 2 days
     paths:
       - ${SF_DIR_BIN}/*
+      - ${SF_DIR_PKG}/*
     exclude:
       - ${SF_DIR_BIN}/**/.gitkeep
       - ${SF_DIR_BIN}/_CPack_Packages

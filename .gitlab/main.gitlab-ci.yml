@@ -4,6 +4,8 @@ variables:
   # Tags for selecting a runner.
   SF_TARGET_ARCH: "amd64"
   SF_TARGET_OS: "linux"
+  # Directory for generated packages.
+  SF_DIR_PKG: "bin/pkg"
   # Name of the branch that allows running deploying to production. (set from CI/CD settings)
   #SF_RELEASE_BRANCH: "main"
 

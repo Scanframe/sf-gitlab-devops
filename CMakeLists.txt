@@ -68,11 +68,13 @@ if (SF_BUILD_TESTING)
 	include(CTest)
 endif ()
 
-# Add Sub Projects in the right order of dependency.
+# Add Sub Projects in the right order of dependencies.
 add_subdirectory(src)
 # Add Doxygen document project.
-add_subdirectory(doc)
-# Add debian package build target.
-#add_subdirectory(package)
-include(cpack/CPackConfig.cmake)
-
+if (EXISTS doc)
+	add_subdirectory(doc)
+endif ()
+# Add package build config.
+if (EXISTS cpack/CPackConfig.cmake)
+	include(cpack/CPackConfig.cmake)
+endif ()
