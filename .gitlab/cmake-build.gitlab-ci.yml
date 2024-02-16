@@ -89,7 +89,7 @@ stages:
       - "${SF_DIR_BIN}/"
       - "${SF_DIR_PKG}/"
     exclude:
-      - "${SF_DIR_PKG}/_CPack_Packages/"
+      - "${SF_DIR_PKG}/_CPack_Packages/*"
       - "**/.gitkeep"
 
 # Template to deploy only when on the protected release branch.
