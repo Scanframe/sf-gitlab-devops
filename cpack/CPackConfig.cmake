@@ -25,17 +25,18 @@ set(SF_PACKAGE_RELEASE 1)
 include("${CMAKE_CURRENT_LIST_DIR}/CPackDebian.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/CPackRpm.cmake")
 
+# Retrieve all targets from this project.
 Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
 foreach (_Target ${_AllTargets})
 	get_target_property(_Type "${_Target}" TYPE)
-	# MODULE_LIBRARY, SHARED_LIBRARY, OBJECT_LIBRARY, INTERFACE_LIBRARY, EXECUTABLE
-	if (_Type STREQUAL "EXECUTABLE" OR _Type MATCHES "_LIBRARY$")
-	#if (_Type STREQUAL "EXECUTABLE" OR _Type STREQUAL "SHARED_LIBRARY")
-		#message(NOTICE "_Target=${_Target}, Type=${_Type}")
+	# Only install executables and shared libraries.
+	if (_Type STREQUAL "EXECUTABLE" OR _Type STREQUAL "SHARED_LIBRARY")
+		message(STATUS "Adding install of target '${_Target}' (${_Type})")
 		list(APPEND _Targets  "${_Target}")
 	endif ()
 endforeach ()
 
+# Install
 install(TARGETS ${_Targets}
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib

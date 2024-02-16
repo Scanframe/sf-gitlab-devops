@@ -166,8 +166,6 @@ job-build:
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
-    # Build the 'install' target which enables cpack to pick them up.
-    - '"${SF_DIR_MOUNT}/build.sh" --build "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
     - *unbind-script
 
 job-test:
@@ -197,6 +195,8 @@ job-pack:
   script:
     - *log-script
     - *bind-script
+    # Build the 'install' target which enables cpack to pick them up.
+    - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
     - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 

@@ -71,10 +71,10 @@ endif ()
 # Add Sub Projects in the right order of dependencies.
 add_subdirectory(src)
 # Add Doxygen document project.
-if (EXISTS doc)
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/doc")
 	add_subdirectory(doc)
 endif ()
 # Add package build config.
-if (EXISTS cpack/CPackConfig.cmake)
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cpack/CPackConfig.cmake")
 	include(cpack/CPackConfig.cmake)
 endif ()
