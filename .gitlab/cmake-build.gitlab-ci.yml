@@ -94,6 +94,18 @@ stages:
       - "${SF_DIR_PKG}/_CPack_Packages/*"
       - "**/.gitkeep"
 
+# Template to define artifacts in the designated directory for packages.
+.artifacts-pack:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    expire_in: 7 days
+    paths:
+      - "${SF_DIR_PKG}/*.zip"
+      - "${SF_DIR_PKG}/*.deb"
+      - "${SF_DIR_PKG}/*.rpm"
+    exclude:
+      - "**/.gitkeep"
+
 # Template to deploy only when on the protected release branch.
 .deploy:
   rules:
@@ -154,6 +166,8 @@ job-build:
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    # Build the 'install' target which enables cpack to pick them up.
+    - '"${SF_DIR_MOUNT}/build.sh" --build "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
     - *unbind-script
 
 job-test:
@@ -177,14 +191,12 @@ job-test:
 
 job-pack:
   stage: cpack
-  extends: [.cache, .artifacts]
+  extends: [.cache, .artifacts-pack]
   needs:
     - job: job-build
   script:
     - *log-script
     - *bind-script
-    # Build the 'install' target which enable cpack to pick them up.
-    - '"${SF_DIR_MOUNT}/build.sh" --build "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
     - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
