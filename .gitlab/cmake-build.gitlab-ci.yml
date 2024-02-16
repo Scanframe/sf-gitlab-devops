@@ -87,11 +87,7 @@ stages:
     expire_in: 2 days
     paths:
       - "${SF_DIR_BIN}/"
-      - "${SF_DIR_PKG}/*.zip"
-      - "${SF_DIR_PKG}/*.deb"
-      - "${SF_DIR_PKG}/*.rpm"
     exclude:
-      - "${SF_DIR_PKG}/_CPack_Packages/*"
       - "**/.gitkeep"
 
 # Template to define artifacts in the designated directory for packages.

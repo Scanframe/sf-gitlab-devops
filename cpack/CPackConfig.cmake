@@ -51,4 +51,3 @@ install(TARGETS ${_Targets}
 #install(DIRECTORIES "lnx64" DESTINATION "." FILES_MATCHING PATTERN "*.bin")
 
 include(CPack)
-
