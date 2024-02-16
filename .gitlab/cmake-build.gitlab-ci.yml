@@ -86,11 +86,11 @@ stages:
     # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
     expire_in: 2 days
     paths:
-      - ${SF_DIR_BIN}/*
-      - ${SF_DIR_PKG}/*
+      - "${SF_DIR_BIN}/*"
+      - "${SF_DIR_PKG}/*"
     exclude:
-      - ${SF_DIR_BIN}/**/.gitkeep
-      - ${SF_DIR_BIN}/_CPack_Packages
+      - "**/.gitkeep"
+      - "${SF_DIR_PKG}/_CPack_Packages"
 
 # Template to deploy only when on the protected release branch.
 .deploy:
