@@ -22,6 +22,9 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/__install__")
 #set(SF_PACKAGE_RELEASE "${NOW}")
 set(SF_PACKAGE_RELEASE 1)
 
+# Don't make the 'install' target depend on the 'all' target.
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
+
 include("${CMAKE_CURRENT_LIST_DIR}/CPackDebian.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/CPackRpm.cmake")
 
