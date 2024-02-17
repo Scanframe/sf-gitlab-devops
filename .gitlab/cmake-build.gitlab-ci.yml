@@ -200,7 +200,7 @@ job-deploy:
   stage: deploy
   extends: [.deploy, .artifacts-pack]
   needs:
-    - job: job-build
+    - job: job-pack
   script:
     - *log-script
     # List all the file currently in the bin directory.
