@@ -35,7 +35,7 @@ Sf_AddVersionResource("${PROJECT_NAME}")
 Sf_AddExifTarget("${PROJECT_NAME}")
 
 # RC-files only seem to be compiled when building using MingW.
-target_sources(${PROJECT_NAME} PRIVATE main.cpp)
+target_sources(${PROJECT_NAME} PRIVATE main.cpp template.h)
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${PROJECT_NAME}")

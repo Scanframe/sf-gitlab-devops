@@ -49,24 +49,38 @@ stages:
   script:
     - echo "..."
 
-# Fetch tags also for submodules and report them all.
-.fetch-tags-script: &fetch-tags
-  - git config --global --add safe.directory '*'
-  - git fetch --tags --force && git submodule foreach --recursive git fetch --tags  --force
-  - git tag --list && git submodule foreach --recursive git tag --list
-  - git describe --tags --dirty || echo "Could not git describe current repo hash."
+# Fetches tags and checks if a tag describes current state of the repository.
+# Is not, unshallow is tried and exits when no tag is still not found.
+.script-tags: &tags-script
+  - |
+    # Prevent error when fetching.
+    git config --global --add safe.directory '*'
+    # Fetch all the tags
+    git fetch --tags
+    # List the tags so the wind up in the log.
+    git tag --list
+    # When not able to describe GitLab is cloning too shallow.
+    if [[ git describe --tags --dirty ]]; then
+      echo "Could not find tag describing this repo. Trying git unshallow..."
+      git fetch --unshallow
+      # Checking again. 
+      if [[ git describe --tags --dirty ]]; then
+        echo "Could not git describe and is probably missing a tag!"
+        exit 1
+      fi
+    fi
 
 # Anchor for single Linux script line only.
-.log-script: &log-script
+.script-log: &log-script
   # Log to syslog to be able to see execution flow.
   - logger --tag "${SF_LOG_TAG}-${SF_TOOLCHAIN}" "Script => '$(pwd)'"
 
 # Script to mount source root on a fixed directory path for cmake.
-.bind-script: &bind-script
+.script-bind: &bind-script
   - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
 
 # Template to unmount source root on a fixed directory path for cmake.
-.unbind-script: &unbind-script
+.script-unbind: &unbind-script
   - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
 
 # Template to configure cache for CMake generated files for the compiler.
@@ -131,7 +145,7 @@ job-check:
   extends: .env-dump
   stage: check-env
   script:
-    - *fetch-tags
+    - echo "..."
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Wiping build directory is not needed since the push policy.
@@ -144,8 +158,9 @@ job-make:
     policy: push
   script:
     - *log-script
-    - *fetch-tags
     - *bind-script
+    # The make stage needs tags for versioning of shared libraries and packaging.
+    - *tags-script
     # Execute the build script to CMake the makefiles.
     - '"${SF_DIR_MOUNT}/build.sh" --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
@@ -159,7 +174,6 @@ job-build:
     policy: pull
   script:
     - *log-script
-    - *fetch-tags
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'

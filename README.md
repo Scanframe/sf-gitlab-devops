@@ -131,3 +131,30 @@ if (SfDoxyGen_FOUND)
 	Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
 endif ()
 ```
+
+### Clang-format Check
+
+To enable format check before a commit modify or add the script `.git/hooks/pre-commit` with the following content.  
+It also checks if it is a commit to the main or master branch.
+
+```bash
+#!/bin/bash
+
+# Redirect output to stderr.
+exec 1>&2
+# Get the branch name.
+branch="$(git rev-parse --abbrev-ref HEAD)"
+# Check if it is 'main' and prevnt a commit on it.
+if [[ "${branch}" == "main" || "${branch}" == "master" ]]; then
+	echo "You can't commit directly to the '${branch}' branch!"
+	exit 1
+fi
+
+# When the file 'check-format.sh' exists call it to check if the formatting is correct.
+if [[ -f check-format.sh ]]; then
+	if ! ./check-format.sh; then
+		echo "Source is not formatted correctly!"
+		exit 1
+	fi
+fi
+```

@@ -1,10 +1,10 @@
 #include <catch2/catch_all.hpp>
-#include <nlohmann/json.hpp>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
 #include <climits>
 #include <csignal>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 #if defined(_WIN32)
 	#include <windows.h>
 #endif
@@ -25,11 +25,14 @@ TEST_CASE("sf::Json", "[json]")
 {
 	SECTION("Json")
 	{
-		std::filesystem::path const path = std::filesystem::path(getExecutableFilepath())
-			.parent_path().parent_path().parent_path()
-			.append("src")
-			.append("tests")
-			.append("test.customer.json");
+		std::filesystem::path const path =
+			std::filesystem::path(getExecutableFilepath())
+				.parent_path()
+				.parent_path()
+				.parent_path()
+				.append("src")
+				.append("tests")
+				.append("test.customer.json");
 		std::cerr << "Json File: " << path << std::endl;
 		REQUIRE(std::filesystem::exists(path));
 
@@ -47,4 +50,3 @@ TEST_CASE("sf::Json", "[json]")
 		std::cout << std::setw(2) << j;
 	}
 }
-

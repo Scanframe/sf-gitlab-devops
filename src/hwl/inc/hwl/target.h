@@ -64,8 +64,8 @@ Defines these with true (1) or false (0):
 
 #if IS_WIN
 	#if IS_GNU
-		#define TARGET_EXPORT __attribute__ ((dllexport))
-		#define TARGET_IMPORT __attribute__ ((dllimport))
+		#define TARGET_EXPORT __attribute__((dllexport))
+		#define TARGET_IMPORT __attribute__((dllimport))
 		#define TARGET_HIDDEN __attribute__((visibility("hidden")))
 	#elif IS_MSVC
 		#define TARGET_EXPORT __declspec(dllexport)
@@ -84,30 +84,30 @@ Defines these with true (1) or false (0):
 #if defined(REPORT_TARGET)
 // Report when GNU GCC is used.
 	#if IS_GNU
-		#pragma message ("GNU compiler")
+		#pragma message("GNU compiler")
 	#endif
 // Report the Windows target.
 	#if IS_WIN
-		#pragma message ("Windows build")
+		#pragma message("Windows build")
 	#endif
 // Report the GNU C++ compiler.
 	#if IS_GNU
-		#pragma message ("GNU C++ Compiler")
+		#pragma message("GNU C++ Compiler")
 	#endif
 // Report the Visual C++ compiler.
 	#if IS_MSVC
-		#pragma message ("Visual C++ Compiler")
+		#pragma message("Visual C++ Compiler")
 	#endif
 // Report the QT is linked.
 	#if IS_QT
-		#pragma message ("Target: QT")
+		#pragma message("Target: QT")
 	#endif
-// Report the target is a dynamically library.
+// Report the target is a dynamic shared library.
 	#if IS_DL_TARGET
-		#pragma message ("Target: Shared Library")
+		#pragma message("Target: Shared Library")
 	#endif
 // Report the target is a static library (archive).
 	#if IS_SL_TARGET
-		#pragma message ("Target: Static Library")
+		#pragma message("Target: Static Library")
 	#endif
-#endif // REPORT_TARGET
+#endif// REPORT_TARGET
