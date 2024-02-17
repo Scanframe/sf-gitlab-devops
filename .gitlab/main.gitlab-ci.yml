@@ -72,6 +72,9 @@ linux-gnu:
     # Skip if signal is "test"
     - if: '$SF_SIGNAL == "test"'
       when: never
+    # For testing the 'deploy' step.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
     - when: always
   variables:
     # Set the toolchain to use.
@@ -90,6 +93,9 @@ linux-gw:
     # Skip if signal is "test"
     - if: '$SF_SIGNAL == "test"'
       when: never
+    # For testing the 'deploy' step.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
     - when: always
   variables:
     # Set the toolchain to use.
