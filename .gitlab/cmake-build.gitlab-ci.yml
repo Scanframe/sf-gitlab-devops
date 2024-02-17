@@ -45,7 +45,7 @@ stages:
   # Do not need the cache for this one.
   cache: []
   before_script:
-    - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv
+    - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort
   script:
     - echo "..."
 
