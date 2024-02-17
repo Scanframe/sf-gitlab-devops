@@ -159,6 +159,7 @@ job-build:
     policy: pull
   script:
     - *log-script
+    - *fetch-tags
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
