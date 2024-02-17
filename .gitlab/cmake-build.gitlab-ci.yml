@@ -206,4 +206,4 @@ job-deploy:
     # List all the file currently in the bin directory.
     - 'find bin/ -type f'
     # Upload all generated Debian packages if there are any.
-    - 'cmake/lib/bin/nexus-apt-upload.sh "${SF_DIR_PKG}/*.deb'
+    - 'cmake/lib/bin/nexus-apt-upload.sh "${SF_DIR_PKG}"/*.deb'
