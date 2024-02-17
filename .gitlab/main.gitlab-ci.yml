@@ -43,7 +43,7 @@ check-env:
   stage: check
   script:
     - echo "Working Directory=$(pwd)"
-    - echo "Environment Dump" && printenv
+    - echo "Environment Dump" && printenv | sort
 
 # Does a cache and artifact check.
 cache-test:
