@@ -317,11 +317,29 @@
 			],
 			"hidden": false,
 			"name": "gnu-debug",
-			"displayName": "GNU Package Debug",
-			"description": "GNU Debian package.",
+			"displayName": "GNU Deb Pack Dbg",
+			"description": "GNU Debian package debug.",
 			"configurePreset": "gnu-debug",
 			"generators": [
-				"DEB",
+				"DEB"
+			],
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"inherits": [
+				".pack"
+			],
+			"hidden": false,
+			"name": "gnu-rpm-debug",
+			"displayName": "GNU RPM Pack Dbg",
+			"description": "GNU RPM package debug.",
+			"configurePreset": "gnu-debug",
+			"generators": [
 				"RPM"
 			],
 			"packageDirectory": "${sourceDir}/bin/pkg",
@@ -337,8 +355,8 @@
 			],
 			"hidden": false,
 			"name": "gw-debug",
-			"displayName": "GW Package Debug",
-			"description": "GW Debian package.",
+			"displayName": "GW ZIP Pack Dbg",
+			"description": "GW ZIP package debug.",
 			"configurePreset": "gw-debug",
 			"generators": [
 				"ZIP"

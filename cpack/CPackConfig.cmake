@@ -20,7 +20,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/__install__")
 # Uncomment this lines to use timestamp for the release number.
 #string(TIMESTAMP NOW "%s")
 #set(SF_PACKAGE_RELEASE "${NOW}")
-set(SF_PACKAGE_RELEASE 1)
+set(SF_PACKAGE_RELEASE 2)
 
 # Don't make the 'install' target depend on the 'all' target.
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
@@ -41,7 +41,7 @@ endforeach ()
 
 # Install
 install(TARGETS ${_Targets}
-	RUNTIME DESTINATION bin
+	RUNTIME DESTINATION ./
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION arc
 	#CONFIGURATIONS Debug
