@@ -198,10 +198,11 @@ job-pack:
 
 job-deploy:
   stage: deploy
-  extends: [.deploy, .artifacts-pack]
+  extends: [.env-dump, .deploy, .artifacts-pack]
   needs:
     - job: job-build
   script:
     - *log-script
     # Upload all generated Debian packages if there are any.
+    - ls -laR bin
     - cmake/lib/bin/nexus-apt-upload.sh bin/pkg/*.deb
