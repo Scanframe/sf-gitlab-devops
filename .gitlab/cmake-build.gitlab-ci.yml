@@ -80,7 +80,7 @@ stages:
 # Template to define artifacts in the designated directory.
 .artifacts:
   artifacts:
-    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
     # Expiration period before artifacts expire.
     # FIXME: Currently variable expansion is not possible and is fixed.
     # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
@@ -93,7 +93,7 @@ stages:
 # Template to define artifacts in the designated directory for packages.
 .artifacts-pack:
   artifacts:
-    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-packages"
     expire_in: 7 days
     paths:
       - "${SF_DIR_PKG}/*.zip"
@@ -198,7 +198,7 @@ job-pack:
 
 job-deploy:
   stage: deploy
-  extends: [.env-dump, .deploy, .artifacts-pack]
+  extends: [.deploy, .artifacts-pack]
   needs:
     - job: job-build
   script:
