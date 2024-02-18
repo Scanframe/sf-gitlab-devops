@@ -60,11 +60,11 @@ stages:
     # List the tags so the wind up in the log.
     git tag --list
     # When not able to describe GitLab is cloning too shallow.
-    if [[ git describe --tags --dirty ]]; then
-      echo "Could not find tag describing this repo. Trying git unshallow..."
+    if git describe --tags --dirty; then
+      echo "Could not find tag describing this repo. Trying unshallow pull."
       git fetch --unshallow
       # Checking again. 
-      if [[ git describe --tags --dirty ]]; then
+      if git describe --tags --dirty; then
         echo "Could not git describe and is probably missing a tag!"
         exit 1
       fi
