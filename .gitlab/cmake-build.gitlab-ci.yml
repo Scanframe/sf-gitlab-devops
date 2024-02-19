@@ -28,15 +28,15 @@ workflow:
 # Order of stages for jobs to perform in.
 stages:
   # Jobs checking the environment requirements.
-  - check-env
+  - check
   # Jobs producing makefiles using CMake presets.
-  - cmake-cfg
+  - configure
   # Jobs for building all cmake preset targets.
-  - cmake-build
+  - build
   # Jobs executing the build unittests using the CTest configurations.
-  - ctest
+  - test
   # Jobs packing the generated artifacts.
-  - cpack
+  - pack
   # Deploy generated packages.
   - deploy
 
@@ -148,14 +148,14 @@ default:
 job-check:
   # Common template job.
   extends: .env-dump
-  stage: check-env
+  stage: check
   script:
     - echo "..."
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Wiping build directory is not needed since the push policy.
-job-make:
-  stage: cmake-cfg
+job-config:
+  stage: configure
   needs:
     - job: job-check
   extends: [.cache]
@@ -171,9 +171,9 @@ job-make:
     - *unbind-script
 
 job-build:
-  stage: cmake-build
+  stage: build
   needs:
-    - job: job-make
+    - job: job-config
   extends: [.cache, .artifacts]
   cache:
     policy: pull
@@ -186,7 +186,7 @@ job-build:
     - *unbind-script
 
 job-test:
-  stage: ctest
+  stage: test
   extends: [.cache, .artifacts]
   needs:
     - job: job-build
@@ -198,14 +198,9 @@ job-test:
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
-  rules:
-    # Only GNU toolchain can be tested at the moment.
-    - if: '$SF_TOOLCHAIN == "gnu"'
-      when: always
-    - when: never
 
 job-pack:
-  stage: cpack
+  stage: pack
   extends: [.cache, .artifacts-pack]
   needs:
     - job: job-build
@@ -222,6 +217,7 @@ job-deploy:
   extends: [.deploy, .artifacts-pack]
   needs:
     - job: job-pack
+    - job: job-test
   script:
     - *log-script
     # List all the file currently in the bin directory.
