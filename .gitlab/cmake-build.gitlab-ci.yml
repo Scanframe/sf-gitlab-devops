@@ -104,15 +104,20 @@ stages:
     exclude:
       - "**/.gitkeep"
 
-# Template to define artifacts in the designated directory for packages.
+# Template to define package generated artifacts in the designated directory.
 .artifacts-pack:
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-packages"
     expire_in: 7 days
     paths:
-      - "${SF_DIR_PKG}/*.zip"
+      # Package generator DEB Debian results.
       - "${SF_DIR_PKG}/*.deb"
+      # Package generator RPM results.
       - "${SF_DIR_PKG}/*.rpm"
+      # Package generator NSIS and NSIS64 results.
+      - "${SF_DIR_PKG}/*.exe"
+      # Package generator ZIP results.
+      - "${SF_DIR_PKG}/*.zip"
     exclude:
       - "**/.gitkeep"
 
