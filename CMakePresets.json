@@ -92,7 +92,7 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Dbg Config GNU Compiler",
+			"displayName": "Dbg GNU Compiler",
 			"description": "Debug config GNU compiler on Linux.",
 			"inherits": [
 				".cfg-lnx"
@@ -112,7 +112,7 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Dbg Config MinGW Compiler",
+			"displayName": "Dbg MinGW Compiler",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
 			"inherits": [
 				".cfg-win"
@@ -123,7 +123,7 @@
 		{
 			"name": "msvc-debug",
 			"hidden": false,
-			"displayName": "Dbg Config MSVC Compiler",
+			"displayName": "Dbg MSVC Compiler",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
 			"inherits": [
 				".cfg-win"
