@@ -11,11 +11,18 @@ having more then one line.")
 #	set(CPACK_SET_DESTDIR "$ENV{HOME}/tmp")
 #endif ()
 
+# Only for RPM and Debian packages.
 set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/Scanframe/devops")
 # Set the temporary directory to install which is actually copy the binaries to.
 # So in this case the as subdirectory in the CMake binary directory is used.
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/__install__")
 
+if (WIN32)
+	# Somehow the'\\\\' to prevent an error.
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe\\\\DevOps")
+else ()
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe/DevOps")
+endif ()
 # Release number set only once.
 # Uncomment this lines to use timestamp for the release number.
 #string(TIMESTAMP NOW "%s")
@@ -24,9 +31,12 @@ set(SF_PACKAGE_RELEASE 2)
 
 # Don't make the 'install' target depend on the 'all' target.
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
+# Number of threads to use when performing parallelized operations, such as compressing the installer package.
+set(CPACK_THREADS 4)
 
-include("${CMAKE_CURRENT_LIST_DIR}/CPackDebian.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackRpm.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-DEBIAN.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-RPM.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
 
 # Retrieve all targets from this project.
 Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
@@ -35,7 +45,7 @@ foreach (_Target ${_AllTargets})
 	# Only install executables and shared libraries.
 	if (_Type STREQUAL "EXECUTABLE" OR _Type STREQUAL "SHARED_LIBRARY")
 		message(STATUS "Adding install of target '${_Target}' (${_Type})")
-		list(APPEND _Targets  "${_Target}")
+		list(APPEND _Targets "${_Target}")
 	endif ()
 endforeach ()
 

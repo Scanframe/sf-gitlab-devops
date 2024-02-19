@@ -1,5 +1,5 @@
+# See: https://cmake.org/cmake/help/latest/cpack_gen/deb.html
 set(CPACK_DEBIAN_PACKAGE_DEBUG ON)
-
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEBIAN_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set(CPACK_DEBIAN_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
@@ -10,6 +10,5 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Arjan van Olphen <a.v.olphen@scanframe.nl>"
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CMAKE_PROJECT_HOMEPAGE_URL}")
 # Prevent error in 'CPackDeb.cmake' reporting "dpkg-shlibdeps: 'dpkg-shlibdeps: error: cannot find library".
 list(APPEND CPACK_DEBIAN_PACKAGE_SHLIBDEPS_PRIVATE_DIRS "${CMAKE_INSTALL_PREFIX}/lib")
-
 #set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libc6 (< 2.4)")
 

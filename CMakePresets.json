@@ -355,11 +355,12 @@
 			],
 			"hidden": false,
 			"name": "gw-debug",
-			"displayName": "GW ZIP Pack Dbg",
-			"description": "GW ZIP package debug.",
+			"displayName": "GW ZIP + NSIS Pack Dbg",
+			"description": "GW ZIP + NSIS package debug.",
 			"configurePreset": "gw-debug",
 			"generators": [
-				"ZIP"
+				"ZIP",
+				"NSIS64"
 			],
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"condition": {
