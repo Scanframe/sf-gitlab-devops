@@ -223,8 +223,8 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Debug test Linux GNU Compiler",
-			"description": "Debug test with GNU compiler on Linux.",
+			"displayName": "Dbg Test GNU",
+			"description": "Debug with GNU compiler on Linux.",
 			"configurePreset": "gnu-debug",
 			"output": {
 				"outputOnFailure": true
@@ -242,8 +242,8 @@
 		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Debug test Linux MinGW Compiler",
-			"description": "Debug test MinGW Windows cross compiler on Linux.",
+			"displayName": "Dbg Test GW",
+			"description": "Debug test GW Windows cross compiler on Linux.",
 			"configurePreset": "gw-debug",
 			"output": {
 				"outputOnFailure": true,
@@ -263,7 +263,7 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Debug test Windows MinGW Compiler",
+			"displayName": "Dbg Test MinGW",
 			"description": "Debug test for MinGW compiler on Windows.",
 			"configurePreset": "mingw-debug",
 			"output": {
@@ -321,7 +321,8 @@
 			"description": "GNU Debian package debug.",
 			"configurePreset": "gnu-debug",
 			"generators": [
-				"DEB"
+				"DEB",
+				"RPM"
 			],
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"condition": {
@@ -359,8 +360,8 @@
 			"description": "GW ZIP + NSIS package debug.",
 			"configurePreset": "gw-debug",
 			"generators": [
-				"ZIP",
-				"NSIS64"
+				"NSIS64",
+				"ZIP"
 			],
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"condition": {

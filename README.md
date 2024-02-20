@@ -111,7 +111,7 @@ Look at [Doxygen](https://www.doxygen.nl/) website for the syntax in C++ header 
 
 ```cmake
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.27)
 # Set the global project name.
 project("doc")
 # Add doxygen project when SfDoxyGen was found.

@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.27)
 
 # Make it so our own packages are found and also the ones in the sub-module library.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
@@ -11,12 +11,15 @@ find_package(SfToolChain CONFIG REQUIRED)
 # Install tool chain for Linux or Windows.
 Sf_SetToolChain()
 
-# Get the Git version number from the repository of this files directory.
-Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
-
+# Get the Git versions from the repository of this files directory.
+Sf_GetGitTagVersion(_Versions "${CMAKE_CURRENT_LIST_DIR}")
+# Split the list into separate values.
+list(GET _Versions 0 SF_GIT_TAG_VERSION)
+list(GET _Versions 1 SF_GIT_TAG_RC)
+list(GET _Versions 2 SF_GIT_TAG_COMMITS)
 # Set the global project name.
 project("devops-trial"
-	VERSION "${SF_VERSION}"
+	VERSION "${SF_GIT_TAG_VERSION}"
 	DESCRIPTION "Scanframe DevOps Trial App"
 	HOMEPAGE_URL "https://git.scanframe.com/trial/devops.git"
 	LANGUAGES C CXX
