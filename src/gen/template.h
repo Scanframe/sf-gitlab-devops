@@ -1,4 +1,6 @@
 #pragma once
+#include <limits>
+
 /**
  * Just a file and namespace to demonstrate the Doxygen manual generation.
  *
@@ -15,12 +17,12 @@ namespace MySpace
  * @param min Minimum value of the range.
  * @param max Maximum value of the range.
  * @param len Length to be scaled according the value and range.
- * @param clip Determines if the length needs to be clipped withing the set range.
+ * @param clip Determines if the length needs to be clipped withing the set
+ * range.
  * @return Resulted scaled value.
  */
 template<class T, class S>
-inline
-S calculateOffset(T value, T min, T max, S len, bool clip)
+inline S calculateOffset(T value, T min, T max, S len, bool clip)
 {
 	max -= min;
 	value -= min;
@@ -31,12 +33,17 @@ S calculateOffset(T value, T min, T max, S len, bool clip)
 		// When the len is a negative value.
 		if (len < 0)
 		{
-			return ((temp < len) ? len : (temp > S(0)) ? S(0) : temp);
+			return (temp < len)
+				? len
+				: (temp > S(0))
+				? S(0)
+				: temp;
 		}
-		else
-		{
-			return ((temp > len) ? len : (temp < S(0)) ? S(0) : temp);
-		}
+		return (temp > len)
+			? len
+			: (temp < S(0))
+			? S(0)
+			: temp;
 	}
 	return temp;
 }
@@ -52,7 +59,9 @@ S calculateOffset(T value, T min, T max, S len, bool clip)
 template<class T>
 T clip(const T v, const T a, const T b)
 {
-	return (v < a) ? a : ((v > b) ? b : v);
+	return (v < a)
+		? a
+		: ((v > b) ? b : v);
 }
 
-}
+}// namespace MySpace

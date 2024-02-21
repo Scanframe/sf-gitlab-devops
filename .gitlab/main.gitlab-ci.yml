@@ -4,6 +4,8 @@ variables:
   # Tags for selecting a runner.
   SF_TARGET_ARCH: "amd64"
   SF_TARGET_OS: "linux"
+  # Directory for generated packages.
+  SF_DIR_PKG: "bin/pkg"
   # Name of the branch that allows running deploying to production. (set from CI/CD settings)
   #SF_RELEASE_BRANCH: "main"
 
@@ -13,8 +15,11 @@ workflow:
     # No pipeline when commit message starts with an exclamation mark '!'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
-    # Run pipeline for a merge_requests updates.
+    # Run pipeline initiated by a merge request event.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Run pipeline initiated by the web application.
+    - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
     # Prevent double pipeline when having this workflow.
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
@@ -38,7 +43,9 @@ check-env:
   stage: check
   script:
     - echo "Working Directory=$(pwd)"
-    - echo "Environment Dump" && printenv
+    - echo "Environment Dump" && printenv | sort
+    # Check the formatting of
+    - ./check-format.sh
 
 # Does a cache and artifact check.
 cache-test:
@@ -46,10 +53,12 @@ cache-test:
   needs: [check-env]
   rules:
     # Run when signal is test.
-    - if: '$SF_SIGNAL == "test"'
+    - if: '$SF_SIGNAL != "test"'
+      when: never
+    - when: always
   variables:
     # Set the toolchain to use.
-    SF_TOOLCHAIN: "toolchain-value"
+    SF_TOOLCHAIN: "toolchain"
     SF_BUILD_TYPE: "debug"
     SF_DIR_BIN: "bin/lnx64"
 
@@ -65,6 +74,9 @@ linux-gnu:
     # Skip if signal is "test"
     - if: '$SF_SIGNAL == "test"'
       when: never
+    # For testing the 'deploy' step.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
     - when: always
   variables:
     # Set the toolchain to use.
@@ -83,6 +95,9 @@ linux-gw:
     # Skip if signal is "test"
     - if: '$SF_SIGNAL == "test"'
       when: never
+    # For testing the 'deploy' step.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
     - when: always
   variables:
     # Set the toolchain to use.

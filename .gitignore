@@ -2,10 +2,12 @@
 **/.idea
 **/.vscode
 **/.vs
+/bin/pkg/*
 /bin/lnx64/*
 /bin/win64/*
 /bin/man/*
+/snap
 */*/*.user
-**/cmake-build/*
+**/cmake-build*/*
 **/CMakeLists.txt.user
-.gitlab-ci.yml
+CMakeUserPresets.json

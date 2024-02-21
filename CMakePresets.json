@@ -1,8 +1,8 @@
 {
-	"version": 3,
+	"version": 6,
 	"cmakeMinimumRequired": {
 		"major": 3,
-		"minor": 22,
+		"minor": 25,
 		"patch": 0
 	},
 	"configurePresets": [
@@ -47,7 +47,9 @@
 		},
 		{
 			"name": ".cfg-lnx",
-			"inherits": [".cfg"],
+			"inherits": [
+				".cfg"
+			],
 			"hidden": true,
 			"displayName": "Debug Linux Template",
 			"description": "Debug config Linux template.",
@@ -67,7 +69,9 @@
 		},
 		{
 			"name": ".cfg-win",
-			"inherits": [".cfg"],
+			"inherits": [
+				".cfg"
+			],
 			"hidden": true,
 			"displayName": "Debug Windows Template",
 			"description": "Debug config Windows template.",
@@ -88,34 +92,42 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Debug GNU Compiler on Linux",
-			"description": "Debug config GNU compiler on Linux",
-			"inherits": [".cfg-lnx"],
+			"displayName": "Dbg GNU Compiler",
+			"description": "Debug config GNU compiler on Linux.",
+			"inherits": [
+				".cfg-lnx"
+			],
 			"binaryDir": "${sourceDir}/cmake-build/gnu-debug"
 		},
 		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Debug GW Compiler on Linux",
+			"displayName": "Dbg GW Compiler",
 			"description": "Debug config for cross Windows GW compiler on Linux.",
-			"inherits": [".cfg-win"],
+			"inherits": [
+				".cfg-win"
+			],
 			"binaryDir": "${sourceDir}/cmake-build/gw-debug"
 		},
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Debug Linux MinGW Compiler on Windows",
+			"displayName": "Dbg MinGW Compiler",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
-			"inherits": [".cfg-win"],
+			"inherits": [
+				".cfg-win"
+			],
 			"generator": "CodeBlocks - MinGW Makefiles",
 			"binaryDir": "${sourceDir}/cmake-build/mingw-debug"
 		},
 		{
 			"name": "msvc-debug",
 			"hidden": false,
-			"displayName": "Debug Linux MinGW Compiler on Windows",
+			"displayName": "Dbg MSVC Compiler",
 			"description": "Debug config for cross Windows MinGW compiler on Windows.",
-			"inherits": [".cfg-win"],
+			"inherits": [
+				".cfg-win"
+			],
 			"generator": "CodeBlocks - NMake Makefiles",
 			"binaryDir": "${sourceDir}/cmake-build/msvc-debug"
 		}
@@ -131,10 +143,12 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Debug build Linux GNU Compiler",
+			"displayName": "Dbg Build GNU Compiler",
 			"description": "Debug build with GNU compiler on Linux.",
 			"configurePreset": "gnu-debug",
-			"inherits": [".build"],
+			"inherits": [
+				".build"
+			],
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -150,10 +164,12 @@
 		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Debug build Linux MinGW Compiler",
-			"description": "Debug build MinGW Windows cross compiler on Linux.",
+			"displayName": "Dbg Build GW Compiler",
+			"description": "Debug build GW Windows cross compiler on Linux.",
 			"configurePreset": "gw-debug",
-			"inherits": [".build"],
+			"inherits": [
+				".build"
+			],
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -168,10 +184,12 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Debug build Windows MinGW Compiler",
+			"displayName": "Dbg Build MinGW",
 			"description": "Debug build for MinGW compiler on Windows.",
 			"configurePreset": "mingw-debug",
-			"inherits": [".build"],
+			"inherits": [
+				".build"
+			],
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -187,7 +205,9 @@
 			"displayName": "Debug build Windows MSVC Compiler",
 			"description": "Debug build for MSVC compiler on Windows.",
 			"configurePreset": "msvc-debug",
-			"inherits": [".build"],
+			"inherits": [
+				".build"
+			],
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
@@ -203,8 +223,8 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Debug test Linux GNU Compiler",
-			"description": "Debug test with GNU compiler on Linux.",
+			"displayName": "Dbg Test GNU",
+			"description": "Debug with GNU compiler on Linux.",
 			"configurePreset": "gnu-debug",
 			"output": {
 				"outputOnFailure": true
@@ -222,8 +242,8 @@
 		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Debug test Linux MinGW Compiler",
-			"description": "Debug test MinGW Windows cross compiler on Linux.",
+			"displayName": "Dbg Test GW",
+			"description": "Debug test GW Windows cross compiler on Linux.",
 			"configurePreset": "gw-debug",
 			"output": {
 				"outputOnFailure": true,
@@ -237,13 +257,13 @@
 			"condition": {
 				"type": "equals",
 				"lhs": "${hostSystemName}",
-				"rhs": "Windows"
+				"rhs": "Linux"
 			}
 		},
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Debug test Windows MinGW Compiler",
+			"displayName": "Dbg Test MinGW",
 			"description": "Debug test for MinGW compiler on Windows.",
 			"configurePreset": "mingw-debug",
 			"output": {
@@ -277,6 +297,101 @@
 				"lhs": "${hostSystemName}",
 				"rhs": "Windows"
 			}
+		}
+	],
+	"packagePresets": [
+		{
+			"hidden": true,
+			"name": ".pack",
+			"displayName": "Package Template",
+			"description": "Template for packaging.",
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"output": {
+				"verbose": false,
+				"debug": false
+			}
+		},
+		{
+			"inherits": [
+				".pack"
+			],
+			"hidden": false,
+			"name": "gnu-debug",
+			"displayName": "GNU Deb Pack Dbg",
+			"description": "GNU Debian package debug.",
+			"configurePreset": "gnu-debug",
+			"generators": [
+				"DEB",
+				"RPM"
+			],
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"inherits": [
+				".pack"
+			],
+			"hidden": false,
+			"name": "gnu-rpm-debug",
+			"displayName": "GNU RPM Pack Dbg",
+			"description": "GNU RPM package debug.",
+			"configurePreset": "gnu-debug",
+			"generators": [
+				"RPM"
+			],
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"inherits": [
+				".pack"
+			],
+			"hidden": false,
+			"name": "gw-debug",
+			"displayName": "GW ZIP + NSIS Pack Dbg",
+			"description": "GW ZIP + NSIS package debug.",
+			"configurePreset": "gw-debug",
+			"generators": [
+				"NSIS64",
+				"ZIP"
+			],
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		}
+	],
+	"workflowPresets": [
+		{
+			"name": "debug",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "gnu-debug"
+				},
+				{
+					"type": "build",
+					"name": "gnu-debug"
+				},
+				{
+					"type": "test",
+					"name": "gnu-debug"
+				},
+				{
+					"type": "package",
+					"name": "gnu-debug"
+				}
+			]
 		}
 	]
 }
