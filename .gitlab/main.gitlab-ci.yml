@@ -47,8 +47,7 @@ check-env:
     # Check the formatting of
     - ./check-format.sh
 
-
-    # Does a cache and artifact check.
+# Does a cache and artifact check.
 cache-test:
   stage: toolchain
   needs: [check-env]
