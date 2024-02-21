@@ -14,11 +14,18 @@
       * [Doxygen Manual/Document Generator](#doxygen-manualdocument-generator)
       * [Code Format Checking with Clang](#code-format-checking-with-clang)
       * [Build Script](#build-script)
-    * [CI/CD Pipeline Configuration](#cicd-pipeline-configuration)
-    * [CLion IDE Docker Integration](#clion-ide-docker-integration)
-    * [MinIO Cache Server](#minio-cache-server)
-    * [Sonatype Nexus](#sonatype-nexus-)
-    * [GitLab-Runner Locally](#gitlab-runner-locally-)
+  * [CI/CD Pipeline Configuration](#cicd-pipeline-configuration)
+  * [MinIO Cache Server](#minio-cache-server)
+  * [Sonatype Nexus](#sonatype-nexus)
+  * [GitLab-Runner with Docker](#gitlab-runner-with-docker)
+  * [CLion IDE Docker Integration](#clion-ide-docker-integration)
+  * [Auto Symantec Versioning with Conventional Commits](#auto-symantec-versioning-with-conventional-commits)
+    * [Commit Message Format](#commit-message-format)
+    * [Type of Commits](#type-of-commits)
+    * [Special Footer (BREAKING CHANGE:)](#special-footer-breaking-change)
+    * [Commit Message Examples](#commit-message-examples)
+      * [No Version Bump](#no-version-bump)
+      * [Major Version Bump: BREAKING CHANGE](#major-version-bump-breaking-change)
 <!-- TOC -->
 
 ## Introduction
@@ -217,7 +224,8 @@ So when the format is incorrect the pipeline will fail.
 
 #### Build Script
 
-The [`./build.sh`](build.sh) script make a call to the CMake support library bash-script [`Build.sh`](https://github.com/Scanframe/sf-cmake/blob/main/bin/Build.sh).
+The [`./build.sh`](build.sh) script make a call to the CMake support library
+bash-script [`Build.sh`](https://github.com/Scanframe/sf-cmake/blob/main/bin/Build.sh).
 
 ```
 Usage: /mnt/project/build.sh [<options>] [<presets> ...]
@@ -246,36 +254,205 @@ Usage: /mnt/project/build.sh [<options>] [<presets> ...]
     Make/Build project: /mnt/project/build.sh -b my-preset
 ```
 
-To make it easy to run the same commands within the Docker builder image, 
-the [`docker-build.sh`](./docker-build.sh) is provided which takes the same 
+To make it easy to run the same commands within the Docker builder image,
+the [`docker-build.sh`](./docker-build.sh) is provided which takes the same
 arguments as the `build.sh` script.
 
-### CI/CD Pipeline Configuration
+## CI/CD Pipeline Configuration
 
 The CI/CD Pipeline configuration has a main [`cmake-build.gitlab-ci.yml`](.gitlab/cmake-build.gitlab-ci.yml) file which triggers a  
-child-pipeline [`gitlab-ci/main.gitlab-ci.yml`](./.gitlab/main.gitlab-ci) twice. 
+child-pipeline [`gitlab-ci/main.gitlab-ci.yml`](.gitlab/main.gitlab-ci.yml) twice.
 Respectively **Linux** and **Windows** but having different variable assignments passed from the main pipeline.
 
-@startuml
-!include ./ci-pipeline.puml
-@enduml
+The `SF_SIGNAL` variable is set in GitLab for the project.
+
+| Value  | Description                                                                            |
+|--------|----------------------------------------------------------------------------------------|
+| skip   | Do not trigger any pipelines.                                                          |
+| test   | Tests the caching and artifacts mechanism.                                             |
+| deploy | Allows testing manual deployment of packages where child pipelines are manual as well. |
+|        | When left empty or not defined the pipeline has normal.                                |
 
 ```plantuml
-!include ./ci-pipeline.puml
+@startuml
+<style>
+	FontName Arial
+	FontSize 13
+	root
+	{
+		Padding 0
+		Margin 0
+		HorizontalAlignment Left
+	}
+	frame {
+		' define a new style, using CSS class syntax
+			FontColor Black
+			LineColor Gray
+			' Transparency is also possible
+			'BackgroundColor #52A0DC55
+			BackgroundColor #F9F9F9-#E9E9E9
+			'[From top left to bottom right <&fullscreen-enter>]
+			RoundCorner 10
+		}
+	}
+	rectangle
+	{
+		.event
+		{
+			'Green gradient
+			BackgroundColor #77BC65-#069A2E
+			RoundCorner 10
+		}
+		.gitlab-ci
+		{
+			BackgroundColor #FFDE59-#B47804
+		}
+	}
+	arrow
+	{
+		LineColor darkred
+	}
+}
+</style>
+
+skinparam TitleFontStyle Bold
+skinparam TitleFontSize 20
+skinparam RankSep 40
+skinparam NodeSep 10
+
+title "CI-Pipeline & Triggers"
+
+frame "Pipeline" as pipeline {
+	left to right direction
+	frame "Push Events" as events {
+		rectangle "Merge Request" <<event>> as merge_event
+		rectangle "Protected Branch" <<event>> as protected_event
+	}
+	frame "GitLab-CI" as gitlab_ci {
+		rectangle "Child: GNU-Build" <<gitlab-ci>> as gnu_cmake
+		rectangle "Child: GW-Build" <<gitlab-ci>> as gw_cmake
+		rectangle "Main" <<gitlab-ci>> as main
+	}
+	'Connectors
+	protected_event -> main : trigger
+	merge_event --> main : trigger
+	main --> gnu_cmake : trigger
+	main --> gw_cmake : trigger
+}
+@enduml
 ```
 
-### CLion IDE Docker Integration
+## MinIO Cache Server
 
-> Needs implementation.
+The Docker way is to use image `minio-server` and `minio-mc` respectively for service and control console.  
+For using Docker a script [`minio.sh`](https://github.com/Scanframe/sf-docker-runner/blob/main/minio.sh) is created to simplify it in
+the [`sf-docker-runner`](https://github.com/Scanframe/sf-docker-runner) repository.  
+To install a MinIO service from scratch using a Debian package is described in
+the [wiki-page](https://wiki.scanframe.com/en/Configuration/Linux/minio-installation).
 
-### MinIO Cache Server
+## Sonatype Nexus
 
-> Needs implementation.
+To configure an APT-repository on a Sonatype Nexus server is described in
+this [wiki-page](https://wiki.scanframe.com/en/Configuration/Linux/nexus-apt-hosted-repo "Link to Scanframe WikiJS.").  
+For uploading files to a Nexus repository is the [`upload-nexus.sh`](cmake%2Flib%2Fbin%2Fupload-nexus.sh) script.
 
-### Sonatype Nexus 
+## GitLab-Runner with Docker
 
-> Needs implementation.
+To run a GitLab-Runner service using Docker use image `gitlab/gitlab-runner:latest`.  
+For using Docker a script [`gitlab-runner.sh`](https://github.com/Scanframe/sf-docker-runner/blob/main/gitlab-runner.sh) is created.
+The script sets all the needed Docker options required by the 'C++ Build Image' (`gnu-cpp:dev`) to
+have fuse available for `bindfs` `fuze-zip` and mounting it in the [`sf-docker-runner`](https://github.com/Scanframe/sf-docker-runner) repository.
 
-### GitLab-Runner Locally 
+## CLion IDE Docker Integration
 
-> Needs implementation.
+For CLion add a Docker toolchain where the image to use is `gnu-cpp:dev` when it was build locally
+or for example `nexus.scanframe.com:8090/gnu-cpp:dev` when it was build remote and uploaded
+to the self-hosted Nexus service.
+
+The '**Docker**' toolchain '**Container Settings**' are as follows:
+
+```
+-u 0:0 
+-e LOCAL_USER=1000:1000 
+-e DISPLAY 
+-v /home/<linux-username>/.Xauthority:/home/user/.Xauthority:ro 
+--privileged 
+--net host 
+--rm
+```
+
+The volume mount for `.Xauthority` and `DISPLAY` environment variable is to allow
+Qt GUI applications to use the host's X-server.  
+Option `--privileged` is needed for it to use `fuse`.
+
+## Auto Symantec Versioning with Conventional Commits
+
+> **TODO**: Needs implementing...
+
+### Commit Message Format
+
+The Conventional Commit format is based on [Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit)
+and is as follows where the blank lines are separators between description, body and footer.
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+The description which is the first message line and is mandatory formatted as follows:
+
+```
+<type>(<scope>)!: <short summary>
+│       │      │      │
+│       │      │      └─⫸ Summary in present tense.
+│       │      │      
+│       │      └─⫸ Optional exclamation mark '!' indicating a breaking change.
+│       │
+│       └─⫸ Commit Scope: common|compiler|config|cmake|changelog|docs-infra|pack|iface|etc...
+│
+└─⫸ Commit Type: build|ci|chore|docs|feat|fix|perf|refactor|style|test|revert
+```
+
+### Type of Commits
+
+| Type     | Version       | Description                                                                        |
+|----------|---------------|------------------------------------------------------------------------------------|
+| build    | Patch         | Changes that affect the build system or external dependencies.                     |
+| chore    | None          | Updates to the build process or auxiliary tools and libraries.                     |
+| ci       | None          | Changes to CI configuration files and scripts.                                     |
+| docs     | None          | Documentation only changes.                                                        |
+| feat     | Minor         | Introducing new features or functionalities but is backwards compatible .          |
+| fix      | Patch         | Bug fixes.                                                                         |
+| perf     | Patch / Minor | Performance improvements.                                                          |
+| refactor | None          | Code refactorings (no functional changes).                                         |
+| style    | None          | Changes that do not affect the meaning of the code (white-space, formatting, etc). |
+| test     | None          | Adding missing tests or correcting existing tests.                                 |
+| revert   | None          | Reverting a previous commit mentioning the concerned commit hash.                  |
+
+### Special Footer (BREAKING CHANGE:)
+
+A special footer is **`BREAKING CHANGE`** which is used when introducing breaking changes
+that require a major version increment.
+
+### Commit Message Examples
+
+#### No Version Bump
+
+```
+docs(config): Update deployment instructions.
+
+Updated deployment instructions in README.md to include new environment variables.
+```
+
+#### Major Version Bump: BREAKING CHANGE
+
+```
+feat(iface)!: Added argument to user athentication function. 
+
+Feature is added for which the interface 
+
+BREAKING CHANGE: Interface has changed for plugins.
+```
