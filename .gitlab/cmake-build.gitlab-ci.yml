@@ -56,7 +56,7 @@ stages:
     # Prevent error when fetching.
     git config --global --add safe.directory '*'
     # Fetch all the tags
-    git fetch --tags
+    git fetch --tags --force
     # List the tags so the wind up in the log.
     git tag --list
     # When not able to describe GitLab is cloning too shallow.
