@@ -41,6 +41,6 @@ Jar-file is automatically fetched and/or downloaded.
 @enduml
 
 ```plantuml
-!include ./ci-pipeline.puml
+!include doc/ci-pipeline.puml
 ```
 
