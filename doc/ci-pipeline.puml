@@ -1,0 +1,66 @@
+@startuml
+<style>
+	FontName Arial
+	FontSize 13
+	root
+	{
+		Padding 0
+		Margin 0
+		HorizontalAlignment Left
+	}
+	frame {
+		' define a new style, using CSS class syntax
+			FontColor Black
+			LineColor Gray
+			' Transparency is also possible
+			'BackgroundColor #52A0DC55
+			BackgroundColor #F9F9F9-#E9E9E9
+			'[From top left to bottom right <&fullscreen-enter>]
+			RoundCorner 10
+		}
+	}
+	rectangle
+	{
+		.event
+		{
+			'Green gradient
+			BackgroundColor #77BC65-#069A2E
+			RoundCorner 10
+		}
+		.gitlab-ci
+		{
+			BackgroundColor #FFDE59-#B47804
+		}
+	}
+	arrow
+	{
+		LineColor darkred
+	}
+}
+</style>
+
+skinparam TitleFontStyle Bold
+skinparam TitleFontSize 20
+skinparam RankSep 40
+skinparam NodeSep 10
+
+title "CI-Pipeline & Triggers"
+
+frame "Pipeline" as pipeline {
+	left to right direction
+	frame "Push Events" as events {
+		rectangle "Merge Request" <<event>> as merge_event
+		rectangle "Protected Branch" <<event>> as protected_event
+	}
+	frame "GitLab-CI" as gitlab_ci {
+		rectangle "Child: GNU-Build" <<gitlab-ci>> as gnu_cmake
+		rectangle "Child: GW-Build" <<gitlab-ci>> as gw_cmake
+		rectangle "Main" <<gitlab-ci>> as main
+	}
+	'Connectors
+	protected_event -> main : trigger
+	merge_event --> main : trigger
+	main --> gnu_cmake : trigger
+	main --> gw_cmake : trigger
+}
+@enduml

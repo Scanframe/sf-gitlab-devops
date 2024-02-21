@@ -3,6 +3,8 @@ variables:
   # Logger tag value.
   #SF_TARGET_ARCH: "amd64"
   #SF_TARGET_OS: "linux"
+  # Directory for generated packages.
+  #SF_DIR_PKG: "bin/pkg"
   # CMake toolchain the preset-name with.
   #SF_TOOLCHAIN: "gnu"
   # CMake build type to construct the preset-name with.
@@ -26,36 +28,59 @@ workflow:
 # Order of stages for jobs to perform in.
 stages:
   # Jobs checking the environment requirements.
-  - check-env
+  - check
   # Jobs producing makefiles using CMake presets.
-  - cmake-cfg
+  - configure
   # Jobs for building all cmake preset targets.
-  - cmake-build
+  - build
   # Jobs executing the build unittests using the CTest configurations.
-  - ctest
-  # Jobs deploying of artifacts.
-  - cpack
+  - test
+  # Jobs packing the generated artifacts.
+  - pack
+  # Deploy generated packages.
+  - deploy
 
 # Template to dump all environment variables.
 .env-dump:
   # Do not need the cache for this one.
   cache: []
   before_script:
-    - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv
+    - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort
   script:
     - echo "..."
 
+# Fetches tags and checks if a tag describes current state of the repository.
+# Is not, unshallow is tried and exits when no tag is still not found.
+.script-tags: &tags-script
+  - |
+    # Prevent error when fetching.
+    git config --global --add safe.directory '*'
+    # Fetch all the tags
+    git fetch --tags
+    # List the tags so the wind up in the log.
+    git tag --list
+    # When not able to describe GitLab is cloning too shallow.
+    if ! git describe --tags --dirty; then
+      echo "Could not find tag describing this repo. Trying git unshallow..."
+      git fetch --unshallow
+      # Checking again.
+      if ! git describe --tags --dirty; then
+        echo "Could not git describe and is probably missing a version tag!"
+        exit 1
+      fi
+    fi    
+
 # Anchor for single Linux script line only.
-.log-script: &log-script
+.script-log: &log-script
   # Log to syslog to be able to see execution flow.
   - logger --tag "${SF_LOG_TAG}-${SF_TOOLCHAIN}" "Script => '$(pwd)'"
 
 # Script to mount source root on a fixed directory path for cmake.
-.bind-script: &bind-script
+.script-bind: &bind-script
   - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
 
 # Template to unmount source root on a fixed directory path for cmake.
-.unbind-script: &unbind-script
+.script-unbind: &unbind-script
   - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
 
 # Template to configure cache for CMake generated files for the compiler.
@@ -69,15 +94,32 @@ stages:
 # Template to define artifacts in the designated directory.
 .artifacts:
   artifacts:
-    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
     # Expiration period before artifacts expire.
     # FIXME: Currently variable expansion is not possible and is fixed.
     # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
     expire_in: 2 days
     paths:
-      - ${SF_DIR_BIN}/*
+      - "${SF_DIR_BIN}/"
     exclude:
-      - ${SF_DIR_BIN}/**/.gitkeep
+      - "**/.gitkeep"
+
+# Template to define package generated artifacts in the designated directory.
+.artifacts-pack:
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-packages"
+    expire_in: 7 days
+    paths:
+      # Package generator DEB Debian results.
+      - "${SF_DIR_PKG}/*.deb"
+      # Package generator RPM results.
+      - "${SF_DIR_PKG}/*.rpm"
+      # Package generator NSIS and NSIS64 results.
+      - "${SF_DIR_PKG}/*.exe"
+      # Package generator ZIP results.
+      - "${SF_DIR_PKG}/*.zip"
+    exclude:
+      - "**/.gitkeep"
 
 # Template to deploy only when on the protected release branch.
 .deploy:
@@ -106,12 +148,14 @@ default:
 job-check:
   # Common template job.
   extends: .env-dump
-  stage: check-env
+  stage: check
+  script:
+    - echo "..."
 
 # Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
 # Wiping build directory is not needed since the push policy.
-job-make:
-  stage: cmake-cfg
+job-config:
+  stage: configure
   needs:
     - job: job-check
   extends: [.cache]
@@ -120,26 +164,29 @@ job-make:
   script:
     - *log-script
     - *bind-script
+    # The make stage needs tags for versioning of shared libraries and packaging.
+    - *tags-script
     # Execute the build script to CMake the makefiles.
     - '"${SF_DIR_MOUNT}/build.sh" --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
 job-build:
-  stage: cmake-build
+  stage: build
   needs:
-    - job: job-make
+    - job: job-config
   extends: [.cache, .artifacts]
   cache:
     policy: pull
   script:
     - *log-script
+    - *tags-script
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
 job-test:
-  stage: ctest
+  stage: test
   extends: [.cache, .artifacts]
   needs:
     - job: job-build
@@ -151,17 +198,29 @@ job-test:
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
-  rules:
-    # Only GNU toolchain can be tested at the moment.
-    - if: '$SF_TOOLCHAIN == "gnu"'
-      when: always
-    - when: never
 
-job-deploy:
-  stage: cpack
-  extends: [.deploy, .artifacts]
+job-pack:
+  stage: pack
+  extends: [.cache, .artifacts-pack]
   needs:
     - job: job-build
   script:
     - *log-script
-    - echo "Packaged in a Debian deb-file or maybe a zip-file?"
+    - *bind-script
+    # Build the 'install' target which enables cpack to pick them up.
+    - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
+    - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - *unbind-script
+
+job-deploy:
+  stage: deploy
+  extends: [.deploy, .artifacts-pack]
+  needs:
+    - job: job-pack
+    - job: job-test
+  script:
+    - *log-script
+    # List all the file currently in the bin directory.
+    - 'find bin/ -type f'
+    # Upload all generated packages to Nexus depending on their extension to a specific destination.
+    - 'find bin/pkg -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'

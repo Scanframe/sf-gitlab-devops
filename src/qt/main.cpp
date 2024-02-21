@@ -1,12 +1,12 @@
 #include <QApplication>
-#include<QPushButton>
+#include <QPushButton>
+#include <hwl/hello.h>
 
 int main(int argc, char* argv[])
 {
 	QApplication a(argc, argv);
-	QPushButton HelloWorld("Hello World");
+	QPushButton HelloWorld(QString::fromStdString(getHello("Qt-World")));
 	HelloWorld.resize(300, 60);
 	HelloWorld.show();
 	return a.exec();
-
 }

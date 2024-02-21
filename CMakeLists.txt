@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.27)
 
 # Make it so our own packages are found and also the ones in the sub-module library.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
@@ -11,12 +11,15 @@ find_package(SfToolChain CONFIG REQUIRED)
 # Install tool chain for Linux or Windows.
 Sf_SetToolChain()
 
-# Get the Git version number from the repository of this files directory.
-Sf_GetGitTagVersion(SF_VERSION "${CMAKE_CURRENT_LIST_DIR}")
-
+# Get the Git versions from the repository of this files directory.
+Sf_GetGitTagVersion(_Versions "${CMAKE_CURRENT_LIST_DIR}")
+# Split the list into separate values.
+list(GET _Versions 0 SF_GIT_TAG_VERSION)
+list(GET _Versions 1 SF_GIT_TAG_RC)
+list(GET _Versions 2 SF_GIT_TAG_COMMITS)
 # Set the global project name.
 project("devops-trial"
-	VERSION "${SF_VERSION}"
+	VERSION "${SF_GIT_TAG_VERSION}"
 	DESCRIPTION "Scanframe DevOps Trial App"
 	HOMEPAGE_URL "https://git.scanframe.com/trial/devops.git"
 	LANGUAGES C CXX
@@ -26,8 +29,7 @@ project("devops-trial"
 add_custom_target("exif" ALL)
 
 # Enables including Qt libraries when building (libraries).
-set(SF_BUILD_QT ON)
-#set(SF_BUILD_QT OFF)
+set(SF_BUILD_QT ON #[[ON or OFF]])
 
 # Use faster linker for Windows maybe?
 if (WIN32)
@@ -41,6 +43,9 @@ endif ()
 # Make sure builds do not wind up in the source directory.
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
+
+# Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
+set(CMAKE_CXX_STANDARD 20)
 find_package(SfCompiler CONFIG REQUIRED)
 
 # Set the 3 CMAKE_?????_OUTPUT_DIRECTORY variables.
@@ -62,14 +67,17 @@ if (SF_BUILD_TESTING)
 	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 	# Enable the tests added with add_test.
 	enable_testing()
-	# Include CDash dashboard testing module
+	# Include CDash dashboard testing module.
 	include(CTest)
 endif ()
 
-# Add Sub Projects in the right order of dependency.
+# Add Sub Projects in the right order of dependencies.
 add_subdirectory(src)
-# Add debian package build target.
-add_subdirectory(package)
 # Add Doxygen document project.
-add_subdirectory(doc)
-
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/doc")
+	add_subdirectory(doc)
+endif ()
+# Add package build config.
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cpack/CPackConfig.cmake")
+	include(cpack/CPackConfig.cmake)
+endif ()

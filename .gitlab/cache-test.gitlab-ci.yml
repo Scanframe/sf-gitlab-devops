@@ -36,10 +36,18 @@ stages:
       when: never
     - when: manual
 
+# Fetch tags also for submodules and report them all.
+.fetch-tags-script: &fetch-tags
+  - git config --global --add safe.directory '*'
+  - git fetch --tags --force && git submodule foreach --recursive git fetch --tags  --force
+  - git tag --list && git submodule foreach --recursive git tag --list
+  - git describe --tags --dirty || echo "Could not git describe current repo hash."
+
 .report-before: &before_script
   - 'echo "Working Directory=$(pwd)"'
   - 'echo "Environment Dump" && printenv'
   - 'ls -la cmake-build/* || echo "Before: Directory does NOT exist."'
+
 .report-after: &after_script
   - 'ls -la cmake-build/* || echo "After: Directory does NOT exist."'
 
@@ -81,6 +89,7 @@ step-pull:
   cache:
     policy: pull
   script:
+    - *fetch-tags
     - *before_script
     - 'cat cmake-build/my-file.txt || echo "File does not exist."'
     - *after_script
