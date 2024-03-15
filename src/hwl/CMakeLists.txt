@@ -1,7 +1,7 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 
-# Set the project name whic is also used as the target name.
+# Set the project name which is also used as the target name.
 project("hello-lib"
 	DESCRIPTION "Hello shared library"
 	LANGUAGES CXX
@@ -22,6 +22,10 @@ endif ()
 # Add shared library target and also sets the dynamic library version.
 Sf_AddSharedLibrary("${PROJECT_NAME}")
 
+# Adds the compiler and linker options for coverage.
+Sf_AddTargetForCoverage("${PROJECT_NAME}")
+
+# Add the library alias.
 add_library(Sf::Hello ALIAS "${PROJECT_NAME}")
 
 # Add the source files to the target.

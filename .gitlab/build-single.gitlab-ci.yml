@@ -1,0 +1,150 @@
+# Variables needed for this file where commented out values are from the parent pipeline or CI-settings.
+variables:
+  # Logger tag value.
+  #SF_TARGET_ARCH: "amd64"
+  #SF_TARGET_OS: "linux"
+  # Directory for generated packages.
+  #SF_DIR_PKG: "bin/pkg"
+  # CMake toolchain the preset-name with.
+  #SF_TOOLCHAIN: "gnu"
+  # CMake build type to construct the preset-name with.
+  #SF_BUILD_TYPE: "debug"
+  # Output directory relative to the working directory.
+  #SF_DIR_BIN: "bin/lnx64"
+  # Name of the branch that allows running deploying to production.
+  #SF_RELEASE_BRANCH: "main"
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+
+# Required for trigger pipelines so run always.
+workflow:
+  rules:
+    - when: always
+
+# Order of stages for jobs to perform in.
+stages:
+  # Build target using workflow.
+  - build
+  # Deploy generated packages.
+  - deploy
+
+# Fetches tags and checks if a tag describes current state of the repository.
+# Is not, unshallow is tried and exits when no tag is still not found.
+.script-tags: &tags-script
+  - |
+    # Prevent error when fetching.
+    git config --global --add safe.directory '*'
+    # Fetch all the tags
+    git fetch --tags --force
+    # List the tags so the wind up in the log.
+    git tag --list
+    # When not able to describe GitLab is cloning too shallow.
+    if ! git describe --dirty; then
+      echo "Could not find tag describing this repo. Trying git unshallow..."
+      git fetch --unshallow
+      # Checking again.
+      if ! git describe --dirty; then
+        echo "Could not git describe and is probably missing a version tag!"
+        exit 1
+      fi
+    fi    
+
+# Defaults for all jobs.
+default:
+  # Tags determine the selection of a runner.
+  tags:
+    - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
+
+# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
+# Wiping build directory is not needed since the push policy.
+job-build:
+  stage: build
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
+    # Expiration period before artifacts expire.
+    # FIXME: Currently variable expansion is not possible and is fixed.
+    # (See: https://gitlab.com/gitlab-org/gitlab/-/issues/365855)
+    expire_in: 7 days
+    paths:
+      # Tree of created binaries.
+      - "${SF_DIR_BIN}/"
+      # Package generator DEB Debian results.
+      - "${SF_DIR_PKG}/*.deb"
+      # Package generator RPM results.
+      - "${SF_DIR_PKG}/*.rpm"
+      # Package generator NSIS and NSIS64 results.
+      - "${SF_DIR_PKG}/*.exe"
+      # Package generator ZIP results.
+      - "${SF_DIR_PKG}/*.zip"
+    exclude:
+      - "**/.gitkeep"
+  before_script:
+    - 'echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort'
+  script:
+    # The make stage needs tags for versioning of shared libraries and packaging.
+    - *tags-script
+    # Execute the build script to CMake the makefiles.
+    - './build.sh --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+
+# Template for all deploy jobs.
+.deploy:
+  needs:
+    - job: job-build
+  script:
+    # Upload all generated packages to Nexus depending on their extension to a specific destination.
+    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
+
+# Use non specific environment depended variables for deployment of development builds.
+job-deploy-develop:
+  stage: deploy
+  extends: .deploy
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Skip when this is the configured release branch.
+    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
+      when: never
+    # Develop is allowed to automatically deploy.
+    - when: always
+
+# Use variables set using environment 'staging'.
+job-deploy-staging:
+  stage: deploy
+  extends: .deploy
+  environment: staging
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # When this branch is not the release branch set it allow manual deployment.
+    - if: '$CI_COMMIT_REF_NAME == $SF_RELEASE_BRANCH'
+      when: manual
+      allow_failure: true
+    # Staging is never deployed other than from a commit/merge to the release branch.
+    - when: never
+
+# Use variables set using environment 'stable'.
+job-deploy-stable:
+  stage: deploy
+  extends: .deploy
+  environment: stable
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Skip when this is not the configured release branch.
+    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Stable is never deployed other than from a commit/merge to the release branch.
+    - when: never

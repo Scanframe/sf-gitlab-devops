@@ -19,13 +19,8 @@
   * [Sonatype Nexus](#sonatype-nexus)
   * [GitLab-Runner with Docker](#gitlab-runner-with-docker)
   * [CLion IDE Docker Integration](#clion-ide-docker-integration)
-  * [Auto Symantec Versioning with Conventional Commits](#auto-symantec-versioning-with-conventional-commits)
-    * [Commit Message Format](#commit-message-format)
-    * [Type of Commits](#type-of-commits)
-    * [Special Footer (BREAKING CHANGE:)](#special-footer-breaking-change)
-    * [Commit Message Examples](#commit-message-examples)
-      * [No Version Bump](#no-version-bump)
-      * [Major Version Bump: BREAKING CHANGE](#major-version-bump-breaking-change)
+* [Gitlab Issues](#gitlab-issues)
+  * [Child Coverage Report](#child-coverage-report)
 <!-- TOC -->
 
 ## Introduction
@@ -115,7 +110,7 @@ The image contains all needed packages for builds and each of them are listed he
 | GNU-Make     | 4.3     | Ninja-Build | 1.10.1  |
 | CLang-Format | 19.0.0  | Gdb         | 12.1    |
 | GNU-Linker   | 2.38    | Qt-Lib-Lnx  | 6.6.1   |
-| Qt-Lib-Win   | 6.6.1   | DoxyGen     | 1.9.1   |
+| Qt-Lib-Win   | 6.6.1   | Doxygen     | 1.9.1   |
 | Graphviz     | 2.43.0  | Exif-Tool   | 12.40   |
 | Dpkg         | 1.21.1  | RPM         | 4.17.0  |
 | OpenJDK      | 11.0.21 | BindFS      | 1.14.7  |
@@ -162,7 +157,7 @@ FetchContent_MakeAvailable(Catch2)
 
 #### Doxygen Manual/Document Generator
 
-The `cmake/lib/SfDoxyGenConfig.cmake` package adds a function `Sf_AddManual()` which in its turn adds a manual target.
+The `cmake/lib/SfDoxygenConfig.cmake` package adds a function `Sf_AddDoxygenDocumentation()` which in its turn adds a manual target.
 
 Look at [Doxygen](https://www.doxygen.nl/) website for the syntax in C++ header comment blocks or Markdown files.
 
@@ -171,10 +166,10 @@ Look at [Doxygen](https://www.doxygen.nl/) website for the syntax in C++ header 
 cmake_minimum_required(VERSION 3.27)
 # Set the global project name.
 project("doc")
-# Add doxygen project when SfDoxyGen was found.
+# Add doxygen project when SfDoxygen was found.
 # On Windows this is only possible when doxygen is installed in Cygwin.
-find_package(SfDoxyGen QUIET)
-if (SfDoxyGen_FOUND)
+find_package(SfDoxygen QUIET)
+if (SfDoxygen_FOUND)
 	# Get the markdown files in this project directory including the README.md.
 	file(GLOB _SourceList RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md" "../*.md")
 	message("${_SourceList}")
@@ -185,7 +180,7 @@ if (SfDoxyGen_FOUND)
 	# Append the list with headers.
 	list(APPEND _SourceList ${_SourceListTmp})
 	# Adds the actual manual target.
-	Sf_AddManual("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
+	Sf_AddDoxygenDocumentation("${PROJECT_NAME}" "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/../bin/man" "${_SourceList}")
 endif ()
 ```
 
@@ -260,7 +255,7 @@ arguments as the `build.sh` script.
 
 ## CI/CD Pipeline Configuration
 
-The CI/CD Pipeline configuration has a main [`cmake-build.gitlab-ci.yml`](.gitlab/cmake-build.gitlab-ci.yml) file which triggers a  
+The CI/CD Pipeline configuration has a main [`cmake-build.gitlab-ci.yml`](.gitlab/build.gitlab-ci.yml) file which triggers a  
 child-pipeline [`gitlab-ci/main.gitlab-ci.yml`](.gitlab/main.gitlab-ci.yml) twice.
 Respectively **Linux** and **Windows** but having different variable assignments passed from the main pipeline.
 
@@ -271,7 +266,7 @@ The `SF_SIGNAL` variable is set in GitLab for the project.
 | skip   | Do not trigger any pipelines.                                                          |
 | test   | Tests the caching and artifacts mechanism.                                             |
 | deploy | Allows testing manual deployment of packages where child pipelines are manual as well. |
-|        | When left empty or not defined the pipeline has normal.                                |
+|        | When left empty or not defined the pipeline runs normal.                               |
 
 ```plantuml
 @startuml
@@ -331,6 +326,7 @@ frame "Pipeline" as pipeline {
 	frame "GitLab-CI" as gitlab_ci {
 		rectangle "Child: GNU-Build" <<gitlab-ci>> as gnu_cmake
 		rectangle "Child: GW-Build" <<gitlab-ci>> as gw_cmake
+		rectangle "Child: GNU-Coverage" <<gitlab-ci>> as gnu_coverage
 		rectangle "Main" <<gitlab-ci>> as main
 	}
 	'Connectors
@@ -338,6 +334,7 @@ frame "Pipeline" as pipeline {
 	merge_event --> main : trigger
 	main --> gnu_cmake : trigger
 	main --> gw_cmake : trigger
+	main --> gnu_coverage : trigger
 }
 @enduml
 ```
@@ -354,7 +351,7 @@ the [wiki-page](https://wiki.scanframe.com/en/Configuration/Linux/minio-installa
 
 To configure an APT-repository on a Sonatype Nexus server is described in
 this [wiki-page](https://wiki.scanframe.com/en/Configuration/Linux/nexus-apt-hosted-repo "Link to Scanframe WikiJS.").  
-For uploading files to a Nexus repository is the [`upload-nexus.sh`](cmake%2Flib%2Fbin%2Fupload-nexus.sh) script.
+For uploading files to a Nexus repository is the [`upload-nexus.sh`](cmake/lib/bin/upload-nexus.sh) script.
 
 ## GitLab-Runner with Docker
 
@@ -385,74 +382,49 @@ The volume mount for `.Xauthority` and `DISPLAY` environment variable is to allo
 Qt GUI applications to use the host's X-server.  
 Option `--privileged` is needed for it to use `fuse`.
 
-## Auto Symantec Versioning with Conventional Commits
+# Gitlab Issues
 
-> **TODO**: Needs implementing...
+## Child Coverage Report
 
-### Commit Message Format
+Child pipelines cannot not report coverage, to enable this using can be done on the console.
 
-The Conventional Commit format is based on [Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit)
-and is as follows where the blank lines are separators between description, body and footer.
+> In GitLab [Issue](https://gitlab.com/gitlab-org/gitlab/-/issues/363557 "Issue link.") the feature
+> can be enabled but seems not to work when tested at this moment.
 
-```
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
-```
+**Enter the Console**
 
-The description which is the first message line and is mandatory formatted as follows:
+_This might take a while... a minute or so._
 
-```
-<type>(<scope>)!: <short summary>
-│       │      │      │
-│       │      │      └─⫸ Summary in present tense.
-│       │      │      
-│       │      └─⫸ Optional exclamation mark '!' indicating a breaking change.
-│       │
-│       └─⫸ Commit Scope: common|compiler|config|cmake|changelog|docs-infra|pack|iface|etc...
-│
-└─⫸ Commit Type: build|ci|chore|docs|feat|fix|perf|refactor|style|test|revert
+```shell
+sudo gitlab-rails console
 ```
 
-### Type of Commits
+Paste the commands in the console when it started (prompt visible).
 
-| Type     | Version       | Description                                                                        |
-|----------|---------------|------------------------------------------------------------------------------------|
-| build    | Patch         | Changes that affect the build system or external dependencies.                     |
-| chore    | None          | Updates to the build process or auxiliary tools and libraries.                     |
-| ci       | None          | Changes to CI configuration files and scripts.                                     |
-| docs     | None          | Documentation only changes.                                                        |
-| feat     | Minor         | Introducing new features or functionalities but is backwards compatible .          |
-| fix      | Patch         | Bug fixes.                                                                         |
-| perf     | Patch / Minor | Performance improvements.                                                          |
-| refactor | None          | Code refactorings (no functional changes).                                         |
-| style    | None          | Changes that do not affect the meaning of the code (white-space, formatting, etc). |
-| test     | None          | Adding missing tests or correcting existing tests.                                 |
-| revert   | None          | Reverting a previous commit mentioning the concerned commit hash.                  |
+**Console Commands**
 
-### Special Footer (BREAKING CHANGE:)
-
-A special footer is **`BREAKING CHANGE`** which is used when introducing breaking changes
-that require a major version increment.
-
-### Commit Message Examples
-
-#### No Version Bump
+Enable the global feature.
 
 ```
-docs(config): Update deployment instructions.
-
-Updated deployment instructions in README.md to include new environment variables.
+Feature.enable(:ci_child_pipeline_coverage_reports)
 ```
 
-#### Major Version Bump: BREAKING CHANGE
+The response is currently.
+
+```text
+WARNING: Understand the stability and security risks of enabling in-development features with feature flags.
+See https://docs.gitlab.com/ee/administration/feature_flags.html#risks-when-enabling-features-still-in-development for more information.                                                                 
+=> true
+```
+
+Check the status of the feature.
 
 ```
-feat(iface)!: Added argument to user athentication function. 
+Feature.get(:ci_child_pipeline_coverage_reports)
+```
 
-Feature is added for which the interface 
+Disable the feature.
 
-BREAKING CHANGE: Interface has changed for plugins.
+```
+Feature.disable(:ci_child_pipeline_coverage_reports)
 ```

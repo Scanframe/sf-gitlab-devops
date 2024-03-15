@@ -1,7 +1,10 @@
 # Required first entry checking the cmake version.
 cmake_minimum_required(VERSION 3.18)
 # Set the project name.
-project("hello-world" LANGUAGES CXX)
+project("hello-world"
+	DESCRIPTION "Hello world application"
+	LANGUAGES CXX
+)
 
 # Only when this is the main project.
 if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)

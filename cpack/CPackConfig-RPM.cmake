@@ -1,8 +1,8 @@
 # See: https://cmake.org/cmake/help/latest/cpack_gen/rpm.html
-set(CPACK_RPM_PACKAGE_DEBUG ON)
+set(CPACK_RPM_PACKAGE_DEBUG OFF)
 set(CPACK_RPM_PACKAGE_RELOCATABLE ON)
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
-set(CPACK_RPM_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+set(CPACK_RPM_PACKAGE_NAME "${SF_PACKAGE_NAME}")
 # Variable CPACK_RPM_PACKAGE_VERSION defaults to the CPACK_PACKAGE_VERSION so no need to set it.
 #set(CPACK_RPM_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 # Variable CPACK_RPM_PACKAGE_RELEASE is not used and resolved using CPACK_PACKAGE_VERSION but even when empty '-1' is added.
