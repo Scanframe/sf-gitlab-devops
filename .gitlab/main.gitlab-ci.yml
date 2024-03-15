@@ -35,6 +35,7 @@ workflow:
 
 stages:
   - check
+  - coverage
   - build
   - report
 
@@ -70,6 +71,9 @@ default:
       when: never
     # Run always when triggered by a merge request event.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    # Run always when pushed/merged to the release branch.
+    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
       when: always
     # By default, run manual and optional.
     - when: manual
@@ -110,7 +114,7 @@ cache-test:
 
 linux-gnu:
   stage: build
-  needs: [check-env, linux-gcov]
+  needs: [check-env]
   extends: .build-rules
   variables:
     # Set the toolchain to use.
@@ -126,7 +130,7 @@ linux-gnu:
 
 linux-gw:
   stage: build
-  needs: [check-env, linux-gcov]
+  needs: [check-env]
   extends: .build-rules
   variables:
     # Set the toolchain to use.
@@ -143,7 +147,7 @@ linux-gw:
 # TODO: Coverage information is not read from child pipelines.
 #  See: https://gitlab.com/gitlab-org/gitlab/-/issues/280818
 linux-gcov:
-  stage: build
+  stage: coverage
   needs: [check-env]
   extends: .coverage-rules
   variables:
