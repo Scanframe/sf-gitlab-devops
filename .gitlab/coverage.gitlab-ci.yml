@@ -1,0 +1,72 @@
+# Variables needed for this file where commented out values are from the parent pipeline or CI-settings.
+variables:
+  # Tag values for runner selection.
+  #SF_TARGET_ARCH: "amd64"
+  #SF_TARGET_OS: "linux"
+  # CMake toolchain the preset-name with.
+  #SF_TOOLCHAIN: "gnu"
+  # CMake build type to construct the preset-name with.
+  #SF_BUILD_TYPE: "debug"
+  # Output directory relative to the working directory.
+  #SF_DIR_BIN: "bin/lnx64"
+  # Output directory used by 'coverage-report.sh'.
+  #SF_GCOVR_DIR: "bin/gcov"
+  # Nexus exchange directory for coverage reports between child and parent pipeline.
+  #SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
+  # Other needed CI-variables: NEXUS_USER, NEXUS_PASSWORD, NEXUS_SERVER_URL, NEXUS_EXCHANGE_REPO
+  # Make Git clone the submodules as well.
+  GIT_SUBMODULE_STRATEGY: recursive
+
+# Required for trigger pipelines so run always.
+workflow:
+  rules:
+    - when: always
+
+# Order of stages for jobs to perform in.
+stages:
+  # Jobs involved in coverage reporting.
+  - coverage
+
+# Fetches tags and checks if a tag describes current state of the repository.
+# Is not, unshallow is tried and exits when no tag is still not found.
+.script-tags: &tags-script
+  - |
+    # Prevent error when fetching.
+    git config --global --add safe.directory '*'
+    # Fetch all the tags
+    git fetch --tags --force
+    # List the tags so the wind up in the log.
+    git tag --list
+    # When not able to describe GitLab is cloning too shallow.
+    if ! git describe --dirty; then
+      echo "Could not find tag describing this repo. Trying git unshallow..."
+      git fetch --unshallow
+      # Checking again.
+      if ! git describe --dirty; then
+        echo "Could not git describe and is probably missing a version tag!"
+        exit 1
+      fi
+    fi    
+
+# Defaults for all jobs.
+default:
+  # Tags determine the selection of a runner.
+  tags:
+    - cplusplus
+    - "${SF_TARGET_OS}"
+    - "${SF_TARGET_ARCH}"
+
+# Job executing CMake preset 'workflow'.
+job-coverage:
+  stage: coverage
+  before_script:
+    - 'echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort'
+  script:
+    # The make stage needs tags for versioning of shared libraries and packaging.
+    - *tags-script
+    # Execute the build script to CMake the makefiles.
+    - './build.sh --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    # Upload the all coverage files in the coverage directory.
+    - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
+    # Add message to merge request.
+    - 'cmake/lib/bin/coverage-comment.sh 1'

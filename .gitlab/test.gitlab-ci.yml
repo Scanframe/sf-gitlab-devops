@@ -25,27 +25,17 @@ stages:
       - cmake-build/*
     policy: pull-push
 
-# Template to deploy only when having on the release branch.
-.deploy:
-  rules:
-    - if: '$SF_SIGNAL == "test"'
-      when: manual
-    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
-      when: never
-    - if: '$CI_COMMIT_BRANCH != $SF_RELEASE_BRANCH'
-      when: never
-    - when: manual
-
 # Fetch tags also for submodules and report them all.
 .fetch-tags-script: &fetch-tags
   - git config --global --add safe.directory '*'
   - git fetch --tags --force && git submodule foreach --recursive git fetch --tags  --force
   - git tag --list && git submodule foreach --recursive git tag --list
-  - git describe --tags --dirty || echo "Could not git describe current repo hash."
+  - git describe --dirty || echo "Could not git describe current repo hash using an annotated tag."
+
+.report-env: &report_env
+  - 'echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort'
 
 .report-before: &before_script
-  - 'echo "Working Directory=$(pwd)"'
-  - 'echo "Environment Dump" && printenv'
   - 'ls -la cmake-build/* || echo "Before: Directory does NOT exist."'
 
 .report-after: &after_script
@@ -90,6 +80,7 @@ step-pull:
     policy: pull
   script:
     - *fetch-tags
+    - *report_env
     - *before_script
     - 'cat cmake-build/my-file.txt || echo "File does not exist."'
     - *after_script
@@ -103,6 +94,7 @@ step-push:
   cache:
     policy: push
   script:
+    - *report_env
     - *before_script
     - 'mkdir -p "cmake-build"'
     - 'echo "My cached-file $(date +%Y-%m-%dT%T.%N)" > "cmake-build/my-file.txt"'
@@ -124,15 +116,44 @@ step-check:
     - 'mountpoint "${SF_DIR_MOUNT}" && echo "Mounted \o/" || echo "Not Mounted !!!"'
     - *unbind-script
 
-step-deploy:
-  stage: deploy
+# Template to deploy only when having on the release branch.
+.deploy:
   needs: [step-push]
   extends:
     - .cache
-    - .artifacts
-    - .deploy
   cache:
     policy: pull
+  rules:
+    - if: '$SF_SIGNAL == "test"'
+      when: manual
+    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $SF_RELEASE_BRANCH'
+      when: never
+    - when: manual
   script:
-    - 'echo "#### Deploy ####" '
+    - *report_env
+    - 'echo "#### Deploy to repo [${NEXUS_APT_REPO}] ####"'
+    - 'cat cmake-build/my-file.txt || echo "Cache-file does not exist."'
+    - 'cat "${SF_DIR_BIN}/my-artifact.txt" || echo "Artifact-File does not exist."'
+
+# Use local variables set using unset environment.
+step-deploy:
+  stage: deploy
+  extends:
+    - .deploy
+
+# Use variables set using environment 'staging'.
+step-deploy-staging:
+  stage: deploy
+  extends:
+    - .deploy
+  environment: staging
+
+# Use variables set using environment 'stable'.
+step-deploy-stable:
+  stage: deploy
+  extends:
+    - .deploy
+  environment: stable
 

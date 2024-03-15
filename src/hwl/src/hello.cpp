@@ -1,6 +1,13 @@
 #include "hello.h"
 
-_HWL_FUNC std::string getHello(const std::string& who)
+_HWL_FUNC std::string getHello(int how)
 {
-	return std::string("Hello ") + who + "!";
+	std::string rv;
+	if (how > 0) {
+		rv = std::string("Hello Universe!");
+	}
+	else {
+		rv = std::string("Hello World!");
+	}
+	return rv;
 }

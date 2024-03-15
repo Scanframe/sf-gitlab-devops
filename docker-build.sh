@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GEt the script directory.
+# Get the script directory.
 SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Build directory used for Docker to prevent mixing.
 BUILD_DIR="${SCRIPT_DIR}/cmake-build/docker"

@@ -8,6 +8,10 @@ set(CPACK_PACKAGE_DESCRIPTION
 	"The long description of this DevOps trial application
 having more then one line.")
 
+# Variable for all types of packages to set the individual package name.
+# This name could get a suffix like '-staging' when it is not a release.
+set(SF_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+
 # Seems to have no effect at the moment...
 #if (NOT WIN32)
 #	set(CPACK_SET_DESTDIR "$ENV{HOME}/tmp")

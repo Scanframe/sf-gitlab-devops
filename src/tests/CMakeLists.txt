@@ -13,7 +13,13 @@ file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 # Tests need to be added as executables first
 Sf_AddExecutable(${TEST_TARGET})
 
+# Adds the compiler and linker options for coverage.
+# Normally not for a test application bu now for demo purposes.
+Sf_AddTargetForCoverage(${TEST_TARGET})
+
 target_sources(${TEST_TARGET} PRIVATE main.cpp ${TEST_SOURCES})
+
+target_link_libraries(${TEST_TARGET} PRIVATE Sf::Hello)
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${TEST_TARGET}")
@@ -26,12 +32,14 @@ target_link_libraries(${TEST_TARGET} PRIVATE Catch2::Catch2 nlohmann_json::nlohm
 
 # If you register a test, then ctest and cmake test will run it.
 # You can also run examples and check the output, as well.
+# Use wine to execute the tests when cross compiling
+# or use the Linux script to execute even when the set RPATH is incorrect.
+# The Expression "$<TARGET_FILE_NAME:${TEST_TARGET}>" equals
+# "$<TARGET_PROPERTY:${TEST_TARGET},OUTPUT_NAME>$<TARGET_PROPERTY:${TEST_TARGET},SUFFIX>"
+add_test(NAME "${TEST_TARGET}"
+	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,win-exec.sh,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_TARGET}>")
 
-if (WIN32)
-	# Use wine to execute the tests.
-	add_test(NAME "${TEST_TARGET}" COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../win-exec.sh" "${TEST_TARGET}")
-else ()
-	add_test(NAME "${TEST_TARGET}" COMMAND "${TEST_TARGET}")
-endif ()
+# Make sure this test is executed before coverage test.
+Sf_AddAsCoverageTest("${TEST_TARGET}")
 
 

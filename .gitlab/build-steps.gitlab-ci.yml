@@ -1,4 +1,5 @@
 # Variables needed for this file.
+# Commented out values are passed from the parent pipeline.
 variables:
   # Logger tag value.
   #SF_TARGET_ARCH: "amd64"
@@ -11,10 +12,8 @@ variables:
   #SF_BUILD_TYPE: "debug"
   # Output directory relative to the working directory.
   #SF_DIR_BIN: "bin/lnx64"
-  # Logger used tag.
   # Name of the branch that allows running deploying to production.
   #SF_RELEASE_BRANCH: "main"
-  SF_LOG_TAG: "===${CI_JOB_NAME_SLUG}.${CI_COMMIT_SHORT_SHA}"
   # Fixed base directory the source root is mounted to between jobs for each toolchain.
   SF_DIR_MOUNT: "/tmp/binder/${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
   # Make Git clone the submodules as well.
@@ -60,20 +59,15 @@ stages:
     # List the tags so the wind up in the log.
     git tag --list
     # When not able to describe GitLab is cloning too shallow.
-    if ! git describe --tags --dirty; then
+    if ! git describe --dirty; then
       echo "Could not find tag describing this repo. Trying git unshallow..."
       git fetch --unshallow
       # Checking again.
-      if ! git describe --tags --dirty; then
+      if ! git describe --dirty; then
         echo "Could not git describe and is probably missing a version tag!"
         exit 1
       fi
     fi    
-
-# Anchor for single Linux script line only.
-.script-log: &log-script
-  # Log to syslog to be able to see execution flow.
-  - logger --tag "${SF_LOG_TAG}-${SF_TOOLCHAIN}" "Script => '$(pwd)'"
 
 # Script to mount source root on a fixed directory path for cmake.
 .script-bind: &bind-script
@@ -92,7 +86,7 @@ stages:
     policy: pull-push
 
 # Template to define artifacts in the designated directory.
-.artifacts:
+.artifacts-build:
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-binaries"
     # Expiration period before artifacts expire.
@@ -121,20 +115,6 @@ stages:
     exclude:
       - "**/.gitkeep"
 
-# Template to deploy only when on the protected release branch.
-.deploy:
-  rules:
-    # For testing the 'deploy' step.
-    - if: '$SF_SIGNAL == "deploy"'
-      when: manual
-    # Skip when this is not a protected branch.
-    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
-      when: never
-    # Skip when this is not the configured release branch.
-    - if: '$CI_COMMIT_BRANCH != $SF_RELEASE_BRANCH'
-      when: never
-    - when: manual
-
 # Defaults for all jobs.
 default:
   # Tags determine the selection of a runner.
@@ -162,7 +142,6 @@ job-config:
   cache:
     policy: push
   script:
-    - *log-script
     - *bind-script
     # The make stage needs tags for versioning of shared libraries and packaging.
     - *tags-script
@@ -174,11 +153,10 @@ job-build:
   stage: build
   needs:
     - job: job-config
-  extends: [.cache, .artifacts]
+  extends: [.cache, .artifacts-build]
   cache:
     policy: pull
   script:
-    - *log-script
     - *tags-script
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
@@ -187,13 +165,12 @@ job-build:
 
 job-test:
   stage: test
-  extends: [.cache, .artifacts]
+  extends: [.cache]
   needs:
     - job: job-build
   cache:
     policy: pull
   script:
-    - *log-script
     - *bind-script
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
     - '"${SF_DIR_MOUNT}/build.sh" --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
@@ -204,23 +181,76 @@ job-pack:
   extends: [.cache, .artifacts-pack]
   needs:
     - job: job-build
+  cache:
+    policy: pull
   script:
-    - *log-script
     - *bind-script
     # Build the 'install' target which enables cpack to pick them up.
     - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
-    - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" '
     - *unbind-script
 
-job-deploy:
-  stage: deploy
-  extends: [.deploy, .artifacts-pack]
+# Template for all deploy jobs.
+.deploy:
   needs:
     - job: job-pack
     - job: job-test
   script:
-    - *log-script
-    # List all the file currently in the bin directory.
-    - 'find bin/ -type f'
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - 'find bin/pkg -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
+    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
+
+# Use non specific environment depended variables.
+job-deploy-develop:
+  stage: deploy
+  extends:
+    - .deploy
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Skip when this is the configured release branch.
+    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
+      when: never
+    # Develop is allowed to automatically deploy.
+    - when: always
+
+# Use variables set using environment 'stable'.
+job-deploy-staging:
+  stage: deploy
+  extends:
+    - .deploy
+  environment: staging
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # When this branch is not the release branch set it allow manual deployment.
+    - if: '$CI_COMMIT_REF_NAME == $SF_RELEASE_BRANCH'
+      when: manual
+      allow_failure: true
+    # Staging is allowed to automatically deploy.
+    - when: always
+
+# Use variables set using environment 'stable'.
+job-deploy-stable:
+  stage: deploy
+  extends:
+    - .deploy
+  environment: stable
+  rules:
+    # For testing the 'deploy' step in any scenario.
+    - if: '$SF_SIGNAL == "deploy"'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Skip when this is not the configured release branch.
+    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
+      when: manual
+      # Make this job optional.
+      allow_failure: true
+    # Never by deploy a release.
+    - when: never
