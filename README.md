@@ -6,6 +6,7 @@
 * [GitLab DevOps Trial Project/Repository](#gitlab-devops-trial-projectrepository)
   * [Content](#content)
   * [Introduction](#introduction)
+  * [GitHub Cloning](#github-cloning)
   * [Docker C++ Build Image](#docker-c-build-image)
   * [The C++ Application Source](#the-c-application-source)
     * [Applications & Library](#applications--library)
@@ -52,9 +53,21 @@ Links:
 
 Repositories:
 
-* [sf-docker-runner](https://github.com/Scanframe/sf-docker-runner)
+* [sf-docker-runner](https://github.com/Scanframe/sf-docker-runner)`
 * [sf-cmake](https://github.com/Scanframe/sf-cmake)
 * [Catch2](https://github.com/catchorg/Catch2)
+
+
+## GitHub Cloning
+
+Since the GitHub repository is a mirror from a private GitLab server the `.gitmodule` file needs to be changed.  
+The script [github-clone.sh](github-clone.sh "Link to script.") facilitates this.s
+
+Execute the script when downloading.
+
+```shell
+wget "https://raw.githubusercontent.com/Scanframe/sf-gitlab-devops/main/github-clone.sh" -qO - | bash
+```
 
 ## Docker C++ Build Image
 

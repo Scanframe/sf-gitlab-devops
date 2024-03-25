@@ -1,5 +1,5 @@
 # Set the target name using the project name as a base name.
-set(TEST_TARGET "${PROJECT_NAME}-test")
+set(TEST_TARGET "${SF_TEST_NAME_PREFIX}${PROJECT_NAME}-test")
 
 # Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
@@ -11,15 +11,15 @@ find_package(SfJson CONFIG REQUIRED)
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
 
 # Tests need to be added as executables first
-Sf_AddExecutable(${TEST_TARGET})
+Sf_AddExecutable("${TEST_TARGET}")
 
 # Adds the compiler and linker options for coverage.
-# Normally not for a test application bu now for demo purposes.
-Sf_AddTargetForCoverage(${TEST_TARGET})
+# Normally not for a test application but now for demo purposes.
+Sf_AddTargetForCoverage("${TEST_TARGET}")
 
-target_sources(${TEST_TARGET} PRIVATE main.cpp ${TEST_SOURCES})
+target_sources("${TEST_TARGET}" PRIVATE main.cpp ${TEST_SOURCES})
 
-target_link_libraries(${TEST_TARGET} PRIVATE Sf::Hello)
+target_link_libraries("${TEST_TARGET}" PRIVATE Sf::Hello)
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${TEST_TARGET}")
