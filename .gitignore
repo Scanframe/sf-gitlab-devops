@@ -17,6 +17,7 @@
 # Credential files for testing CI-pipeline called scripts.
 /.nexus-upload-credentials
 /.comment-credentials
+/.gitlab-credentials.ini
 # Debug messages for testing conventinal commit.
 /.version-bump
 # Test bash scripts.

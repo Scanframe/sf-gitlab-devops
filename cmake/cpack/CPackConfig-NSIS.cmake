@@ -1,6 +1,6 @@
 # See: https://cmake.org/cmake/help/latest/cpack_gen/nsis.html
-set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_LIST_DIR}/../doc/logo.ico")
-set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_LIST_DIR}/../doc/logo.ico")
+set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_LIST_DIR}/res/logo.ico")
+set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_LIST_DIR}/res/logo.ico")
 set(CPACK_NSIS_PACKAGE_NAME "${SF_PACKAGE_NAME}")
 set(CPACK_NSIS_DISPLAY_NAME "${SF_PACKAGE_NAME}")
 set(CPACK_NSIS_URL_INFO_ABOUT "${CMAKE_PROJECT_HOMEPAGE_URL}")

@@ -4,7 +4,7 @@ Language: Cpp
 BasedOnStyle: LLVM
 
 AccessModifierOffset: 0
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: None
 AlignConsecutiveAssignments:
   Enabled: false
@@ -75,7 +75,7 @@ BraceWrapping:
   SplitEmptyRecord: true
   AfterExternBlock: false
   AfterObjCDeclaration: false
-  AfterStruct: false
+  AfterStruct: true
   BeforeLambdaBody: false
   BeforeWhile: false
   SplitEmptyNamespace: true
@@ -124,7 +124,7 @@ IncludeCategories:
     CaseSensitive: false
 IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
-IndentAccessModifiers: false
+IndentAccessModifiers: true
 IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExternBlock: AfterExternBlock

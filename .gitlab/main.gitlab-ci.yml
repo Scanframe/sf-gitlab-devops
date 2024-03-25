@@ -32,10 +32,12 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: always
     - when: never
+  # Cancel when there is a new commit.
+  auto_cancel:
+    on_new_commit: interruptible
 
 stages:
   - check
-  - coverage
   - build
   - report
 
@@ -56,51 +58,34 @@ default:
     # For testing the 'deploy' jobs.
     - if: '$SF_SIGNAL == "deploy"'
       when: manual
+      allow_failure: true
     # Run manual when triggered by web.
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: manual
-      # Make the job optional.
-      allow_failure: true
-    - when: always
-
-# Template for rules on both coverage related jobs.
-.coverage-rules:
-  rules:
-    # Skip if signal is "test"
-    - if: '$SF_SIGNAL == "test"'
-      when: never
-    # Run always when triggered by a merge request event.
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-    # Run always when pushed/merged to the release branch.
-    - if: '$CI_COMMIT_BRANCH == $SF_RELEASE_BRANCH'
-      when: always
-    # By default, run manual and optional.
-    - when: manual
-      # Make the job optional.
-    - allow_failure: true
+    - when: on_success
+    - allow_failure: false
 
 # Reports the environment variables for debugging.
 check-env:
   stage: check
   script:
-    - echo "Working Directory=$(pwd)"
+    - 'echo "Working Directory=$(pwd)"'
     # Print all environments variables sorted to make it easier to find.
-    - echo "Environment Dump" && printenv | sort
+    - 'echo "Environment Dump" && printenv | sort'
     # Check the formatting of the code.
-    - ./check-format.sh
+    - 'if [[ -f check-format.sh ]]; then ./check-format.sh; fi'
 
 # Does a cache and artifact check.
 cache-test:
   stage: build
-  needs: [check-env]
+  needs:
+    - job: check-env
   rules:
     # Run when signal is test.
     - if: '$SF_SIGNAL != "test"'
       when: never
-    - when: always
-      # Make this job optional.
-      allow_failure: true
+    - when: on_success
+    - allow_failure: false
   variables:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "toolchain"
@@ -114,7 +99,9 @@ cache-test:
 
 linux-gnu:
   stage: build
-  needs: [check-env]
+  needs:
+    - job: check-env
+    - job: linux-gcov
   extends: .build-rules
   variables:
     # Set the toolchain to use.
@@ -130,7 +117,9 @@ linux-gnu:
 
 linux-gw:
   stage: build
-  needs: [check-env]
+  needs:
+    - job: check-env
+    - job: linux-gcov
   extends: .build-rules
   variables:
     # Set the toolchain to use.
@@ -147,14 +136,24 @@ linux-gw:
 # TODO: Coverage information is not read from child pipelines.
 #  See: https://gitlab.com/gitlab-org/gitlab/-/issues/280818
 linux-gcov:
-  stage: coverage
+  stage: build
   needs: [check-env]
-  extends: .coverage-rules
   variables:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "gnu"
     SF_BUILD_TYPE: "coverage"
     SF_DIR_BIN: "bin/lnx64"
+  rules:
+    # Skip if signal is "test"
+    - if: '$SF_SIGNAL == "test"'
+      when: never
+    # Run always when triggered by a merge request event.
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+      allow_failure: false
+    # By default, run manual.
+    - when: manual
+    - allow_failure: true
   trigger:
     strategy: depend
     forward:
@@ -162,10 +161,10 @@ linux-gcov:
     include:
       - local: '.gitlab/coverage.gitlab-ci.yml'
 
+# Report the coverage generated in the pipeline using infor stored on Nexus.
 report-coverage:
   stage: report
   needs: [linux-gcov]
-  extends: .coverage-rules
   coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}"
@@ -182,4 +181,4 @@ report-coverage:
     # Retrieve the coverage file needed for GitLab created by the child pipeline.
     - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
     # Output the report.txt for the regex to pickup on.
-    - '[[ -f "${SF_GCOVR_DIR}/report.txt" ]] && cat "${SF_GCOVR_DIR}/report.txt"'
+    - 'if [[ -f "${SF_GCOVR_DIR}/report.txt" ]]; then cat "${SF_GCOVR_DIR}/report.txt"; fi'

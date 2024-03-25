@@ -24,17 +24,19 @@ set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 # Disables the component-based installation mechanism.
 set(CPACK_MONOLITHIC_INSTALL ON)
 
-# Only for RPM and Debian packages.
-set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/Scanframe/devops")
 # Set the temporary directory to install which is actually copy the binaries to.
 # So in this case the as subdirectory in the CMake binary directory is used.
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/__install__")
 
 if (WIN32)
 	# Somehow the'\\\\' to prevent an error.
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe\\\\DevOps")
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe\\\\${PROJECT_NAME}")
+	# Only for ZIP, RPM and Debian packages.
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/Scanframe/${PROJECT_NAME}")
 else ()
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe/DevOps")
+	set(CPACK_PACKAGE_INSTALL_DIRECTORY "Scanframe/${PROJECT_NAME}")
+	# Only for ZIP, RPM and Debian packages.
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/Scanframe/${PROJECT_NAME}")
 endif ()
 
 # Initialize the package release variable for Debian it is limited to regex "^[A-Za-z0-9.+~]+$"
@@ -80,24 +82,37 @@ include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
 
 # Retrieve all targets from this project.
 Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
-list(APPEND CMAKE_MESSAGE_INDENT "Install of ")
+# Iterate through all targets
 foreach (_Target ${_AllTargets})
 	get_target_property(_Type "${_Target}" TYPE)
 	# Only install executables and shared libraries.
 	if (_Type STREQUAL "EXECUTABLE" OR _Type STREQUAL "SHARED_LIBRARY")
-		message(VERBOSE "${_Type} '${_Target}'")
-		list(APPEND _Targets "${_Target}")
+		# Skip all test targets for packaging.
+		if ("${_Target}" MATCHES "^${SF_TEST_NAME_PREFIX}.*$")
+			message(VERBOSE "Skipping ${_Type} '${_Target}'")
+		else ()
+			message(VERBOSE "Installing ${_Type} '${_Target}'")
+			list(APPEND _Targets "${_Target}")
+		endif ()
 	endif ()
 endforeach ()
-list(POP_BACK CMAKE_MESSAGE_INDENT)
 
 # Install all the targets in (sub-)directories.
-install(TARGETS ${_Targets}
-	RUNTIME DESTINATION ./
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION arc
-	#CONFIGURATIONS Debug
-)
+if (WIN32)
+	# Do not include the import libraries.
+	install(TARGETS ${_Targets}
+		RUNTIME DESTINATION ./
+		LIBRARY DESTINATION ./
+		#CONFIGURATIONS Debug
+	)
+else ()
+	install(TARGETS ${_Targets}
+		RUNTIME DESTINATION ./
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION arc
+		#CONFIGURATIONS Debug
+	)
+endif ()
 
 #install(DIRECTORY "bin/man/html/" DESTINATION doc FILES_MATCHING PATTERN "*.*")
 #install(DIRECTORIES "lnx64" DESTINATION "." FILES_MATCHING PATTERN "*.bin")
@@ -106,4 +121,3 @@ install(TARGETS ${_Targets}
 # So CPACK_PACKAGE_FILE_NAME is set "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}"
 # The variable CPACK_ARCHIVE_FILE_NAME is bugged in 3.27.8 and not set or used by 'CPack' include file here.
 include(CPack)
-

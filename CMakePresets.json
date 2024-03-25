@@ -191,12 +191,6 @@
 			"inherits": [
 				".build",
 				".lnx-only"
-			],
-			"targets": [
-				"hello-world",
-				"hello-world-qt",
-				"devops-trial-test",
-				"document"
 			]
 		},
 		{
@@ -210,7 +204,7 @@
 				".lnx-only"
 			],
 			"targets": [
-				"devops-trial-test"
+				"t_devops-trial-test"
 			]
 		},
 		{
@@ -224,7 +218,7 @@
 				".lnx-only"
 			],
 			"targets": [
-				"devops-trial-test"
+				"t_devops-trial-test"
 			]
 		},
 		{
@@ -236,11 +230,6 @@
 			"inherits": [
 				".build",
 				".lnx-only"
-			],
-			"targets": [
-				"hello-world",
-				"hello-world-qt",
-				"devops-trial-test"
 			]
 		},
 		{
@@ -252,12 +241,6 @@
 			"inherits": [
 				".build",
 				".lnx-only"
-			],
-			"targets": [
-				"hello-world",
-				"hello-world-qt",
-				"devops-trial-test",
-				"document"
 			]
 		},
 		{
@@ -269,11 +252,6 @@
 			"inherits": [
 				".build",
 				".lnx-only"
-			],
-			"targets": [
-				"hello-world",
-				"hello-world-qt",
-				"devops-trial-test"
 			]
 		}
 	],
