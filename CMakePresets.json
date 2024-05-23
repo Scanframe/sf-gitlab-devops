@@ -29,7 +29,7 @@
 				},
 				"Catch2_VERSION": {
 					"type": "STRING",
-					"value": "v3.2.0"
+					"value": "v3.5.2"
 				},
 				"SF_BUILD_QT": {
 					"type": "BOOL",
@@ -50,8 +50,19 @@
 			}
 		},
 		{
+			"name": ".qt",
+			"hidden": true,
+			"cacheVariables": {
+				"SF_BUILD_QT": {
+					"type": "BOOL",
+					"value": "ON"
+				}
+			}
+		},
+		{
 			"name": ".cfg-lnx",
 			"inherits": [
+				".qt",
 				".cfg"
 			],
 			"hidden": true,
@@ -74,6 +85,7 @@
 		{
 			"name": ".cfg-win",
 			"inherits": [
+				".qt",
 				".cfg"
 			],
 			"hidden": true,

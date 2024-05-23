@@ -14,19 +14,19 @@ namespace MySpace
  * @tparam T Type of the passed arguments for scaling.
  * @tparam S The type of the to be scaled argument.
  * @param value Value in the range.
- * @param min Minimum value of the range.
- * @param max Maximum value of the range.
+ * @param min_val Minimum value of the range.
+ * @param max_val Maximum value of the range.
  * @param len Length to be scaled according the value and range.
  * @param clip Determines if the length needs to be clipped withing the set
  * range.
  * @return Resulted scaled value.
  */
 template<class T, class S>
-inline S calculateOffset(T value, T min, T max, S len, bool clip)
+inline auto calculateOffset(T value, T min_val, T max_val, S len, bool clip) -> S
 {
-	max -= min;
-	value -= min;
-	S temp = (max && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max) : (len * value) / max) : 0;
+	max_val -= min_val;
+	value -= min_val;
+	S temp = (max_val && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max_val) : (len * value) / max_val) : 0;
 	// Clip when required.
 	if (clip)
 	{
@@ -51,17 +51,21 @@ inline S calculateOffset(T value, T min, T max, S len, bool clip)
 /**
  * @brief Returns clipped value of v between a and b where a < b.
  * @tparam T Type of the values
- * @param v Value needing to be clipped,
- * @param a Begin value of the range.
- * @param b End value of the range.
+ * @param value Value needing to be clipped,
+ * @param min_val Begin value of the range.
+ * @param max_val End value of the range.
  * @return Clipped value.
  */
 template<class T>
-T clip(const T v, const T a, const T b)
+inline auto clip(const T value, const T min_val, const T max_val) -> T
 {
-	return (v < a)
-		? a
-		: ((v > b) ? b : v);
+	return (value < min_val)
+		? min_val
+		: (
+				(value > max_val)
+					? max_val
+					: value
+			);
 }
 
 }// namespace MySpace

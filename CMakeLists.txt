@@ -40,10 +40,14 @@ set(SF_TEST_NAME_PREFIX "t_" CACHE STRING "Prefix for test applications to allow
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
-	# When using the CLion's MinGW compiler it gives an error.
-	#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
+	# Prevent error when configuring for cross compile for Windows in Linux.
+	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+		# Make some cmake files happy so they do report "Not found".
+		set(Vulkan_INCLUDE_DIR "/tmp")
+	endif()
 	# Needed to be able to set debug breaks using MSVC
-	SET(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
+	set(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
 endif ()
 
 # Make sure builds do not wind up in the source directory.
@@ -57,8 +61,17 @@ find_package(SfCompiler CONFIG REQUIRED)
 # Set the 3 CMAKE_?????_OUTPUT_DIRECTORY variables.
 Sf_SetOutputDirs("bin")
 
+if (SF_BUILD_TESTING)
+	# Prevents Catch2 from adding targets.
+	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
+	# Enable the tests added with add_test.
+	enable_testing()
+	# Include CDash dashboard testing module and it sets the BUILD_TESTING to 'ON'.
+	include(CTest)
+endif ()
+
 # Configure the rpath.
-if (SF_BUILD_QT STREQUAL "ON")
+if (SF_BUILD_QT)
 	# When the Qt directory is available append it.
 	Sf_GetQtVersionDirectory(_QtVer)
 	if (NOT _QtVer STREQUAL "")
@@ -71,15 +84,6 @@ endif ()
 # Satisfy cmake to prevent warning.
 if (CMAKE_VERBOSE_MAKEFILE)
 	message(STATUS "Verbosity enabled.")
-endif ()
-
-if (SF_BUILD_TESTING)
-	# Prevents Catch2 from adding targets.
-	set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
-	# Enable the tests added with add_test.
-	enable_testing()
-	# Include CDash dashboard testing module.
-	include(CTest)
 endif ()
 
 # Clear the tests from previous by passing an empty string.
