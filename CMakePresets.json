@@ -582,7 +582,10 @@
 					"type": "package",
 					"name": "gnu-debug"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
 		},
 		{
 			"name": "gnu-coverage",
@@ -601,7 +604,10 @@
 					"type": "test",
 					"name": "gnu-coverage"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
 		},
 		{
 			"name": "gw-coverage",
@@ -620,7 +626,10 @@
 					"type": "test",
 					"name": "gw-coverage"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
 		},
 		{
 			"name": "gw-debug",
@@ -643,7 +652,10 @@
 					"type": "package",
 					"name": "gw-debug"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
 		},
 		{
 			"name": "gnu-release",
@@ -666,7 +678,10 @@
 					"type": "package",
 					"name": "gnu-release"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
 		},
 		{
 			"name": "gw-release",
@@ -689,7 +704,10 @@
 					"type": "package",
 					"name": "gw-release"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "Linux"
+			}
 		},
 		{
 			"name": "mingw-debug",
@@ -712,7 +730,10 @@
 					"type": "package",
 					"name": "mingw-debug"
 				}
-			]
+			],
+			"vendor": {
+				"target_os": "Cygwin"
+			}
 		}
 	]
 }
