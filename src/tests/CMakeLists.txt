@@ -37,8 +37,8 @@ target_link_libraries(${TEST_TARGET} PRIVATE Catch2::Catch2 nlohmann_json::nlohm
 # The Expression "$<TARGET_FILE_NAME:${TEST_TARGET}>" equals
 # "$<TARGET_PROPERTY:${TEST_TARGET},OUTPUT_NAME>$<TARGET_PROPERTY:${TEST_TARGET},SUFFIX>"
 add_test(NAME "${TEST_TARGET}"
-	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,win-exec.sh,lnx-exec.sh>" "$<TARGET_FILE_NAME:${TEST_TARGET}>")
-
+	COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../$<IF:$<BOOL:${WIN32}>,$<IF:$<STREQUAL:${CMAKE_HOST_SYSTEM_NAME},Windows>,win-exec.cmd,win-exec.sh>,lnx-exec.sh>"
+	"$<TARGET_FILE_NAME:${TEST_TARGET}>")
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_TARGET}")
 

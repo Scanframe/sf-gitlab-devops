@@ -50,6 +50,24 @@
 			}
 		},
 		{
+			"name": ".lnx-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		},
+		{
 			"name": ".qt",
 			"hidden": true,
 			"cacheVariables": {
@@ -62,6 +80,7 @@
 		{
 			"name": ".cfg-lnx",
 			"inherits": [
+				".lnx-only",
 				".qt",
 				".cfg"
 			],
@@ -85,6 +104,7 @@
 		{
 			"name": ".cfg-win",
 			"inherits": [
+				".lnx-only",
 				".qt",
 				".cfg"
 			],
@@ -103,6 +123,29 @@
 			},
 			"environment": {
 				"PATH": "${sourceDir}/cmake/lib/bin:$penv{PATH}"
+			}
+		},
+		{
+			"name": ".cfg-w64",
+			"inherits": [
+				".qt",
+				".cfg"
+			],
+			"hidden": true,
+			"displayName": "Debug Windows Template",
+			"description": "Debug config Windows template.",
+			"cacheVariables": {
+				"SF_BUILD_TESTING": {
+					"type": "BOOL",
+					"value": "ON"
+				},
+				"SF_CROSS_WINDOWS": {
+					"type": "BOOL",
+					"value": "OFF"
+				}
+			},
+			"environment": {
+				"PATH": "$penv{PATH}"
 			}
 		},
 		{
@@ -176,6 +219,17 @@
 				".cfg-win"
 			],
 			"binaryDir": "${sourceDir}/cmake-build/gw-release"
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg MinGW Compiler",
+			"description": "Debug config for MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".cfg-w64"
+			],
+			"binaryDir": "${sourceDir}/cmake-build/mingw-debug"
 		}
 	],
 	"buildPresets": [
@@ -192,6 +246,15 @@
 				"type": "equals",
 				"lhs": "${hostSystemName}",
 				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
@@ -265,6 +328,17 @@
 				".build",
 				".lnx-only"
 			]
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg Build MinGW Compiler",
+			"description": "Debug build MinGW compiler on Windows.",
+			"configurePreset": "mingw-debug",
+			"inherits": [
+				".w64-only",
+				".build"
+			]
 		}
 	],
 	"testPresets": [
@@ -286,6 +360,15 @@
 				"type": "equals",
 				"lhs": "${hostSystemName}",
 				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
@@ -353,6 +436,17 @@
 				".lnx-only"
 			],
 			"configurePreset": "gw-release"
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"displayName": "Dbg Test MinGW",
+			"description": "Debug test MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".test"
+			],
+			"configurePreset": "mingw-debug"
 		}
 	],
 	"packagePresets": [
@@ -374,6 +468,15 @@
 				"type": "equals",
 				"lhs": "${hostSystemName}",
 				"rhs": "Linux"
+			}
+		},
+		{
+			"name": ".w64-only",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
 			}
 		},
 		{
@@ -434,6 +537,22 @@
 			"displayName": "GW ZIP + NSIS Pack Release",
 			"description": "GW ZIP + NSIS package release.",
 			"configurePreset": "gw-release",
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"generators": [
+				"NSIS64",
+				"ZIP"
+			]
+		},
+		{
+			"name": "mingw-debug",
+			"hidden": false,
+			"inherits": [
+				".w64-only",
+				".pack"
+			],
+			"displayName": "MinGW ZIP + NSIS Pack Dbg",
+			"description": "MinGW ZIP + NSIS package debug.",
+			"configurePreset": "mingw-debug",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
 				"NSIS64",
@@ -569,6 +688,29 @@
 				{
 					"type": "package",
 					"name": "gw-release"
+				}
+			]
+		},
+		{
+			"name": "mingw-debug",
+			"displayName": "MinGW Dbg Workflow",
+			"description": "MinGW debug workflow.",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "build",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "test",
+					"name": "mingw-debug"
+				},
+				{
+					"type": "package",
+					"name": "mingw-debug"
 				}
 			]
 		}
