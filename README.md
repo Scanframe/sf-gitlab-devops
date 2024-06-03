@@ -40,6 +40,9 @@ caching between jobs across different hosts machines/containers.
 The used Docker containers are stored on a self-hosted Docker-repository and deployment on a
 self-hosted apt-repository and for Windows a raw-repository.
 
+![services-processes](doc/services-processes.svg "Services & processes")
+
+
 Links:
 
 * [GitLab](https://about.gitlab.com/)
