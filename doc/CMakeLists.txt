@@ -9,7 +9,7 @@ if (SfDoxygen_FOUND)
 	# Get the markdown files in this project directory including the README.md.
 	file(GLOB _SourceList RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "*.md" "../*.md")
 	# Get all the header files from the application.
-	file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../src/*.h" "../src/*.md")
+	file(GLOB_RECURSE _SourceListTmp RELATIVE "${CMAKE_CURRENT_BINARY_DIR}" "../src/*.h" "../src/*.md" "../cmake/lib/*.md")
 	# Remove unwanted header file(s) ending on 'Private.h'.
 	list(FILTER _SourcesListTmp EXCLUDE REGEX ".*Private\\.h$")
 	# Append the list with headers.

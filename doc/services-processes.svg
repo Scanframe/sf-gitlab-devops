@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.2" width="185.77mm" height="128.39mm" viewBox="1449 5975 18577 12839" preserveAspectRatio="xMidYMid" fill-rule="evenodd" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xml:space="preserve">
+<svg version="1.2" width="188.27mm" height="113mm" viewBox="1449 5975 18827 11300" preserveAspectRatio="xMidYMid" fill-rule="evenodd" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xml:space="preserve">
  <defs>
   <font id="EmbeddedFont_1" horiz-adv-x="2048">
    <font-face font-family="Liberation Sans embedded" units-per-em="2048" font-weight="normal" font-style="normal" ascent="1852" descent="423"/>
@@ -50,6 +50,7 @@
    <glyph unicode="+" horiz-adv-x="1033" d="M 671,608 L 671,180 524,180 524,608 100,608 100,754 524,754 524,1182 671,1182 671,754 1095,754 1095,608 671,608 Z"/>
    <glyph unicode=")" horiz-adv-x="557" d="M 555,528 C 555,335 525,162 465,9 404,-144 311,-289 186,-424 L 12,-424 C 137,-284 229,-136 287,19 345,174 374,344 374,530 374,716 345,887 287,1042 228,1197 137,1345 12,1484 L 186,1484 C 312,1348 405,1203 465,1050 525,896 555,723 555,532 L 555,528 Z"/>
    <glyph unicode="(" horiz-adv-x="583" d="M 127,532 C 127,725 157,898 218,1051 278,1204 371,1349 496,1484 L 670,1484 C 545,1345 454,1198 396,1042 337,886 308,715 308,530 308,345 337,175 395,20 452,-135 544,-283 670,-424 L 496,-424 C 370,-288 277,-143 217,11 157,164 127,337 127,528 L 127,532 Z"/>
+   <glyph unicode="&amp;" horiz-adv-x="1297" d="M 1193,-12 C 1075,-12 976,30 895,115 845,72 788,38 724,15 660,-8 593,-20 523,-20 380,-20 269,15 190,84 111,153 72,248 72,371 72,556 186,699 415,800 393,841 374,890 358,947 342,1004 334,1055 334,1102 334,1202 365,1280 426,1335 487,1390 573,1417 685,1417 786,1417 867,1392 929,1341 990,1290 1021,1221 1021,1133 1021,1054 991,984 930,923 869,862 763,801 612,741 686,604 784,467 905,329 980,440 1037,576 1076,739 L 1221,696 C 1179,530 1108,374 1009,227 1073,162 1142,129 1217,129 1264,129 1303,134 1334,145 L 1334,10 C 1297,-5 1250,-12 1193,-12 Z M 869,1133 C 869,1181 852,1220 819,1251 786,1281 740,1296 683,1296 619,1296 570,1279 537,1245 504,1210 487,1163 487,1102 487,1026 509,945 552,858 639,893 704,924 745,950 786,976 817,1004 838,1034 859,1064 869,1097 869,1133 Z M 795,217 C 663,373 557,525 476,674 319,607 240,507 240,373 240,292 266,229 318,182 369,135 440,111 529,111 576,111 624,120 671,139 718,157 760,183 795,217 Z"/>
    <glyph unicode=" " horiz-adv-x="556"/>
   </font>
  </defs>
@@ -133,15 +134,15 @@
     <rect class="BoundingBox" stroke="none" fill="none" x="1449" y="5975" width="5576" height="3801"/>
     <path fill="rgb(238,238,238)" stroke="none" d="M 4237,9750 L 1474,9750 1474,6000 6999,6000 6999,9750 4237,9750 Z"/>
     <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 4237,9750 L 1474,9750 1474,6000 6999,6000 6999,9750 4237,9750 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="1674" y="6649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Local Project</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="1674" y="7036"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(source)</tspan></tspan></tspan></text>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="1674" y="6649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Local C++ Project</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="1674" y="7036"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(source)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id4">
-    <rect class="BoundingBox" stroke="none" fill="none" x="1805" y="7250" width="4808" height="1801"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="1805" y="7225" width="4808" height="1801"/>
     <g>
      <defs>
-      <linearGradient id="gradient1" x1="3235" y1="6464" x2="5182" y2="9836" gradientUnits="userSpaceOnUse">
+      <linearGradient id="gradient1" x1="3235" y1="6439" x2="5182" y2="9811" gradientUnits="userSpaceOnUse">
        <stop offset="0" style="stop-color:rgb(119,188,101)"/>
        <stop offset="0.015625" style="stop-color:rgb(119,188,101)"/>
        <stop offset="0.015625" style="stop-color:rgb(117,187,100)"/>
@@ -272,192 +273,166 @@
        <stop offset="1" style="stop-color:rgb(6,154,46)"/>
       </linearGradient>
      </defs>
-     <path style="fill:url(#gradient1)" d="M 4209,9025 L 1830,9025 1830,7275 6587,7275 6587,9025 4209,9025 Z"/>
+     <path style="fill:url(#gradient1)" d="M 4209,9000 L 1830,9000 1830,7250 6587,7250 6587,9000 4209,9000 Z"/>
     </g>
-    <path fill="none" stroke="rgb(46,139,87)" stroke-width="50" stroke-linejoin="round" d="M 4209,9025 L 1830,9025 1830,7275 6587,7275 6587,9025 4209,9025 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="7890"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Git Commit Hook</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="8305"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Pre-commit clang-format </tspan></tspan><tspan class="TextPosition" x="2030" y="8699"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">check</tspan></tspan></tspan></text>
+    <path fill="none" stroke="rgb(46,139,87)" stroke-width="50" stroke-linejoin="round" d="M 4209,9000 L 1830,9000 1830,7250 6587,7250 6587,9000 4209,9000 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="7865"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Git Commit Hook</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="8280"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Pre-commit clang-format </tspan></tspan><tspan class="TextPosition" x="2030" y="8674"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">check</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id5">
-    <rect class="BoundingBox" stroke="none" fill="none" x="8475" y="6000" width="5551" height="8651"/>
-    <path fill="rgb(238,238,238)" stroke="none" d="M 11250,14625 L 8500,14625 8500,6025 14000,6025 14000,14625 11250,14625 Z"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 11250,14625 L 8500,14625 8500,6025 14000,6025 14000,14625 11250,14625 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="8700" y="6674"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">GitLab Pipeline (2x)</tspan></tspan><tspan class="TextPosition" x="8700" y="7061"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(Linux + Windows)</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="8475" y="5975" width="5551" height="6051"/>
+    <path fill="rgb(238,238,238)" stroke="none" d="M 11250,12000 L 8500,12000 8500,6000 14000,6000 14000,12000 11250,12000 Z"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 11250,12000 L 8500,12000 8500,6000 14000,6000 14000,12000 11250,12000 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="8700" y="6649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">GitLab </tspan></tspan><tspan class="TextPosition" x="10402" y="6481"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Pipeline (2x)</tspan></tspan><tspan class="TextPosition" x="8700" y="7041"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(Linux + Windows)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id6">
-    <rect class="BoundingBox" stroke="none" fill="none" x="6563" y="7818" width="2688" height="471"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 6588,8150 L 8962,8150"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 8965,8286 L 9239,8165 9247,8159 9250,8151 9247,8141 9240,8136 8965,8014 8961,8013 8959,8013 8954,8014 8948,8017 8944,8022 8943,8027 8943,8273 8944,8278 8948,8284 8954,8286 8959,8288 8961,8288 8965,8286 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="7539" y="8074"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(85,48,141)" stroke="none" style="white-space: pre">push</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="6563" y="7987" width="2488" height="277"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 6588,8125 L 8762,8125"/>
+    <path fill="rgb(0,0,0)" stroke="none" d="M 8765,8261 L 9039,8140 9047,8134 9050,8126 9047,8116 9040,8111 8765,7989 8761,7988 8759,7988 8754,7989 8748,7992 8744,7997 8743,8002 8743,8248 8744,8253 8748,8259 8754,8261 8759,8263 8761,8263 8765,8261 Z"/>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id7">
-    <rect class="BoundingBox" stroke="none" fill="none" x="9225" y="7250" width="4087" height="1801"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="9024" y="7225" width="4596" height="1801"/>
     <g>
      <defs>
-      <linearGradient id="gradient2" x1="10385" y1="6620" x2="12152" y2="9680" gradientUnits="userSpaceOnUse">
+      <linearGradient id="gradient2" x1="10374" y1="6485" x2="12268" y2="9765" gradientUnits="userSpaceOnUse">
        <stop offset="0" style="stop-color:rgb(145,190,238)"/>
        <stop offset="1" style="stop-color:rgb(89,131,176)"/>
       </linearGradient>
      </defs>
-     <path style="fill:url(#gradient2)" d="M 11268,9025 L 9250,9025 9250,7275 13286,7275 13286,9025 11268,9025 Z"/>
+     <path style="fill:url(#gradient2)" d="M 11322,9000 L 9049,9000 9049,7250 13594,7250 13594,9000 11322,9000 Z"/>
     </g>
-    <path fill="none" stroke="rgb(0,102,153)" stroke-width="50" stroke-linejoin="round" d="M 11268,9025 L 9250,9025 9250,7275 13286,7275 13286,9025 11268,9025 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9450" y="7890"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Unit tests</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9450" y="8305"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Tests + Coverage</tspan></tspan></tspan></text>
-   </g>
-  </g>
-  <g class="com.sun.star.drawing.CustomShape">
-   <g id="id8">
-    <rect class="BoundingBox" stroke="none" fill="none" x="9250" y="12275" width="4088" height="1801"/>
-    <g>
-     <defs>
-      <linearGradient id="gradient3" x1="10410" y1="11645" x2="12177" y2="14705" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(145,190,238)"/>
-       <stop offset="1" style="stop-color:rgb(89,131,176)"/>
-      </linearGradient>
-     </defs>
-     <path style="fill:url(#gradient3)" d="M 11294,14050 L 9275,14050 9275,12300 13312,12300 13312,14050 11294,14050 Z"/>
-    </g>
-    <path fill="none" stroke="rgb(0,102,153)" stroke-width="50" stroke-linejoin="round" d="M 11294,14050 L 9275,14050 9275,12300 13312,12300 13312,14050 11294,14050 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9475" y="12915"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Packaging</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9475" y="13330"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Linux  Deb + Rpm</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9475" y="13724"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Windows Exe + Zip</tspan></tspan></tspan></text>
+    <path fill="none" stroke="rgb(0,102,153)" stroke-width="50" stroke-linejoin="round" d="M 11322,9000 L 9049,9000 9049,7250 13594,7250 13594,9000 11322,9000 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9249" y="7865"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Unit tests</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9249" y="8280"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Tests</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9249" y="8674"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Coverage (Linux only)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
+   <g id="id8">
+    <rect class="BoundingBox" stroke="none" fill="none" x="11206" y="8975" width="277" height="727"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 11322,9000 C 11322,9525 11336,9308 11345,9411"/>
+    <path fill="rgb(0,0,0)" stroke="none" d="M 11207,9419 L 11337,9689 11343,9697 11351,9700 11360,9696 11366,9689 11480,9411 11481,9408 11481,9405 11480,9400 11476,9394 11471,9391 11466,9390 11221,9397 11215,9398 11209,9402 11207,9408 11206,9413 11206,9415 11207,9419 Z"/>
+   </g>
+  </g>
+  <g class="com.sun.star.drawing.CustomShape">
    <g id="id9">
-    <rect class="BoundingBox" stroke="none" fill="none" x="11149" y="9000" width="277" height="727"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 11268,9025 C 11268,9550 11280,9333 11288,9436"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 11151,9443 L 11279,9714 11285,9722 11293,9725 11302,9722 11308,9714 11423,9437 11424,9433 11424,9431 11423,9425 11419,9420 11415,9416 11409,9415 11164,9421 11158,9423 11153,9426 11150,9432 11149,9438 11149,9440 11151,9443 Z"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="9054" y="9675" width="4597" height="1801"/>
+    <g>
+     <defs>
+      <linearGradient id="gradient3" x1="10405" y1="8935" x2="12299" y2="12215" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(145,190,238)"/>
+       <stop offset="1" style="stop-color:rgb(89,131,176)"/>
+      </linearGradient>
+     </defs>
+     <path style="fill:url(#gradient3)" d="M 11352,11450 L 9079,11450 9079,9700 13625,9700 13625,11450 11352,11450 Z"/>
+    </g>
+    <path fill="none" stroke="rgb(0,102,153)" stroke-width="50" stroke-linejoin="round" d="M 11352,11450 L 9079,11450 9079,9700 13625,9700 13625,11450 11352,11450 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9279" y="10315"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Building &amp; Package</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9279" y="10730"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Linux  (Deb + Rpm)</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9279" y="11124"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Windows (Exe + Zip)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id10">
-    <rect class="BoundingBox" stroke="none" fill="none" x="9250" y="9700" width="4088" height="1801"/>
-    <g>
-     <defs>
-      <linearGradient id="gradient4" x1="10410" y1="9070" x2="12177" y2="12130" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(145,190,238)"/>
-       <stop offset="1" style="stop-color:rgb(89,131,176)"/>
-      </linearGradient>
-     </defs>
-     <path style="fill:url(#gradient4)" d="M 11294,11475 L 9275,11475 9275,9725 13312,9725 13312,11475 11294,11475 Z"/>
-    </g>
-    <path fill="none" stroke="rgb(0,102,153)" stroke-width="50" stroke-linejoin="round" d="M 11294,11475 L 9275,11475 9275,9725 13312,9725 13312,11475 11294,11475 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9475" y="10340"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Building</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9475" y="10755"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Linux + Windows</tspan></tspan></tspan></text>
-   </g>
-  </g>
-  <g class="com.sun.star.drawing.ConnectorShape">
-   <g id="id11">
-    <rect class="BoundingBox" stroke="none" fill="none" x="11156" y="11450" width="277" height="851"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 11294,11475 L 11294,12012"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 11158,12015 L 11279,12289 11285,12297 11293,12300 11303,12297 11308,12290 11430,12015 11432,12011 11432,12009 11430,12004 11427,11998 11422,11994 11417,11993 11171,11993 11166,11994 11160,11998 11158,12004 11157,12009 11157,12011 11158,12015 Z"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="15525" y="5975" width="4751" height="6051"/>
+    <path fill="rgb(238,238,238)" stroke="none" d="M 17900,12000 L 15550,12000 15550,6000 20250,6000 20250,12000 17900,12000 Z"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 17900,12000 L 15550,12000 15550,6000 20250,6000 20250,12000 17900,12000 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="15750" y="6649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">MinIO </tspan></tspan><tspan class="TextPosition" x="17261" y="6481"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(cache)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
+   <g id="id11">
+    <rect class="BoundingBox" stroke="none" fill="none" x="15975" y="9350" width="3969" height="1801"/>
+    <g>
+     <defs>
+      <linearGradient id="gradient4" x1="17091" y1="8746" x2="18828" y2="11754" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(191,129,158)"/>
+       <stop offset="1" style="stop-color:rgb(161,70,126)"/>
+      </linearGradient>
+     </defs>
+     <path style="fill:url(#gradient4)" d="M 17959,11125 L 16000,11125 16000,9375 19918,9375 19918,11125 17959,11125 Z"/>
+    </g>
+    <path fill="none" stroke="rgb(161,70,126)" stroke-width="50" stroke-linejoin="round" d="M 17959,11125 L 16000,11125 16000,9375 19918,9375 19918,11125 17959,11125 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16200" y="9893"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Multi build job only </tspan></tspan><tspan class="TextPosition" x="16200" y="10287"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">intermediate cache</tspan></tspan></tspan></text>
+   </g>
+  </g>
+  <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id12">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15525" y="5975" width="4501" height="3551"/>
-    <path fill="rgb(238,238,238)" stroke="none" d="M 17775,9500 L 15550,9500 15550,6000 20000,6000 20000,9500 17775,9500 Z"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 17775,9500 L 15550,9500 15550,6000 20000,6000 20000,9500 17775,9500 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="15750" y="6649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">MinIO Cache</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="13623" y="10127" width="2378" height="587"/>
+    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 13901,10572 C 15282,10539 14472,10327 15457,10264"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 13627,10712 L 13623,10438 13898,10434 13902,10709 13627,10712 Z"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 15446,10128 L 16000,10250 15454,10403 15446,10128 Z"/>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id13">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15906" y="7250" width="3760" height="1801"/>
-    <g>
-     <defs>
-      <linearGradient id="gradient5" x1="16943" y1="6691" x2="18628" y2="9609" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(255,222,89)"/>
-       <stop offset="1" style="stop-color:rgb(180,120,4)"/>
-      </linearGradient>
-     </defs>
-     <path style="fill:url(#gradient5)" d="M 17786,9025 L 15931,9025 15931,7275 19640,7275 19640,9025 17786,9025 Z"/>
-    </g>
-    <path fill="none" stroke="rgb(205,133,63)" stroke-width="50" stroke-linejoin="round" d="M 17786,9025 L 15931,9025 15931,7275 19640,7275 19640,9025 17786,9025 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="7793"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Multi build job only </tspan></tspan><tspan class="TextPosition" x="16131" y="8187"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">intermediate cache</tspan></tspan></tspan></text>
-   </g>
-  </g>
-  <g class="com.sun.star.drawing.ConnectorShape">
-   <g id="id14">
-    <rect class="BoundingBox" stroke="none" fill="none" x="13983" y="8150" width="1950" height="2313"/>
-    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 14267,10295 C 15327,10035 14717,8749 15429,8280"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 14016,10462 L 13984,10188 14257,10156 14289,10429 14016,10462 Z"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 15365,8161 L 15932,8150 15437,8427 15365,8161 Z"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="8475" y="12599" width="11801" height="4676"/>
+    <path fill="rgb(238,238,238)" stroke="none" d="M 14375,17249 L 8500,17249 8500,12624 20250,12624 20250,17249 14375,17249 Z"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 14375,17249 L 8500,17249 8500,12624 20250,12624 20250,17249 14375,17249 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="8700" y="13273"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Nexus </tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="8700" y="13660"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(</tspan></tspan><tspan class="TextPosition" y="13665"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Sonatype)</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
+   <g id="id14">
+    <rect class="BoundingBox" stroke="none" fill="none" x="15928" y="13050" width="3969" height="1801"/>
+    <g>
+     <defs>
+      <linearGradient id="gradient5" x1="17044" y1="12446" x2="18781" y2="15454" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(191,129,158)"/>
+       <stop offset="1" style="stop-color:rgb(161,70,126)"/>
+      </linearGradient>
+     </defs>
+     <path style="fill:url(#gradient5)" d="M 17912,14825 L 15953,14825 15953,13075 19871,13075 19871,14825 17912,14825 Z"/>
+    </g>
+    <path fill="none" stroke="rgb(161,70,126)" stroke-width="50" stroke-linejoin="round" d="M 17912,14825 L 15953,14825 15953,13075 19871,13075 19871,14825 17912,14825 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="13690"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Apt Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="14105"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Channels develop,</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="14499"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">staging and stable</tspan></tspan></tspan></text>
+   </g>
+  </g>
+  <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id15">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15525" y="9975" width="4501" height="8051"/>
-    <path fill="rgb(238,238,238)" stroke="none" d="M 17775,18000 L 15550,18000 15550,10000 20000,10000 20000,18000 17775,18000 Z"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 17775,18000 L 15550,18000 15550,10000 20000,10000 20000,18000 17775,18000 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="15750" y="10649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Nexus </tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="15750" y="11036"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(</tspan></tspan><tspan class="TextPosition" y="11041"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Sonatype)</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="13600" y="10550" width="2354" height="3500"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 13625,10575 C 15371,10575 14335,13561 15671,13916"/>
+    <path fill="rgb(0,0,0)" stroke="none" d="M 15653,14048 L 15940,13963 15949,13958 15953,13951 15951,13941 15945,13935 15688,13778 15685,13776 15683,13776 15677,13777 15671,13779 15667,13783 15665,13789 15633,14032 15633,14038 15636,14044 15641,14047 15647,14049 15649,14049 15653,14048 Z"/>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id16">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15906" y="11250" width="3760" height="1801"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="15928" y="15050" width="3969" height="1801"/>
     <g>
      <defs>
-      <linearGradient id="gradient6" x1="16943" y1="10691" x2="18628" y2="13609" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(255,222,89)"/>
-       <stop offset="1" style="stop-color:rgb(180,120,4)"/>
+      <linearGradient id="gradient6" x1="17044" y1="14446" x2="18781" y2="17454" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(191,129,158)"/>
+       <stop offset="1" style="stop-color:rgb(161,70,126)"/>
       </linearGradient>
      </defs>
-     <path style="fill:url(#gradient6)" d="M 17786,13025 L 15931,13025 15931,11275 19640,11275 19640,13025 17786,13025 Z"/>
+     <path style="fill:url(#gradient6)" d="M 17912,16825 L 15953,16825 15953,15075 19871,15075 19871,16825 17912,16825 Z"/>
     </g>
-    <path fill="none" stroke="rgb(205,133,63)" stroke-width="50" stroke-linejoin="round" d="M 17786,13025 L 15931,13025 15931,11275 19640,11275 19640,13025 17786,13025 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="11890"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Apt Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="12305"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Channels develop,</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="12699"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">staging and stable</tspan></tspan></tspan></text>
+    <path fill="none" stroke="rgb(161,70,126)" stroke-width="50" stroke-linejoin="round" d="M 17912,16825 L 15953,16825 15953,15075 19871,15075 19871,16825 17912,16825 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="15690"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Raw Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="16105"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Downloads of</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16153" y="16499"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Exe + Zip files</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id17">
-    <rect class="BoundingBox" stroke="none" fill="none" x="13288" y="12022" width="2646" height="1179"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 13313,13175 C 15276,13175 14105,12263 15628,12160"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 15652,12296 L 15921,12165 15929,12159 15932,12151 15928,12142 15921,12136 15643,12023 15639,12022 15637,12022 15631,12024 15626,12027 15622,12032 15621,12038 15630,12283 15631,12288 15635,12294 15640,12296 15646,12297 15648,12297 15652,12296 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="14095" y="12586"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(85,48,141)" stroke="none" style="white-space: pre">upload</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="13600" y="10550" width="2354" height="5482"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 13625,10575 C 15371,10575 14327,15373 15689,15903"/>
+    <path fill="rgb(0,0,0)" stroke="none" d="M 15647,16030 L 15939,15962 15948,15958 15953,15951 15951,15941 15946,15934 15699,15762 15696,15760 15694,15760 15688,15760 15682,15762 15677,15766 15675,15771 15629,16012 15629,16018 15631,16024 15636,16028 15641,16030 15644,16030 15647,16030 Z"/>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
    <g id="id18">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15906" y="13250" width="3760" height="1801"/>
-    <g>
-     <defs>
-      <linearGradient id="gradient7" x1="16943" y1="12691" x2="18628" y2="15609" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(255,222,89)"/>
-       <stop offset="1" style="stop-color:rgb(180,120,4)"/>
-      </linearGradient>
-     </defs>
-     <path style="fill:url(#gradient7)" d="M 17786,15025 L 15931,15025 15931,13275 19640,13275 19640,15025 17786,15025 Z"/>
-    </g>
-    <path fill="none" stroke="rgb(205,133,63)" stroke-width="50" stroke-linejoin="round" d="M 17786,15025 L 15931,15025 15931,13275 19640,13275 19640,15025 17786,15025 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="13890"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Raw Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="14305"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Downloads of</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="14699"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Exe + Zip files</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="1475" y="12475" width="5549" height="3051"/>
+    <path fill="rgb(238,238,238)" stroke="none" d="M 4249,15500 L 1500,15500 1500,12500 6998,12500 6998,15500 4249,15500 Z"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 4249,15500 L 1500,15500 1500,12500 6998,12500 6998,15500 4249,15500 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="1700" y="13149"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Docker</tspan><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre"> </tspan></tspan><tspan class="TextPosition" x="3511" y="12981"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(source)</tspan></tspan></tspan></text>
    </g>
   </g>
-  <g class="com.sun.star.drawing.ConnectorShape">
+  <g class="com.sun.star.drawing.CustomShape">
    <g id="id19">
-    <rect class="BoundingBox" stroke="none" fill="none" x="13288" y="13150" width="2645" height="1130"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 13313,13175 C 15276,13175 14105,14042 15627,14141"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 15643,14277 L 15920,14164 15928,14158 15932,14151 15929,14141 15922,14135 15651,14005 15648,14003 15646,14003 15640,14004 15634,14008 15631,14012 15629,14018 15621,14263 15622,14268 15626,14274 15631,14277 15637,14278 15639,14278 15643,14277 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="14095" y="13783"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(85,48,141)" stroke="none" style="white-space: pre">upload</tspan></tspan></tspan></text>
-   </g>
-  </g>
-  <g class="com.sun.star.drawing.CustomShape">
-   <g id="id20">
-    <rect class="BoundingBox" stroke="none" fill="none" x="1477" y="14975" width="5549" height="3051"/>
-    <path fill="rgb(238,238,238)" stroke="none" d="M 4251,18000 L 1502,18000 1502,15000 7000,15000 7000,18000 4251,18000 Z"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" d="M 4251,18000 L 1502,18000 1502,15000 7000,15000 7000,18000 4251,18000 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="1702" y="15649"><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Docker</tspan><tspan font-family="Liberation Sans, sans-serif" font-size="494px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre"> </tspan></tspan><tspan class="TextPosition" x="3513" y="15481"><tspan font-family="Liberation Sans, sans-serif" font-size="287px" font-weight="700" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">(source)</tspan></tspan></tspan></text>
-   </g>
-  </g>
-  <g class="com.sun.star.drawing.CustomShape">
-   <g id="id21">
-    <rect class="BoundingBox" stroke="none" fill="none" x="1805" y="15850" width="4808" height="1801"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="1803" y="13350" width="4808" height="1801"/>
     <g>
      <defs>
-      <linearGradient id="gradient8" x1="3235" y1="15064" x2="5182" y2="18436" gradientUnits="userSpaceOnUse">
+      <linearGradient id="gradient7" x1="3233" y1="12564" x2="5180" y2="15936" gradientUnits="userSpaceOnUse">
        <stop offset="0" style="stop-color:rgb(119,188,101)"/>
        <stop offset="0.015625" style="stop-color:rgb(119,188,101)"/>
        <stop offset="0.015625" style="stop-color:rgb(117,187,100)"/>
@@ -588,50 +563,73 @@
        <stop offset="1" style="stop-color:rgb(6,154,46)"/>
       </linearGradient>
      </defs>
-     <path style="fill:url(#gradient8)" d="M 4209,17625 L 1830,17625 1830,15875 6587,15875 6587,17625 4209,17625 Z"/>
+     <path style="fill:url(#gradient7)" d="M 4207,15125 L 1828,15125 1828,13375 6585,13375 6585,15125 4207,15125 Z"/>
     </g>
-    <path fill="none" stroke="rgb(46,139,87)" stroke-width="50" stroke-linejoin="round" d="M 4209,17625 L 1830,17625 1830,15875 6587,15875 6587,17625 4209,17625 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="16490"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Build Tools (C++, Qt)</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="16905"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Linux Qt</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2030" y="17299"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Windows Qt + Wine</tspan></tspan></tspan></text>
+    <path fill="none" stroke="rgb(46,139,87)" stroke-width="50" stroke-linejoin="round" d="M 4207,15125 L 1828,15125 1828,13375 6585,13375 6585,15125 4207,15125 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="2028" y="13990"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Build Tools (C++, Qt)</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2028" y="14405"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Linux Qt</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="2028" y="14799"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Windows Qt + Wine</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.CustomShape">
-   <g id="id22">
-    <rect class="BoundingBox" stroke="none" fill="none" x="15906" y="15850" width="3760" height="1801"/>
+   <g id="id20">
+    <rect class="BoundingBox" stroke="none" fill="none" x="9225" y="15100" width="4551" height="1801"/>
     <g>
      <defs>
-      <linearGradient id="gradient9" x1="16943" y1="15291" x2="18628" y2="18209" gradientUnits="userSpaceOnUse">
-       <stop offset="0" style="stop-color:rgb(255,222,89)"/>
-       <stop offset="1" style="stop-color:rgb(180,120,4)"/>
+      <linearGradient id="gradient8" x1="10559" y1="14369" x2="12442" y2="17631" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(191,129,158)"/>
+       <stop offset="1" style="stop-color:rgb(161,70,126)"/>
       </linearGradient>
      </defs>
-     <path style="fill:url(#gradient9)" d="M 17786,17625 L 15931,17625 15931,15875 19640,15875 19640,17625 17786,17625 Z"/>
+     <path style="fill:url(#gradient8)" d="M 11500,16875 L 9250,16875 9250,15125 13750,15125 13750,16875 11500,16875 Z"/>
     </g>
-    <path fill="none" stroke="rgb(205,133,63)" stroke-width="50" stroke-linejoin="round" d="M 17786,17625 L 15931,17625 15931,15875 19640,15875 19640,17625 17786,17625 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="16490"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Docker </tspan></tspan><tspan class="TextPosition" x="16131" y="17002"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16131" y="17417"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(0,0,0)" stroke="none" style="white-space: pre">Cpp build images</tspan></tspan></tspan></text>
+    <path fill="none" stroke="rgb(161,70,126)" stroke-width="50" stroke-linejoin="round" d="M 11500,16875 L 9250,16875 9250,15125 13750,15125 13750,16875 11500,16875 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="9450" y="15740"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Docker Repository</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="9450" y="16155"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Cpp build images</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
+   <g id="id21">
+    <rect class="BoundingBox" stroke="none" fill="none" x="11118" y="12000" width="521" height="3127"/>
+    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 11499,14842 C 11479,12910 11293,14096 11256,12541"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 11637,15124 L 11363,15126 11361,14851 11636,14849 11637,15124 Z"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 11118,12551 L 11250,12000 11393,12548 11118,12551 Z"/>
+   </g>
+  </g>
+  <g class="com.sun.star.drawing.ConnectorShape">
+   <g id="id22">
+    <rect class="BoundingBox" stroke="none" fill="none" x="4159" y="9750" width="7480" height="5382"/>
+    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 11489,14838 C 11171,10910 4958,13221 4292,10272"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 11637,15119 L 11363,15131 11351,14856 11626,14844 11637,15119 Z"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 4160,10312 L 4237,9750 4433,10282 4160,10312 Z"/>
+   </g>
+  </g>
+  <g class="com.sun.star.drawing.CustomShape">
    <g id="id23">
-    <rect class="BoundingBox" stroke="none" fill="none" x="6563" y="16418" width="9370" height="471"/>
-    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 6588,16750 L 15644,16750"/>
-    <path fill="rgb(0,0,0)" stroke="none" d="M 15647,16886 L 15921,16765 15929,16759 15932,16751 15929,16741 15922,16736 15647,16614 15643,16613 15641,16613 15636,16614 15630,16617 15626,16622 15625,16627 15625,16873 15626,16878 15630,16884 15636,16886 15641,16888 15643,16888 15647,16886 Z"/>
-    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="10880" y="16674"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(85,48,141)" stroke="none" style="white-space: pre">push</tspan></tspan></tspan></text>
+    <rect class="BoundingBox" stroke="none" fill="none" x="15974" y="7225" width="3968" height="1801"/>
+    <g>
+     <defs>
+      <linearGradient id="gradient9" x1="17089" y1="6621" x2="18826" y2="9629" gradientUnits="userSpaceOnUse">
+       <stop offset="0" style="stop-color:rgb(191,129,158)"/>
+       <stop offset="1" style="stop-color:rgb(161,70,126)"/>
+      </linearGradient>
+     </defs>
+     <path style="fill:url(#gradient9)" d="M 17958,9000 L 15999,9000 15999,7250 19916,7250 19916,9000 17958,9000 Z"/>
+    </g>
+    <path fill="none" stroke="rgb(161,70,126)" stroke-width="50" stroke-linejoin="round" d="M 17958,9000 L 15999,9000 15999,7250 19916,7250 19916,9000 17958,9000 Z"/>
+    <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="16199" y="7865"><tspan font-family="Liberation Sans, sans-serif" font-size="459px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">Coverage Report</tspan></tspan></tspan><tspan class="TextParagraph"><tspan class="TextPosition" x="16199" y="8280"><tspan font-family="Liberation Sans, sans-serif" font-size="353px" font-weight="400" fill="rgb(255,255,255)" stroke="none" style="white-space: pre">HTML passive site</tspan></tspan></tspan></text>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id24">
-    <rect class="BoundingBox" stroke="none" fill="none" x="11112" y="14621" width="6675" height="4193"/>
-    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 11256,14909 C 11478,20075 16270,18892 17511,18006"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 11113,14628 L 11387,14622 11394,14897 11119,14903 11113,14628 Z"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 17348,17985 L 17786,17625 17569,18149 17348,17985 Z"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="13595" y="7987" width="2406" height="277"/>
+    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 13852,8125 L 15468,8125"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 13595,8263 L 13595,7988 13870,7988 13870,8263 13595,8263 Z"/>
+    <path fill="rgb(18,118,34)" stroke="none" d="M 15450,7988 L 16000,8125 15450,8263 15450,7988 Z"/>
    </g>
   </g>
   <g class="com.sun.star.drawing.ConnectorShape">
    <g id="id25">
-    <rect class="BoundingBox" stroke="none" fill="none" x="4099" y="9746" width="13688" height="6130"/>
-    <path fill="none" stroke="rgb(18,118,34)" stroke-width="50" stroke-linejoin="round" d="M 4243,10036 C 4571,17503 15336,14999 17443,15594"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 4100,9753 L 4374,9747 4381,10022 4106,10028 4100,9753 Z"/>
-    <path fill="rgb(18,118,34)" stroke="none" d="M 17436,15429 L 17786,15875 17267,15646 17436,15429 Z"/>
+    <rect class="BoundingBox" stroke="none" fill="none" x="6561" y="14225" width="2690" height="1898"/>
+    <path fill="none" stroke="rgb(0,0,0)" stroke-width="50" stroke-linejoin="round" stroke-linecap="round" d="M 6586,14250 C 8584,14250 7388,15813 8950,15985"/>
+    <path fill="rgb(0,0,0)" stroke="none" d="M 8958,16121 L 9238,16014 9246,16008 9250,16001 9247,15991 9240,15985 8973,15849 8969,15847 8967,15847 8961,15848 8955,15851 8952,15855 8950,15861 8937,16106 8938,16112 8941,16117 8947,16120 8952,16122 8954,16122 8958,16121 Z"/>
    </g>
   </g>
  </g>

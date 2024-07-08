@@ -42,7 +42,6 @@ self-hosted apt-repository and for Windows a raw-repository.
 
 ![services-processes](doc/services-processes.svg "Services & processes")
 
-
 Links:
 
 * [GitLab](https://about.gitlab.com/)
@@ -59,7 +58,6 @@ Repositories:
 * [sf-docker-runner](https://github.com/Scanframe/sf-docker-runner)`
 * [sf-cmake](https://github.com/Scanframe/sf-cmake)
 * [Catch2](https://github.com/catchorg/Catch2)
-
 
 ## GitHub Cloning
 
