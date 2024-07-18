@@ -275,7 +275,7 @@
 				".lnx-only"
 			],
 			"targets": [
-				"t_devops-trial-test"
+				"t_devops-shared-test"
 			]
 		},
 		{
@@ -289,7 +289,7 @@
 				".lnx-only"
 			],
 			"targets": [
-				"t_devops-trial-test"
+				"t_devops-shared-test"
 			]
 		},
 		{

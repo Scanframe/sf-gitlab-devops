@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.27)
 set(CPACK_PACKAGE_CONTACT "Arjan van Olphen <a.v.olphen@scanframe.nl>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_DESCRIPTION
-	"The long description of this DevOps trial application
+	"The long description of this DevOps template application
 having more then one line.")
 
 # Variable for all types of packages to set the individual package name.

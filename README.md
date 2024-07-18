@@ -1,9 +1,9 @@
-# GitLab DevOps Trial Project/Repository
+# GitLab DevOps Template Project/Repository
 
 ## Content
 
 <!-- TOC -->
-* [GitLab DevOps Trial Project/Repository](#gitlab-devops-trial-projectrepository)
+* [GitLab DevOps Template Project/Repository](#gitlab-devops-template-projectrepository)
   * [Content](#content)
   * [Introduction](#introduction)
   * [GitHub Cloning](#github-cloning)

@@ -21,10 +21,10 @@ list(GET _Versions 1 SF_GIT_TAG_RC)
 list(GET _Versions 2 SF_GIT_TAG_COMMITS)
 
 # Set the global project name.
-project("devops-trial"
+project("devops-shared"
 	VERSION "${SF_GIT_TAG_VERSION}"
 	DESCRIPTION "Scanframe DevOps Trial App"
-	HOMEPAGE_URL "https://git.scanframe.com/trial/devops.git"
+	HOMEPAGE_URL "https://git.scanframe.com/shared/devops.git"
 	LANGUAGES C CXX
 )
 
