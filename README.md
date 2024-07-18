@@ -377,7 +377,7 @@ have fuse available for `bindfs` `fuze-zip` and mounting it in the [`sf-docker-r
 ## CLion IDE Docker Integration
 
 For CLion add a Docker toolchain where the image to use is `gnu-cpp:dev` when it was build locally
-or for example `nexus.scanframe.com:8090/gnu-cpp:dev` when it was build remote and uploaded
+or for example `nexus.scanframe.com/gnu-cpp:dev` when it was build remote and uploaded
 to the self-hosted Nexus service.
 
 The '**Docker**' toolchain '**Container Settings**' are as follows:

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-DIR="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPT_DIR="${DIR}" "${DIR}/cmake/lib/bin/Build.sh" "${@}"
+script_dir="$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="${script_dir}" "${script_dir}/cmake/lib/bin/Build.sh" "${@}"

@@ -27,10 +27,6 @@
 					"type": "STRING",
 					"value": "Debug"
 				},
-				"Catch2_VERSION": {
-					"type": "STRING",
-					"value": "v3.5.2"
-				},
 				"SF_BUILD_QT": {
 					"type": "BOOL",
 					"value": "OFF"

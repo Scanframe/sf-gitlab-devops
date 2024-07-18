@@ -19,7 +19,7 @@ variables:
 
 workflow:
   rules:
-    # No pipeline when commit message starts with an exclamation mark '!'.
+    # No pipeline when SF_SIGNAL equals 'skip'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
     # Run pipeline initiated by a merge request event.
