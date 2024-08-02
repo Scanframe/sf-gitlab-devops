@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 # Bail out on first error.
 set -e
@@ -12,39 +12,22 @@ img_name="nexus.scanframe.com/gnu-cpp:dev"
 # Create the docker binary build directory.
 mkdir -p "${script_dir}/cmake-build/docker"
 
-if [[ "$(uname -s)" != "CYGWIN_NT"* ]]; then
-	# Function which runs the docker build.sh script.
-	function docker_run {
-		docker run \
-			--rm \
-			--interactive \
-			--tty \
-			--privileged \
-			--net=host \
-			--env LOCAL_USER="$(id -u):$(id -g)" \
-			--env DISPLAY \
-			--volume "${HOME}/.Xauthority:/home/user/.Xauthority:ro" \
-			--volume "${script_dir}:/mnt/project:rw" \
-			--volume "${build_dir}:/mnt/project/cmake-build:rw" \
-			--workdir "/mnt/project/" \
-			"${img_name}" "${@}"
-	}
-else
-	# Function which runs the docker build.sh script.
-	function docker_run {
-		docker run \
-			--rm \
-			--interactive \
-			--privileged \
-			--net=host \
-			--env LOCAL_USER="$(id -u):$(id -g)" \
-			--env DISPLAY \
-			--volume "$(cygpath -w "${script_dir}"):/mnt/project:rw" \
-			--volume "$(cygpath -w "${build_dir}"):/mnt/project/cmake-build:rw" \
-			--workdir "/mnt/project/" \
-			"${img_name}" "${@}"
-	}
-fi
+# Function which runs the docker build.sh script in the container.
+function docker_run {
+	docker run \
+		--rm \
+		--interactive \
+		--tty \
+		--privileged \
+		--net=host \
+		--env LOCAL_USER="$(id -u):$(id -g)" \
+		--env DISPLAY \
+		--volume "${HOME}/.Xauthority:/home/user/.Xauthority:ro" \
+		--volume "${script_dir}:/mnt/project:rw" \
+		--volume "${build_dir}:/mnt/project/cmake-build:rw" \
+		--workdir "/mnt/project/" \
+		"${img_name}" "${@}"
+}
 
 # When no arguments are given run bash from within the container.
 if [[ $# -eq 0 ]]; then
