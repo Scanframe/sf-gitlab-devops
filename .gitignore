@@ -1,6 +1,7 @@
 # Files from possible IDE's.
 /.metadata
 /.idea
+/.run
 /.vscode
 /.vs
 /CMakeLists.txt.user
