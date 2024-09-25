@@ -69,11 +69,13 @@ default:
 check-env:
   stage: check
   script:
-    - 'echo "Working Directory=$(pwd)"'
+    - echo "Working Directory=$(pwd)"
     # Print all environments variables sorted to make it easier to find.
-    - 'echo "Environment Dump" && printenv | sort'
+    - echo "Environment Dump" && printenv | sort
+    # Prevent error when fetching using 'check-format.sh'.
+    - git config --global --add safe.directory '*'
     # Check the formatting of the code.
-    - 'if [[ -f check-format.sh ]]; then ./check-format.sh; fi'
+    - if [[ -f check-format.sh ]]; then ./check-format.sh; fi
 
 # Does a cache and artifact check.
 cache-test:
