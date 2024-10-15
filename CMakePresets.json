@@ -147,7 +147,7 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Dbg GNU Compiler",
+			"displayName": "Debug GNU",
 			"description": "Debug config GNU compiler on Linux.",
 			"inherits": [
 				".cfg-lnx"
@@ -157,7 +157,7 @@
 		{
 			"name": "gnu-coverage",
 			"hidden": false,
-			"displayName": "Coverage GNU Compiler",
+			"displayName": "Coverage GNU",
 			"description": "Coverage config GNU compiler on Linux.",
 			"inherits": [
 				".cfg-lnx"
@@ -173,8 +173,8 @@
 		{
 			"name": "gw-coverage",
 			"hidden": false,
-			"displayName": "Coverage GW Compiler",
-			"description": "Coverage config GW compiler on Linux.",
+			"displayName": "Coverage GW",
+			"description": "Coverage config Windows GW compiler on Linux.",
 			"inherits": [
 				".cfg-win"
 			],
@@ -189,8 +189,8 @@
 		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Dbg GW Compiler",
-			"description": "Debug config for cross Windows GW compiler on Linux.",
+			"displayName": "Debug GW",
+			"description": "Debug config for Windows GW compiler on Linux.",
 			"inherits": [
 				".cfg-win"
 			],
@@ -199,7 +199,7 @@
 		{
 			"name": "gnu-release",
 			"hidden": false,
-			"displayName": "Release GNU Compiler",
+			"displayName": "Release GNU",
 			"description": "Release config GNU compiler on Linux.",
 			"inherits": [
 				".cfg-lnx"
@@ -209,8 +209,8 @@
 		{
 			"name": "gw-release",
 			"hidden": false,
-			"displayName": "Release GW Compiler",
-			"description": "Release config for cross Windows GW compiler on Linux.",
+			"displayName": "Release GW",
+			"description": "Release config for Windows GW compiler on Linux.",
 			"inherits": [
 				".cfg-win"
 			],
@@ -219,13 +219,24 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Dbg MinGW Compiler",
+			"displayName": "Debug MinGW",
 			"description": "Debug config for MinGW compiler on Windows.",
 			"inherits": [
 				".w64-only",
 				".cfg-w64"
 			],
 			"binaryDir": "${sourceDir}/cmake-build/mingw-debug"
+		},
+		{
+			"name": "mingw-release",
+			"hidden": false,
+			"displayName": "Release MinGW",
+			"description": "Release config for MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".cfg-w64"
+			],
+			"binaryDir": "${sourceDir}/cmake-build/mingw-release"
 		}
 	],
 	"buildPresets": [
@@ -256,7 +267,7 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Dbg Build GNU Compiler",
+			"displayName": "Debug GNU",
 			"description": "Debug build with GNU compiler on Linux.",
 			"configurePreset": "gnu-debug",
 			"inherits": [
@@ -267,8 +278,8 @@
 		{
 			"name": "gnu-coverage",
 			"hidden": false,
-			"displayName": "Coverage Dbg Build GNU Compiler",
-			"description": "Debug build with GNU compiler on Linux using Coverage.",
+			"displayName": "Coverage GNU",
+			"description": "Coverage build with GNU compiler on Linux.",
 			"configurePreset": "gnu-coverage",
 			"inherits": [
 				".build",
@@ -279,10 +290,32 @@
 			]
 		},
 		{
+			"name": "gnu-release",
+			"hidden": false,
+			"displayName": "Release GNU",
+			"description": "Release build with GNU compiler on Linux.",
+			"configurePreset": "gnu-release",
+			"inherits": [
+				".build",
+				".lnx-only"
+			]
+		},
+		{
+			"name": "gw-debug",
+			"hidden": false,
+			"displayName": "Debug GW",
+			"description": "Debug build Windows GW compiler on Linux.",
+			"configurePreset": "gw-debug",
+			"inherits": [
+				".build",
+				".lnx-only"
+			]
+		},
+		{
 			"name": "gw-coverage",
 			"hidden": false,
-			"displayName": "Coverage Dbg Build GW Compiler",
-			"description": "Debug build with GW compiler on Linux using Coverage.",
+			"displayName": "Coverage GW",
+			"description": "Coverage build with GW compiler on Linux.",
 			"configurePreset": "gw-coverage",
 			"inherits": [
 				".build",
@@ -293,32 +326,10 @@
 			]
 		},
 		{
-			"name": "gw-debug",
-			"hidden": false,
-			"displayName": "Dbg Build GW Compiler",
-			"description": "Debug build GW Windows cross compiler on Linux.",
-			"configurePreset": "gw-debug",
-			"inherits": [
-				".build",
-				".lnx-only"
-			]
-		},
-		{
-			"name": "gnu-release",
-			"hidden": false,
-			"displayName": "Release Build GNU Compiler",
-			"description": "Release build with GNU compiler on Linux.",
-			"configurePreset": "gnu-release",
-			"inherits": [
-				".build",
-				".lnx-only"
-			]
-		},
-		{
 			"name": "gw-release",
 			"hidden": false,
-			"displayName": "Release Build GW Compiler",
-			"description": "Release build GW Windows cross compiler on Linux.",
+			"displayName": "Release GW",
+			"description": "Release build GW compiler on Linux.",
 			"configurePreset": "gw-release",
 			"inherits": [
 				".build",
@@ -328,9 +339,20 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Dbg Build MinGW Compiler",
+			"displayName": "Debug MinGW",
 			"description": "Debug build MinGW compiler on Windows.",
 			"configurePreset": "mingw-debug",
+			"inherits": [
+				".w64-only",
+				".build"
+			]
+		},
+		{
+			"name": "mingw-release",
+			"hidden": false,
+			"displayName": "Release MinGW",
+			"description": "Release build MinGW compiler on Windows.",
+			"configurePreset": "mingw-release",
 			"inherits": [
 				".w64-only",
 				".build"
@@ -370,7 +392,7 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "Dbg Test GNU",
+			"displayName": "Debug GNU",
 			"description": "Debug with GNU compiler on Linux.",
 			"inherits": [
 				".test",
@@ -381,7 +403,7 @@
 		{
 			"name": "gnu-coverage",
 			"hidden": false,
-			"displayName": "Coverage Test GNU",
+			"displayName": "Coverage GNU",
 			"description": "Coverage with GNU compiler on Linux.",
 			"inherits": [
 				".test",
@@ -390,10 +412,21 @@
 			"configurePreset": "gnu-coverage"
 		},
 		{
+			"name": "gnu-release",
+			"hidden": false,
+			"displayName": "Release GNU",
+			"description": "Release with GNU compiler on Linux.",
+			"inherits": [
+				".test",
+				".lnx-only"
+			],
+			"configurePreset": "gnu-release"
+		},
+		{
 			"name": "gw-debug",
 			"hidden": false,
-			"displayName": "Dbg Test GW",
-			"description": "Debug test GW Windows cross compiler on Linux.",
+			"displayName": "Debug GW",
+			"description": "Debug test Windows GW compiler on Linux.",
 			"inherits": [
 				".test",
 				".lnx-only"
@@ -403,8 +436,8 @@
 		{
 			"name": "gw-coverage",
 			"hidden": false,
-			"displayName": "Coverage Test GW",
-			"description": "Coverage with GW compiler on Linux.",
+			"displayName": "Coverage GW",
+			"description": "Coverage with Windows GW compiler on Linux.",
 			"inherits": [
 				".test",
 				".lnx-only"
@@ -412,21 +445,10 @@
 			"configurePreset": "gw-coverage"
 		},
 		{
-			"name": "gnu-release",
-			"hidden": false,
-			"displayName": "Release Test GNU",
-			"description": "Release with GNU compiler on Linux.",
-			"inherits": [
-				".test",
-				".lnx-only"
-			],
-			"configurePreset": "gnu-release"
-		},
-		{
 			"name": "gw-release",
 			"hidden": false,
-			"displayName": "Release Test GW",
-			"description": "Release test GW Windows cross compiler on Linux.",
+			"displayName": "Release GW",
+			"description": "Release test Windows GW compiler on Linux.",
 			"inherits": [
 				".test",
 				".lnx-only"
@@ -436,13 +458,24 @@
 		{
 			"name": "mingw-debug",
 			"hidden": false,
-			"displayName": "Dbg Test MinGW",
+			"displayName": "Debug MinGW",
 			"description": "Debug test MinGW compiler on Windows.",
 			"inherits": [
 				".w64-only",
 				".test"
 			],
 			"configurePreset": "mingw-debug"
+		},
+		{
+			"name": "mingw-release",
+			"hidden": false,
+			"displayName": "Release MinGW",
+			"description": "Release test MinGW compiler on Windows.",
+			"inherits": [
+				".w64-only",
+				".test"
+			],
+			"configurePreset": "mingw-release"
 		}
 	],
 	"packagePresets": [
@@ -478,7 +511,7 @@
 		{
 			"name": "gnu-debug",
 			"hidden": false,
-			"displayName": "GNU Deb Pack Dbg",
+			"displayName": "Debug GNU",
 			"description": "GNU Debian package debug.",
 			"inherits": [
 				".pack",
@@ -498,7 +531,7 @@
 				".pack",
 				".lnx-only"
 			],
-			"displayName": "GW ZIP + NSIS Pack Dbg",
+			"displayName": "Debug GW",
 			"description": "GW ZIP + NSIS package debug.",
 			"configurePreset": "gw-debug",
 			"packageDirectory": "${sourceDir}/bin/pkg",
@@ -510,7 +543,7 @@
 		{
 			"name": "gnu-release",
 			"hidden": false,
-			"displayName": "GNU Deb Pack Release",
+			"displayName": "Release GNU",
 			"description": "GNU Debian package release.",
 			"inherits": [
 				".pack",
@@ -530,7 +563,7 @@
 				".pack",
 				".lnx-only"
 			],
-			"displayName": "GW ZIP + NSIS Pack Release",
+			"displayName": "Release GW",
 			"description": "GW ZIP + NSIS package release.",
 			"configurePreset": "gw-release",
 			"packageDirectory": "${sourceDir}/bin/pkg",
@@ -546,9 +579,25 @@
 				".w64-only",
 				".pack"
 			],
-			"displayName": "MinGW ZIP + NSIS Pack Dbg",
+			"displayName": "MinGW ZIP + NSIS",
 			"description": "MinGW ZIP + NSIS package debug.",
 			"configurePreset": "mingw-debug",
+			"packageDirectory": "${sourceDir}/bin/pkg",
+			"generators": [
+				"NSIS64",
+				"ZIP"
+			]
+		},
+		{
+			"name": "mingw-release",
+			"hidden": false,
+			"inherits": [
+				".w64-only",
+				".pack"
+			],
+			"displayName": "MinGW ZIP + NSIS",
+			"description": "MinGW ZIP + NSIS package debug.",
+			"configurePreset": "mingw-release",
 			"packageDirectory": "${sourceDir}/bin/pkg",
 			"generators": [
 				"NSIS64",
@@ -559,8 +608,8 @@
 	"workflowPresets": [
 		{
 			"name": "gnu-debug",
-			"displayName": "GNU Dbg Workflow",
-			"description": "GNU debug workflow.",
+			"displayName": "Debug GNU",
+			"description": "Debug workflow.",
 			"steps": [
 				{
 					"type": "configure",
@@ -585,8 +634,8 @@
 		},
 		{
 			"name": "gnu-coverage",
-			"displayName": "GNU Coverage Workflow",
-			"description": "GNU coverage workflow.",
+			"displayName": "Coverage GNU",
+			"description": "Coverage workflow.",
 			"steps": [
 				{
 					"type": "configure",
@@ -599,54 +648,6 @@
 				{
 					"type": "test",
 					"name": "gnu-coverage"
-				}
-			],
-			"vendor": {
-				"target_os": "GNU/Linux"
-			}
-		},
-		{
-			"name": "gw-coverage",
-			"displayName": "GW Coverage Workflow",
-			"description": "GW coverage workflow.",
-			"steps": [
-				{
-					"type": "configure",
-					"name": "gw-coverage"
-				},
-				{
-					"type": "build",
-					"name": "gw-coverage"
-				},
-				{
-					"type": "test",
-					"name": "gw-coverage"
-				}
-			],
-			"vendor": {
-				"target_os": "GNU/Linux"
-			}
-		},
-		{
-			"name": "gw-debug",
-			"displayName": "GW Dbg Workflow",
-			"description": "GW debug workflow.",
-			"steps": [
-				{
-					"type": "configure",
-					"name": "gw-debug"
-				},
-				{
-					"type": "build",
-					"name": "gw-debug"
-				},
-				{
-					"type": "test",
-					"name": "gw-debug"
-				},
-				{
-					"type": "package",
-					"name": "gw-debug"
 				}
 			],
 			"vendor": {
@@ -655,8 +656,8 @@
 		},
 		{
 			"name": "gnu-release",
-			"displayName": "GNU Release Workflow",
-			"description": "GNU release workflow.",
+			"displayName": "Release GNU",
+			"description": "Release workflow.",
 			"steps": [
 				{
 					"type": "configure",
@@ -680,9 +681,57 @@
 			}
 		},
 		{
+			"name": "gw-debug",
+			"displayName": "Debug GW",
+			"description": "Debug workflow.",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "gw-debug"
+				},
+				{
+					"type": "build",
+					"name": "gw-debug"
+				},
+				{
+					"type": "test",
+					"name": "gw-debug"
+				},
+				{
+					"type": "package",
+					"name": "gw-debug"
+				}
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
+		},
+		{
+			"name": "gw-coverage",
+			"displayName": "Coverage GW",
+			"description": "Coverage workflow.",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "gw-coverage"
+				},
+				{
+					"type": "build",
+					"name": "gw-coverage"
+				},
+				{
+					"type": "test",
+					"name": "gw-coverage"
+				}
+			],
+			"vendor": {
+				"target_os": "GNU/Linux"
+			}
+		},
+		{
 			"name": "gw-release",
-			"displayName": "GW Release Workflow",
-			"description": "GW release workflow.",
+			"displayName": "Release GW",
+			"description": "Release workflow.",
 			"steps": [
 				{
 					"type": "configure",
@@ -702,13 +751,13 @@
 				}
 			],
 			"vendor": {
-				"target_os": "Linux"
+				"target_os": "GNU/Linux"
 			}
 		},
 		{
 			"name": "mingw-debug",
-			"displayName": "MinGW Dbg Workflow",
-			"description": "MinGW debug workflow.",
+			"displayName": "Debug MinGW",
+			"description": "Debug workflow.",
 			"steps": [
 				{
 					"type": "configure",
@@ -725,6 +774,32 @@
 				{
 					"type": "package",
 					"name": "mingw-debug"
+				}
+			],
+			"vendor": {
+				"target_os": "Cygwin"
+			}
+		},
+		{
+			"name": "mingw-release",
+			"displayName": "Release MinGW",
+			"description": "Release workflow.",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "mingw-release"
+				},
+				{
+					"type": "build",
+					"name": "mingw-release"
+				},
+				{
+					"type": "test",
+					"name": "mingw-release"
+				},
+				{
+					"type": "package",
+					"name": "mingw-release"
 				}
 			],
 			"vendor": {

@@ -320,12 +320,12 @@ Set environment variable 'DOCKER_BUILD=1' for using 'docker' as offset in the bu
 When a the container is detached it executes the 'build.sh' script by attaching to the container which is much faster.
 ```
 
-
 ## CI/CD Pipeline Configuration
 
-The CI/CD Pipeline configuration has a main [`cmake-build.gitlab-ci.yml`](.gitlab/build.gitlab-ci.yml) file which triggers a  
-child-pipeline [`gitlab-ci/main.gitlab-ci.yml`](.gitlab/main.gitlab-ci.yml) twice.
-Respectively **Linux** and **Windows** but having different variable assignments passed from the main pipeline.
+The CI/CD Pipeline configuration has a main [`main.gitlab-ci.yml`](.gitlab/main.gitlab-ci.yml) file which triggers a  
+child-pipeline [`build-single.gitlab-ci.yml`](.gitlab/main.gitlab-ci.yml) twice.  
+Respectively **Linux** and **Windows** but having different variable assignments passed from the main pipeline.  
+The [`coverage.gitlab-ci.yml`](.gitlab/coverage.gitlab-ci.yml) is triggert once. 
 
 The `SF_SIGNAL` variable is set in GitLab for the project.
 

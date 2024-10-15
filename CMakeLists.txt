@@ -31,21 +31,15 @@ project("devops-shared"
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 
-# Declare some cmake flags for decisions on building targets.
-set(SF_BUILD_TESTING "OFF" CACHE BOOL "Enable test targets to be build.")
-set(SF_BUILD_QT "OFF" CACHE BOOL "Enable QT targets to be build.")
-set(SF_BUILD_GUI_TESTING "OFF" CACHE BOOL "Enable testing of tests using the GUI.")
-set(SF_TEST_NAME_PREFIX "t_" CACHE STRING "Prefix for test applications to allow skipping when packaging.")
-
 # Use faster linker for Windows maybe?
 if (WIN32)
 	# Adding option '-mwindows' as a linker flag will remove the console.
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=bfd")
 	# Prevent error when configuring for cross compile for Windows in Linux.
-	if ("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+	if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
 		# Make some cmake files happy so they do report "Not found".
 		set(Vulkan_INCLUDE_DIR "/tmp")
-	endif()
+	endif ()
 	# Needed to be able to set debug breaks using MSVC
 	set(CMAKE_C_FLAGS_DEBUG "-D_DEBUG")
 endif ()
@@ -53,7 +47,10 @@ endif ()
 # Make sure builds do not wind up in the source directory.
 find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
-
+if (SF_BUILD_QT)
+	# Install/fetch the Qt Libraries when ENV{QT_VER_DIR} is not set.
+	find_package(SfQtLibrary 6.7.2 CONFIG REQUIRED)
+endif ()
 # Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
 set(CMAKE_CXX_STANDARD 20)
 find_package(SfCompiler CONFIG REQUIRED)
@@ -70,12 +67,15 @@ if (SF_BUILD_TESTING)
 	include(CTest)
 endif ()
 
-# Configure the rpath.
+# Configure the rpath to make the Linux compiled instances find
+# libraries without using the LD_LIBRARY_PATH.
 if (SF_BUILD_QT)
-	# When the Qt directory is available append it.
-	Sf_GetQtVersionDirectory(_QtVer)
-	if (NOT _QtVer STREQUAL "")
-		Sf_SetRPath("\${ORIGIN}:\${ORIGIN}/lib:${_QtVer}/gcc_64/lib")
+	# Need to have the Qt directory in the RPATH.
+	Sf_GetQtVersionDirectory(_QtVerDir)
+	if (_QtVerDir STREQUAL "")
+		message(SEND_ERROR "Qt version directory not found or set!")
+	else ()
+		Sf_SetRPath("\${ORIGIN}:\${ORIGIN}/lib:${_QtVerDir}/gcc_64/lib")
 	endif ()
 else ()
 	Sf_SetRPath("\${ORIGIN}:\${ORIGIN}/lib")

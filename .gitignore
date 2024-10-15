@@ -15,6 +15,8 @@
 /bin/lnx64/*
 /bin/win64/*
 /bin/man/*
+# Location of downloaded uncompressed libraries.
+/lib/*
 # Credential files for testing CI-pipeline called scripts.
 /.nexus-upload-credentials
 /.comment-credentials
@@ -23,3 +25,4 @@
 /.version-bump
 # Test bash scripts.
 /test-*.sh
+.tools-dir-*
