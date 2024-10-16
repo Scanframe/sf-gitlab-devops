@@ -16,6 +16,8 @@ variables:
   SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
   # To propagate the CI_PIPELINE_ID to the child pipeline.
   SF_PARENT_PIPELINE_ID: "${CI_PIPELINE_ID}"
+  # Default Docker image.
+  SF_DOCKER_IMAGE: "nexus.scanframe.com/gnu-cpp:24.04-6.7.2"
 
 workflow:
   rules:
@@ -43,6 +45,8 @@ stages:
 
 # Defaults for all jobs.
 default:
+  # Set a specific Docker image to execute all jobs in.
+  image: "${SF_DOCKER_IMAGE}"
   # Tags determine the selection of a runner.
   tags:
     - cplusplus
