@@ -1,5 +1,6 @@
 #pragma once
 #include <limits>
+#include <type_traits>
 
 /**
  * Just a file and namespace to demonstrate the Doxygen manual generation.
