@@ -22,11 +22,20 @@ namespace MySpace
  * @return Resulted scaled value.
  */
 template<class T, class S>
-inline auto calculateOffset(T value, T min_val, T max_val, S len, bool clip) -> S
+auto calculateOffset(T value, T min_val, T max_val, S len, bool clip) -> S
 {
 	max_val -= min_val;
 	value -= min_val;
-	S temp = (max_val && value) ? (std::numeric_limits<T>::is_iec559 ? len * (value / max_val) : (len * value) / max_val) : 0;
+	S temp;
+	if constexpr (std::is_floating_point<T>())
+	{
+		temp = len * (value / max_val);
+	}
+	else
+	{
+		temp = (len * value) / max_val;
+	}
+	temp = (max_val && value) ? temp : 0;
 	// Clip when required.
 	if (clip)
 	{

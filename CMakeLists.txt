@@ -100,7 +100,7 @@ endif ()
 # Only when testing is enabled and the build type is 'Coverage'.
 # This must be the last test added since it relies on previous the calls
 # to 'Sf_AddAsCoverageTest()'.
-Sf_AddTestCoverageReport("coverage-report" "src" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov")
+Sf_AddTestCoverageReport("coverage-report" "${CMAKE_CURRENT_LIST_DIR}/bin/gcov" "--html flat --json --cleanup --verbose" "src")
 
 # Add package build config when not building coverage.
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Coverage")

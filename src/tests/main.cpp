@@ -37,5 +37,7 @@ int main(int argc, char* argv[])
 			return rv;
 		}
 	};
+	// Delay to observe test order.
+	sleep(1);
 	return func();
 }
