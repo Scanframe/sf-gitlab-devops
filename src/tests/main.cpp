@@ -1,4 +1,5 @@
 #include <catch2/catch_all.hpp>
+#include <unistd.h>
 
 namespace
 {
@@ -38,6 +39,6 @@ int main(int argc, char* argv[])
 		}
 	};
 	// Delay to observe test order.
-	sleep(1);
+	::sleep(1);
 	return func();
 }
