@@ -12,8 +12,8 @@
 static std::string getExecutableFilepath()
 {
 #if defined(_WIN32)
-	std::string rv(MAX_PATH, '\0');
-	rv.resize(::GetModuleFileNameA(nullptr, rv.data(), rv.capacity()));
+	std::string retval(MAX_PATH, '\0');
+	retval.resize(::GetModuleFileNameA(nullptr, retval.data(), retval.capacity()));
 #else
 	std::string retval(PATH_MAX, '\0');
 	retval.resize(::readlink("/proc/self/exe", retval.data(), retval.capacity()));
