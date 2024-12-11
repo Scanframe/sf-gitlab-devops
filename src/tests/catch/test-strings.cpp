@@ -1,4 +1,4 @@
-#include "../gen/template.h"
+#include "gen/template.h"
 #include <catch2/catch_all.hpp>
 
 TEST_CASE("Some Unit Tests", "[generic][any]")
@@ -15,7 +15,7 @@ TEST_CASE("Some Unit Tests", "[generic][any]")
 
 	SECTION("Template")
 	{
-		CHECK(MySpace::calculateOffset(0.5, -2.0, 2.0, 1000u, true) == 625);
-		CHECK(MySpace::calculateOffset(1.0, -2.0, 2.0, 1000u, true) == 750);
+		CHECK(MySpace::calculateOffset(0.5, -2.0, 2.0, 1000U, true) == 625);
+		CHECK(MySpace::calculateOffset(1.0, -2.0, 2.0, 1000U, true) == 750);
 	}
 }
