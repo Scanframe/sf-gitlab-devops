@@ -25,4 +25,5 @@
 /.version-bump
 # Test bash scripts.
 /test-*.sh
-.tools-dir-*
+/.tools-dir-*
+/user.cmake

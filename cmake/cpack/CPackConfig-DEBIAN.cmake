@@ -6,7 +6,23 @@ set(CPACK_DEBIAN_PACKAGE_NAME "${SF_PACKAGE_NAME}")
 #set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
 # Variable CPACK_DEBIAN_PACKAGE_RELEASE is not used and resolved using CPACK_PACKAGE_VERSION.
 #set(CPACK_DEBIAN_PACKAGE_RELEASE "")
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# Set the architecture conform the compiler.
+# To check the resulting package architecture use:
+#    dpkg-deb -f <deb-file> architecture
+if (SF_COMPILER STREQUAL "gnu")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# Check for the aarch64 cross compiler.
+elseif (SF_COMPILER STREQUAL "ga")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "aarch64")
+	# This bellow causes an error.
+	#set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+else ()
+	message(SEND_ERROR "SF_COMPILER needs architecture configuration")
+endif ()
+
 set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
 #set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CMAKE_PROJECT_HOMEPAGE_URL}")

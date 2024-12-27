@@ -28,6 +28,11 @@ project("devops-shared"
 	LANGUAGES C CXX
 )
 
+# Check if the cmake is available and include it to maybe overrule CMakePresets.json cache variables.
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/user.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/user.cmake")
+endif ()
+
 # Add top target for displaying info on the compiled target where Sf_AddExifTarget() is called on.
 add_custom_target("exif" ALL)
 

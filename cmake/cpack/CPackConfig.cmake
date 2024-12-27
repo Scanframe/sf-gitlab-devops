@@ -74,11 +74,14 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 # Number of threads to use when performing parallelized operations, such as compressing the installer package.
 set(CPACK_THREADS 4)
 
-# Specific packager settings are in put in include separate files.
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-DEBIAN.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-RPM.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
+# Specific packager settings are in put in separate include files.
+if (NOT WIN32)
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-DEBIAN.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-RPM.cmake")
+else ()
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
+endif ()
 
 # Retrieve all targets from this project.
 Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
@@ -101,13 +104,13 @@ endforeach ()
 if (WIN32)
 	# Do not include the import libraries.
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
-		LIBRARY DESTINATION ./
+		RUNTIME DESTINATION .
+		LIBRARY DESTINATION .
 		#CONFIGURATIONS Debug
 	)
 else ()
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
+		RUNTIME DESTINATION .
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION arc
 		#CONFIGURATIONS Debug
