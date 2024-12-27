@@ -17,7 +17,7 @@ variables:
   # To propagate the CI_PIPELINE_ID to the child pipeline.
   SF_PARENT_PIPELINE_ID: "${CI_PIPELINE_ID}"
   # Default Docker image.
-  SF_DOCKER_IMAGE: "nexus.scanframe.com/gnu-cpp:24.04-6.7.2"
+  SF_DOCKER_IMAGE: "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.7.2"
 
 workflow:
   rules:
