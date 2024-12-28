@@ -12,8 +12,9 @@
 # Binary directories containg build/packaged results.
 /bin/gcov/*
 /bin/pkg/*
-/bin/lnx64/*
-/bin/win64/*
+# Ignore all binary directories.
+/bin/lnx64*/*
+/bin/win64*/*
 /bin/man/*
 # Location of downloaded uncompressed libraries.
 /lib/*
@@ -26,4 +27,5 @@
 # Test bash scripts.
 /test-*.sh
 /.tools-dir-*
+# CMake include file overrulling the cache instead of changing the CMakePresets.json file.
 /user.cmake
