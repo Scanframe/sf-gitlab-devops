@@ -86,80 +86,77 @@ Execute the script `cpp-builder.sh` and view its sub-commands.
 ```
 
 ```
-Usage: cpp-builder.sh [<options>] <command>
-  Execute an actions for docker and/or it's container.
+Executes CMake commands using the 'CMakePresets.json' and 'CMakeUserPresets.json' files
+of which the first is mandatory to exist.
 
-  Options:
-    -h, --help    : Show this help.
-    -p, --project : Project directory which is mounted in '/mnt/project' and has a symlink '~/project'.
+Usage: build.sh [<options>] [<presets> ...]
+  -h, --help       : Shows this help.
+  -d, --debug      : Debug: Show executed commands rather then executing them.
+  -i, --info       : Return information on all available build, test and package presets.
+  -s, --submodule  : Return branch information on all Git submodules of last commit.
+  -p, --package    : Create packages using a preset.
+  --required <trg> : Install required packages using the package manager under Linux.
+                     For Windows package managers apt-cyg (Cygwin) and WinGet are used.
+                     Where <trg> is the targeted system to build for like 'lnx', 'win', 'arm' on Linux
+                     and for Windows only 'win'.
+  -m, --make       : Create build directory and makefiles only.
+  -f, --fresh      : Configure a fresh build tree, removing any existing cache file.
+  -C, --wipe       : Wipe clean build tree directory by removing all contents from the build directory.
+  -c, --clean      : Cleans build targets first (adds build option '--clean-first')
+  -b, --build      : Build target and make config when it does not exist.
+  -B, --build-only : Build target only and fail when the configuration does note exist.
+  -t, --test       : Runs the ctest application using a test-preset.
+  -r, --regex      : Regular expression on which test names are to be executed.
+  -w, --workflow   : Runs the passed work flow presets.
+  -l, --list-only  : Lists the ctest test defined application by the project and selected preset.
+  -n, --target     : Overrides the build targets set in the preset by a single target.
+  Where <sub-dir> is the directory used as build root for the CMakeLists.txt in it.
+  This is usually the current directory '.'.
+  When the <target> argument is omitted it defaults to 'all'.
+  The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
 
-  Commands:
-    build       : Builds the docker image tagged 'gnu-cpp:dev' for self-hosted Nexus repository and requires zipped Qt libraries.
-    push        : Pushes the docker image to the self-hosted Nexus repository.
-    pull        : Pulls the docker image from the self-hosted Nexus repository.
-    base-push   : Pushes the base image 'ubuntu:22.04' to the self-hosted Nexus repository.
-    qt-lnx      : Generates the 'qt-win.zip' from the current users Linux Qt library.
-    qt-win      : Generates the qt-win-zip from the current users Windows Qt library.
-    qt-lnx-up   : Uploads the generated zip-file to the Nexus server as 'repository/shared/library/qt-lnx.zip'.
-    qt-win-up   : Uploads the generated zip-file to the Nexus server as 'repository/shared/library/qt-win.zip'.
-    runx        : Runs the docker container named 'gnu-cpp' in the foreground mounting the passed project directory using the host's X-server.
-    run         : Same as 'runx' using a fake X-server.
-    stop        : Stops the container named 'gnu-cpp' running in the background.
-    kill        : Kills the container named 'gnu-cpp' running in the background.
-    status      : Return the status of named 'gnu-cpp' the container running in the background.
-    attach      : Attaches to the  in the background running container named 'gnu-cpp'.
-    versions    : Shows versions of most installed applications within the container.
-    docker-push : Push 'gnu-cpp' to userspace '' on docker.com.
-
-  Command passed to 'nexus-docker.sh':
-    du          : Show docker disk usage.
-    local       : Docker client list local images.
-    list        : List remote images on Nexus server.
-    login       : Log Docker in on the self hosted Nexus registry repository.
-    docker-login: Log Docker in on docker.com registry as 'avolphen'.
-    logout      : Log docker out from any repository.
-    prune       : Remove all Docker build cache.
-    remove      : Removes a local image. (not implemented)
-    wine-reg    : Compress registry files from common/wine-reg.
-    wine-reg-up : Upload compressed registry files to Nexus raw repository.
+  Examples:
+    Get all project presets info: ./build.sh -i
+    Make/Build project: ./build.sh -b my-build-preset1 my-build-preset2
+    Test project: ./build.sh -t my-test-preset1 my-test-preset2
+    Make/Build/Test/Pack project: ./build.sh -w my-workflow-preset
 ```
 
 The image contains all needed packages for builds and each of them are listed here with their versions.
 
-The next list is obtained by executing `./cpp-builder.sh versions` or `./docker-build.sh versions`.
+The next list is obtained by executing `./docker-build.sh versions`.
 
-| Application    | Version    |
-|----------------|------------|
-| Ubuntu         | 22.04      |
-| Git            | 2.46.0     |
-| GCC            | 11.4.0     |
-| C++            | 11.4.0     |
-| GCC            | 12.3.0     |
-| C++            | 12.3.0     |
-| MinGW GCC      | 10-posix   |
-| MinGW C++      | 10-posix   |
-| CMake          | 3.30.2     |
-| GNU-Make       | 4.3        |
-| Ninja-Build    | 1.10.1     |
-| CLang-Format   | 20.0.0     |
-| Gdb            | 12.1       |
-| GNU-Linker     | 2.38       |
-| Qt-Lib-Lnx     | 6.7.2      |
-| Qt-Lib-Win     | 6.7.2      |
-| DoxyGen        | 1.9.1      |
-| Graphviz       | 2.43.0     |
-| Exif-Tool      | 12.40      |
-| Dpkg           | 1.21.1     |
-| RPM            | 4.17.0     |
-| OpenJDK        | 11.0.24    |
-| BindFS         | 1.14.7     |
-| Fuse-ZIP       | 0.6.0      |
-| JQ             | 1.6        |
-| Gcovr          | 7.2        |
-| Python3        | 3.10.12    |
-| Wine           | 9.0        |
-| Wine > Windows | 10.0.19043 |
-
+```text
+Docker image used: nexus.scanframe.com/amd64/gnu-cpp:24.04-6.7.2:
+Application     Version
+Ubuntu          24.04
+Git             2.47.1
+GCC             13.3.0
+C++             13.3.0
+GCC-13          13.3.0
+C++-13          13.3.0
+MinGW GCC       13-posix
+MinGW C++       13-posix
+CMake           3.31.2
+GNU-Make        4.3
+Ninja-Build     1.11.1
+CLang-Format    20.0.0
+Gdb             15.0.50.20240403-git
+GNU-Linker      2.42
+DoxyGen         1.9.8
+Graphviz        2.43.0
+Exif-Tool       12.76
+Dpkg            1.22.6
+RPM             4.18.2
+OpenJDK         21.0.5
+BindFS          1.14.7
+Fuse-ZIP        0.6.0
+JQ              1.7
+Gcovr           8.2
+Python3         3.12.3
+Wine            9.0
+Wine > Windows  10.0.19043
+```
 ## The C++ Application Source
 
 ### Applications & Library
@@ -207,7 +204,7 @@ Look at [Doxygen](https://www.doxygen.nl/) website for the syntax in C++ header 
 
 ```cmake
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.25)
 # Set the global project name.
 project("doc")
 # Add doxygen project when SfDoxygen was found.
@@ -303,21 +300,34 @@ To make it easy to run the same commands within the Docker builder image,
 the [`docker-build.sh`](./docker-build.sh) is provided which takes the same arguments as the `build.sh` script.
 
 ```
-Same as 'build.sh' script but running from Docker image 'nexus.scanframe.com/gnu-cpp:dev' but allows Docker specific commands.
+Same as 'build.sh' script but running from Docker image but allows Docker specific commands.
 
-Usage: cmake/lib/bin/docker-build.sh [command] <args...>
-  pull      : Pulls the docker image 'nexus.scanframe.com/gnu-cpp:dev' from the Docker registry.
-  run       : Runs a command as user 'user' in the container using Docker command
-              'run' or 'exec' depending on a running container in the background.
-  detach    : Detaches a container named 'cpp_builder' in the background.
-  attach    : Attaches to the  in the background running container named 'cpp_builder'.
-  status    : Returns info of the running container 'cpp_builder' in the background.
-  stop      : Stops the container named 'cpp_builder' running in the background.
-  kill      : Kills the container named 'cpp_builder' running in the background.
-  versions  : Shows versions of most installed applications within the container.
+Usage: docker-build.sh <options> -- <build-options> [command] <args...>
 
-Set environment variable 'DOCKER_BUILD=1' for using 'docker' as offset in the build directory to prevent mixing host build directories.
-When a the container is detached it executes the 'build.sh' script by attaching to the container which is much faster.
+  Options:
+    -h, --help                : Shows this help.
+    --qt-ver <version>        : Qt version part forming the Docker image name which defaults to '6.7.2' but empty is possible.
+    -p, --platform <platform> : Platform part forming the Docker image which defaults to 'amd64' where available is 'amd64' and 'arm64'.
+    --no-build-dir            : Docker project builds in a regular cmake-build directory as a native build would.
+
+  Commands:
+    pull      : Pulls the docker image from the Docker registry.
+    run       : Runs a command as user 'user' in the container using Docker command.
+                'run' or 'exec' depending on a running container in the background.
+    start     : Starts/Detaches a container named 'cpp_builder' in the background.
+    attach    : Attaches to the  in the background running container named 'cpp_builder'.
+    status    : Returns info of the running container 'cpp_builder' in the background.
+    stop      : Stops the container named 'cpp_builder' running in the background.
+    kill      : Kills the container named 'cpp_builder' running in the background.
+    versions  : Shows versions of most installed applications within the container.
+    sshd      : Starts sshd service on port 3022 to allow remote control.
+
+  When a the container is detached it executes the 'build.sh' script by attaching to the container which is much faster.
+
+  Examples:
+    Show the targets using the amd64 platform docker image and Qt version 6.7.2.
+      docker-build.sh --platform amd64 --qt-ver 6.7.2 -- --info
+      docker-build.sh --platform arm64 --qt-ver '' -- run uname -a
 ```
 
 ## CI/CD Pipeline Configuration

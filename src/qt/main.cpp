@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-	QApplication a(argc, argv);
+	QApplication const app(argc, argv);
 	QPushButton HelloWorld(
 		QString::fromStdString(getHello(0)) +
 		"\n Qt Library: v" + qVersion() +
@@ -12,5 +12,5 @@ int main(int argc, char* argv[])
 	);
 	HelloWorld.resize(300, 60);
 	HelloWorld.show();
-	return a.exec();
+	return QApplication::exec();
 }

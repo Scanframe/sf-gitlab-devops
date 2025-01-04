@@ -1,15 +1,13 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.25)
 
 # Make it so our own packages are found and also the ones in the sub-module library.
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" "${CMAKE_CURRENT_LIST_DIR}/cmake/lib")
 
 # Package needed for Sf_GetGitTagVersion().
 find_package(SfBase CONFIG REQUIRED)
-# Package needed for adding function Sf_SetToolChain().
+# Package setting the correct tool chain according the host and SF_COMPILER.
 find_package(SfToolChain CONFIG REQUIRED)
-# Install tool chain for Linux or Windows.
-Sf_SetToolChain()
 
 # Get the Git versions from the repository of this files directory.
 Sf_GetGitTagVersion(_Versions "${CMAKE_CURRENT_LIST_DIR}")
@@ -56,6 +54,7 @@ if (SF_BUILD_QT)
 	# Install/fetch the Qt Libraries when ENV{QT_VER_DIR} is not set.
 	find_package(SfQtLibrary 6.7.2 CONFIG REQUIRED)
 endif ()
+
 # Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
 set(CMAKE_CXX_STANDARD 20)
 find_package(SfCompiler CONFIG REQUIRED)

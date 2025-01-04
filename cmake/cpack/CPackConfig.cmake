@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.25)
 
 # This the also the default for variale CPACK_DEBIAN_PACKAGE_MAINTAINER.
 set(CPACK_PACKAGE_CONTACT "Arjan van Olphen <a.v.olphen@scanframe.nl>")
