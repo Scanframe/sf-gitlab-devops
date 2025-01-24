@@ -52,7 +52,7 @@ find_package(SfMacros CONFIG REQUIRED)
 find_package(SfBuildCheck CONFIG REQUIRED)
 if (SF_BUILD_QT)
 	# Install/fetch the Qt Libraries when ENV{QT_VER_DIR} is not set.
-	find_package(SfQtLibrary 6.7.2 CONFIG REQUIRED)
+	find_package(SfQtLibrary 6.8.1 CONFIG REQUIRED)
 endif ()
 
 # Set the C++ standard to 20 for all projects which is required for the SfCompiler package.
