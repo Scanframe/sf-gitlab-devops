@@ -1,3 +1,5 @@
+#!pwsh-shebang.sh
+
 # Gets the current script directory and make it the current working.
 Push-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Definition)
 # Run the imported script.
