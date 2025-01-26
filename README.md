@@ -61,102 +61,38 @@ Repositories:
 * [sf-cmake](https://github.com/Scanframe/sf-cmake)
 * [Catch2](https://github.com/catchorg/Catch2)
 
-## GitHub Cloning
+## Cloning
 
-Since the GitHub repository is a mirror from a private GitLab server the `.gitmodule` file needs to be changed.  
-The script [github-clone.sh](github-clone.sh "Link to script.") facilitates this.s
-
-Execute the script when downloading.
+After cloning the Git repository is to be initialized using the script [init-repo.sh](init-repo.sh "Link to script.") 
+facilitates retrieving submodules and URL when cloned from GitHub. Fixes the symlinks for Windows/Cygwin which requires 
+Cygwin to be installed using one of the following scripts.
 
 ```shell
-wget "https://raw.githubusercontent.com/Scanframe/sf-gitlab-devops/main/github-clone.sh" -qO - | bash
+powershell -Command "Invoke-Expression(Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/Scanframe/sf-cygwin-bin/master/install-cygwin.ps1' -UseBasicParsing).Content"
+```
+
+```shell
+powershell -Command "Invoke-Expression(Invoke-WebRequest -Uri 'https://git.scanframe.com/shared/bin-bash/-/raw/master/install-cygwin.ps1' -UseBasicParsing).Content"
 ```
 
 ## Docker C++ Build Image
 
 The Docker image used for the CI/CD-pipeline en also for compiling in [CLion](https://www.jetbrains.com/clion/) is configured
-by the in the GitHub [`sf-docker-runner`](https://github.com/Scanframe/sf-docker-runner) repository bash script `cpp-builder.sh` and `cpp-builder/Dockerfile`.  
+by the in the GitHub [`sf-docker-runner`](https://github.com/Scanframe/sf-docker-runner) repository bash script `cpp-builder.sh` and `cpp-builder/cpp.Dockerfile`.  
 The bash-script assembles all files needed to create this monster of an image of 2.8 GByte and push it to the self-hosted
-[Sonatype Nexus server](https://nexus.scanframe.com/#browse/browse:docker-image:v2/gnu-cpp/tags/dev).
+[Sonatype Nexus server](https://nexus.scanframe.com/#browse/browse:docker-image).
 
-Execute the script `cpp-builder.sh` and view its sub-commands.
+Clone the repo and execute the script `cpp-builder.sh` and view its sub-commands.
 
 ```shell
 ./cpp-builder.sh --help
-```
-
-```
-Executes CMake commands using the 'CMakePresets.json' and 'CMakeUserPresets.json' files
-of which the first is mandatory to exist.
-
-Usage: build.sh [<options>] [<presets> ...]
-  -h, --help       : Shows this help.
-  -d, --debug      : Debug: Show executed commands rather then executing them.
-  -i, --info       : Return information on all available build, test and package presets.
-  -s, --submodule  : Return branch information on all Git submodules of last commit.
-  -p, --package    : Create packages using a preset.
-  --required <trg> : Install required packages using the package manager under Linux.
-                     For Windows package managers apt-cyg (Cygwin) and WinGet are used.
-                     Where <trg> is the targeted system to build for like 'lnx', 'win', 'arm' on Linux
-                     and for Windows only 'win'.
-  -m, --make       : Create build directory and makefiles only.
-  -f, --fresh      : Configure a fresh build tree, removing any existing cache file.
-  -C, --wipe       : Wipe clean build tree directory by removing all contents from the build directory.
-  -c, --clean      : Cleans build targets first (adds build option '--clean-first')
-  -b, --build      : Build target and make config when it does not exist.
-  -B, --build-only : Build target only and fail when the configuration does note exist.
-  -t, --test       : Runs the ctest application using a test-preset.
-  -r, --regex      : Regular expression on which test names are to be executed.
-  -w, --workflow   : Runs the passed work flow presets.
-  -l, --list-only  : Lists the ctest test defined application by the project and selected preset.
-  -n, --target     : Overrides the build targets set in the preset by a single target.
-  Where <sub-dir> is the directory used as build root for the CMakeLists.txt in it.
-  This is usually the current directory '.'.
-  When the <target> argument is omitted it defaults to 'all'.
-  The <sub-dir> is also the directory where cmake will create its 'cmake-build-???' directory.
-
-  Examples:
-    Get all project presets info: ./build.sh -i
-    Make/Build project: ./build.sh -b my-build-preset1 my-build-preset2
-    Test project: ./build.sh -t my-test-preset1 my-test-preset2
-    Make/Build/Test/Pack project: ./build.sh -w my-workflow-preset
 ```
 
 The image contains all needed packages for builds and each of them are listed here with their versions.
 
 The next list is obtained by executing `./docker-build.sh versions`.
 
-```text
-Docker image used: nexus.scanframe.com/amd64/gnu-cpp:24.04-6.7.2:
-Application     Version
-Ubuntu          24.04
-Git             2.47.1
-GCC             13.3.0
-C++             13.3.0
-GCC-13          13.3.0
-C++-13          13.3.0
-MinGW GCC       13-posix
-MinGW C++       13-posix
-CMake           3.31.2
-GNU-Make        4.3
-Ninja-Build     1.11.1
-CLang-Format    20.0.0
-Gdb             15.0.50.20240403-git
-GNU-Linker      2.42
-DoxyGen         1.9.8
-Graphviz        2.43.0
-Exif-Tool       12.76
-Dpkg            1.22.6
-RPM             4.18.2
-OpenJDK         21.0.5
-BindFS          1.14.7
-Fuse-ZIP        0.6.0
-JQ              1.7
-Gcovr           8.2
-Python3         3.12.3
-Wine            9.0
-Wine > Windows  10.0.19043
-```
+
 ## The C++ Application Source
 
 ### Applications & Library
@@ -329,6 +265,41 @@ Usage: docker-build.sh <options> -- <build-options> [command] <args...>
       docker-build.sh --platform amd64 --qt-ver 6.7.2 -- --info
       docker-build.sh --platform arm64 --qt-ver '' -- run uname -a
 ```
+
+The command `./docker-build.sh versions` will show all installed tool versions.
+
+```text
+Docker image used: nexus.scanframe.com/amd64/gnu-cpp:24.04-6.8.1:
+Application     Version
+Ubuntu          24.04
+Git             2.47.1
+GCC             13.3.0
+C++             13.3.0
+GCC-13          13.3.0
+C++-13          13.3.0
+MinGW GCC       13-posix
+MinGW C++       13-posix
+CMake           3.31.2
+GNU-Make        4.3
+Ninja-Build     1.11.1
+CLang-Format    20.0.0
+Gdb             15.0.50.20240403-git
+GNU-Linker      2.42
+DoxyGen         1.9.8
+Graphviz        2.43.0
+Exif-Tool       12.76
+Dpkg            1.22.6
+RPM             4.18.2
+OpenJDK         21.0.5
+BindFS          1.14.7
+Fuse-ZIP        0.6.0
+JQ              1.7
+Gcovr           8.2
+Python3         3.12.3
+Wine            9.0
+Wine > Windows  10.0.19043
+```
+
 
 ## CI/CD Pipeline Configuration
 
@@ -515,7 +486,7 @@ It is not possible to run the GDB debugger from the IDE.
 Somehow the IDE is not able to communicate with GDB.  
 The path of the binary file on the host is shown or passed to GDB.
 
-/mnt/server/userdata/source/c++src/trial-devops/bin/lnx64/hello-world.bin
+`/mnt/server/userdata/source/c++src/trial-devops/bin/lnx64/hello-world.bin`
 
 The configuration used by the Docker toolchain for this project is:
 
@@ -528,4 +499,3 @@ The configuration used by the Docker toolchain for this project is:
 --net host
 --rm
 ```
-
