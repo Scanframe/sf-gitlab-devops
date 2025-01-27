@@ -9,7 +9,10 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${script_dir}"
 
 # Check if the needed cmds are installed.
-cmds=("git" "sed" "symlink2native.sh")
+cmds=("git")
+# For Cygwin an additional command are needed.
+[[ "$(uname -o)" == "Cygwin " ]] && cmds+=("symlink2native.sh")
+
 for cmd in "${cmds[@]}"; do
 	if ! command -v "${cmd}" >/dev/null; then
 		WriteLog "Missing command '${cmd}' for this script!"
