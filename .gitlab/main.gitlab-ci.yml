@@ -139,6 +139,24 @@ linux-gw:
     include:
       - local: '.gitlab/build-single.gitlab-ci.yml'
 
+linux-ga:
+  stage: build
+  needs:
+    - job: check-env
+    - job: linux-gcov
+  extends: .build-rules
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "ga"
+    SF_BUILD_TYPE: "release"
+    SF_DIR_BIN: "bin/lnx64"
+  trigger:
+    strategy: depend
+    forward:
+      yaml_variables: true
+    include:
+      - local: '.gitlab/build-single.gitlab-ci.yml'
+
 # TODO: Coverage information is not read from child pipelines.
 #  See: https://gitlab.com/gitlab-org/gitlab/-/issues/280818
 linux-gcov:
