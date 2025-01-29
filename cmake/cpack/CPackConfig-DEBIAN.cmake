@@ -10,17 +10,22 @@ set(CPACK_DEBIAN_PACKAGE_NAME "${SF_PACKAGE_NAME}")
 # Set the architecture conform the compiler.
 # To check the resulting package architecture use:
 #    dpkg-deb -f <deb-file> architecture
-if (SF_COMPILER STREQUAL "gnu")
+if (SF_ARCHITECTURE STREQUAL "x86_64")
+	# Set the architecture name used by debian.
 	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-
-# Check for the aarch64 cross compiler.
-elseif (SF_COMPILER STREQUAL "ga")
-	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "aarch64")
-	# This bellow causes an error.
-	#set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+# Check for the aarch64.
+elseif (SF_ARCHITECTURE STREQUAL "x86")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
+	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+elseif (SF_ARCHITECTURE STREQUAL "aarch64")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+elseif (SF_ARCHITECTURE STREQUAL "arm")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "armhf")
+	set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 else ()
-	message(SEND_ERROR "SF_COMPILER needs architecture configuration")
+	message(SEND_ERROR "Architecture '${CMAKE_SYSTEM_PROCESSOR}' not supported!")
 endif ()
 
 set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
@@ -29,4 +34,5 @@ set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CMAKE_PROJECT_HOMEPAGE_URL}")
 # Prevent error in 'CPackDeb.cmake' reporting "dpkg-shlibdeps: 'dpkg-shlibdeps: error: cannot find library".
 list(APPEND CPACK_DEBIAN_PACKAGE_SHLIBDEPS_PRIVATE_DIRS "${CMAKE_INSTALL_PREFIX}/lib")
 #set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libc6 (< 2.4)")
+
 
