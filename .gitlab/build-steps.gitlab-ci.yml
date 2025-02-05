@@ -120,6 +120,8 @@ stages:
 
 # Defaults for all jobs.
 default:
+  # Set a specific Docker image to execute all jobs in.
+  image: "${SF_DOCKER_IMAGE}"
   # Tags determine the selection of a runner.
   tags:
     - cplusplus

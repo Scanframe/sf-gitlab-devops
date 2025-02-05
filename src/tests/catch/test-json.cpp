@@ -9,16 +9,16 @@
 	#include <windows.h>
 #endif
 
-std::string getExecutableFilepath()
+static std::string getExecutableFilepath()
 {
 #if defined(_WIN32)
-	std::string rv(MAX_PATH, '\0');
-	rv.resize(::GetModuleFileNameA(nullptr, rv.data(), rv.capacity()));
+	std::string retval(MAX_PATH, '\0');
+	retval.resize(::GetModuleFileNameA(nullptr, retval.data(), retval.capacity()));
 #else
-	std::string rv(PATH_MAX, '\0');
-	rv.resize(::readlink("/proc/self/exe", rv.data(), rv.capacity()));
+	std::string retval(PATH_MAX, '\0');
+	retval.resize(::readlink("/proc/self/exe", retval.data(), retval.capacity()));
 #endif
-	return rv;
+	return retval;
 }
 
 TEST_CASE("sf::Json", "[json]")
@@ -32,6 +32,7 @@ TEST_CASE("sf::Json", "[json]")
 				.parent_path()
 				.append("src")
 				.append("tests")
+				.append("catch")
 				.append("test.customer.json");
 		std::cerr << "Json File: " << path << std::endl;
 		REQUIRE(std::filesystem::exists(path));

@@ -4,9 +4,16 @@
 
 int main(int argc, char* argv[])
 {
-	QApplication a(argc, argv);
-	QPushButton HelloWorld(QString::fromStdString(getHello(0)));
-	HelloWorld.resize(300, 60);
+	QApplication const app(argc, argv);
+	QPushButton HelloWorld(
+		QString::fromStdString(getHello(0)) +
+		"\nTimestamp: " + QString::fromStdString(utcTimeString()) +
+		"\nGCC Version: " + QString::fromStdString(getGCCVersion()) +
+		"\nStandard: " + QString::fromStdString(getCppStandardVersion()) +
+		"\nQt Library: v" + qVersion() +
+		"\nQt Build  : v" + QT_VERSION_STR
+	);
+	HelloWorld.resize(300, 120);
 	HelloWorld.show();
-	return a.exec();
+	return QApplication::exec();
 }

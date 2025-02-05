@@ -1,11 +1,11 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.25)
 
 # This the also the default for variale CPACK_DEBIAN_PACKAGE_MAINTAINER.
 set(CPACK_PACKAGE_CONTACT "Arjan van Olphen <a.v.olphen@scanframe.nl>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CMAKE_PROJECT_DESCRIPTION}")
 set(CPACK_PACKAGE_DESCRIPTION
-	"The long description of this DevOps trial application
+	"The long description of this DevOps template application
 having more then one line.")
 
 # Variable for all types of packages to set the individual package name.
@@ -74,11 +74,14 @@ set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
 # Number of threads to use when performing parallelized operations, such as compressing the installer package.
 set(CPACK_THREADS 4)
 
-# Specific packager settings are in put in include separate files.
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-DEBIAN.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-RPM.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
+# Specific packager settings are in put in separate include files.
+if (NOT WIN32)
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-DEBIAN.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-RPM.cmake")
+else ()
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-NSIS.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/CPackConfig-ARCHIVE.cmake")
+endif ()
 
 # Retrieve all targets from this project.
 Sf_GetAllTargets(_AllTargets "${PROJECT_SOURCE_DIR}" "TRUE")
@@ -101,13 +104,13 @@ endforeach ()
 if (WIN32)
 	# Do not include the import libraries.
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
-		LIBRARY DESTINATION ./
+		RUNTIME DESTINATION .
+		LIBRARY DESTINATION .
 		#CONFIGURATIONS Debug
 	)
 else ()
 	install(TARGETS ${_Targets}
-		RUNTIME DESTINATION ./
+		RUNTIME DESTINATION .
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION arc
 		#CONFIGURATIONS Debug

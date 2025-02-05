@@ -7,8 +7,7 @@ if (SF_BUILD_QT)
 endif ()
 
 # Function enable_testing() set the 'BUILD_TESTING' flag.
-if (BUILD_TESTING)
-	add_subdirectory(tests)
+if (SF_BUILD_TESTING)
+	add_subdirectory(tests/google)
+	add_subdirectory(tests/catch)
 endif ()
-
-

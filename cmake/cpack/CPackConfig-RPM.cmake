@@ -15,3 +15,8 @@ set(CPACK_RPM_PACKAGE_GROUP "Scanframe")
 set(CPACK_RPM_PACKAGE_AUTOREQ 1)
 set(CPACK_RPM_PACKAGE_AUTOPROV 1)
 #set(CPACK_RPM_PACKAGE_REQUIRES "python >= 2.5.0, cmake >= 3.27")
+set(CPACK_RPM_PACKAGE_ARCHITECTURE "${SF_ARCHITECTURE}")
+# Set the correct stripping application from the toolchain.
+set(CPACK_RPM_SPEC_MORE_DEFINE "%define __strip ${CMAKE_STRIP}")
+# Prevent stripping since it calls the default /usr/bin/strip on the aarch64 when on x86_64 system.
+#set(CPACK_RPM_SPEC_MORE_DEFINE "%define __spec_install_post /bin/true")

@@ -16,10 +16,12 @@ variables:
   SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
   # To propagate the CI_PIPELINE_ID to the child pipeline.
   SF_PARENT_PIPELINE_ID: "${CI_PIPELINE_ID}"
+  # Default Docker image.
+  SF_DOCKER_IMAGE: "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.8.1"
 
 workflow:
   rules:
-    # No pipeline when commit message starts with an exclamation mark '!'.
+    # No pipeline when SF_SIGNAL equals 'skip'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
     # Run pipeline initiated by a merge request event.
@@ -43,6 +45,8 @@ stages:
 
 # Defaults for all jobs.
 default:
+  # Set a specific Docker image to execute all jobs in.
+  image: "${SF_DOCKER_IMAGE}"
   # Tags determine the selection of a runner.
   tags:
     - cplusplus
@@ -69,11 +73,13 @@ default:
 check-env:
   stage: check
   script:
-    - 'echo "Working Directory=$(pwd)"'
+    - echo "Working Directory=$(pwd)"
     # Print all environments variables sorted to make it easier to find.
-    - 'echo "Environment Dump" && printenv | sort'
+    - echo "Environment Dump" && printenv | sort
+    # Prevent error when fetching using 'check-format.sh'.
+    - git config --global --add safe.directory '*'
     # Check the formatting of the code.
-    - 'if [[ -f check-format.sh ]]; then ./check-format.sh; fi'
+    - if [[ -f check-format.sh ]]; then ./check-format.sh; fi
 
 # Does a cache and artifact check.
 cache-test:
@@ -126,6 +132,24 @@ linux-gw:
     SF_TOOLCHAIN: "gw"
     SF_BUILD_TYPE: "release"
     SF_DIR_BIN: "bin/win64"
+  trigger:
+    strategy: depend
+    forward:
+      yaml_variables: true
+    include:
+      - local: '.gitlab/build-single.gitlab-ci.yml'
+
+linux-ga:
+  stage: build
+  needs:
+    - job: check-env
+    - job: linux-gcov
+  extends: .build-rules
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "ga"
+    SF_BUILD_TYPE: "release"
+    SF_DIR_BIN: "bin/lnx64"
   trigger:
     strategy: depend
     forward:
