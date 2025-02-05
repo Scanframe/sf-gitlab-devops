@@ -52,8 +52,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 	#REPORT_TARGET
 )
 
-#set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
-
 # When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 #target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
 
@@ -64,3 +62,12 @@ target_include_directories(${PROJECT_NAME}
 	# Privately no need for a prefix.
 	PRIVATE "inc/hwl"
 )
+
+# Sets the extension of the generated binary.
+Sf_SetTargetSuffix("${PROJECT_NAME}")
+
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")
+
+
+

@@ -55,6 +55,7 @@ frame "Pipeline" as pipeline {
 	frame "GitLab-CI" as gitlab_ci {
 		rectangle "Child: GNU-Build" <<gitlab-ci>> as gnu_cmake
 		rectangle "Child: GW-Build" <<gitlab-ci>> as gw_cmake
+		rectangle "Child: GNU-Coverage" <<gitlab-ci>> as gnu_coverage
 		rectangle "Main" <<gitlab-ci>> as main
 	}
 	'Connectors
@@ -62,5 +63,6 @@ frame "Pipeline" as pipeline {
 	merge_event --> main : trigger
 	main --> gnu_cmake : trigger
 	main --> gw_cmake : trigger
+	main --> gnu_coverage : trigger
 }
 @enduml

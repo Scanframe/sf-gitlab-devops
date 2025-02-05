@@ -31,9 +31,6 @@ Sf_AddExecutable("${PROJECT_NAME}")
 # Import the library.
 target_link_libraries(${PROJECT_NAME} PRIVATE Sf::Hello)
 
-# Add version resource to the target.
-Sf_AddVersionResource("${PROJECT_NAME}")
-
 # Add custom target to report resource stored versions.
 Sf_AddExifTarget("${PROJECT_NAME}")
 
@@ -42,3 +39,7 @@ target_sources(${PROJECT_NAME} PRIVATE main.cpp template.h)
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${PROJECT_NAME}")
+
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")
+

@@ -15,7 +15,6 @@ if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	Sf_SetOutputDirs("bin")
 endif ()
 
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -28,9 +27,6 @@ Sf_SetOutputDirs("bin")
 
 # Set the actual executable target.
 Sf_AddExecutable("${PROJECT_NAME}")
-
-# Add version resource to the target.
-Sf_AddVersionResource("${PROJECT_NAME}")
 
 # Add custom target to report resource stored versions.
 Sf_AddExifTarget("${PROJECT_NAME}")
@@ -51,4 +47,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Sets the extension of the generated binary.
 Sf_SetTargetSuffix("${PROJECT_NAME}")
+
+# Add version resource to the target.
+Sf_AddVersionResource("${PROJECT_NAME}")
 
