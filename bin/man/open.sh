@@ -1,5 +1,10 @@
 #!/bin/bash
 
 # shellcheck disable=SC2034
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-google-chrome --app="file://${SCRIPT_DIR}/html/index.html"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ "$(uname -o)" == "Cygwin" ]]; then
+	"$(ls -f /cygdrive/*/Program\ Files*/Google/Chrome/Application/chrome.exe | head -n 1)" --app="file://$(cygpath --mixed "${script_dir}/html/index.html")"
+else
+	google-chrome --app="file://${script_dir}/html/index.html"
+fi

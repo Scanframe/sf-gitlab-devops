@@ -1,5 +1,5 @@
 # Variables needed for this file.
-# Commented out values are passed from the parent pipeline.
+# Commented-out values are passed from the parent pipeline.
 variables:
   # Logger tag value.
   #SF_TARGET_ARCH: "amd64"
@@ -51,8 +51,8 @@ stages:
   script:
     - echo "..."
 
-# Fetches tags and checks if a tag describes current state of the repository.
-# Is not, unshallow is tried and exits when no tag is still not found.
+# Fetches tags and checks if a tag describes the current state of the repository.
+# If not, unshallow is tried and exits when still no tag is found.
 .script-tags: &tags-script
   - |
     # Prevent error when fetching.
@@ -72,15 +72,15 @@ stages:
       fi
     fi    
 
-# Script to mount source root on a fixed directory path for cmake.
+# Script to mount the source root on a fixed directory path for cmake.
 .script-bind: &bind-script
   - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
 
-# Template to unmount source root on a fixed directory path for cmake.
+# Template to unmount the source root on a fixed directory path for cmake.
 .script-unbind: &unbind-script
   - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
 
-# Template to configure cache for CMake generated files for the compiler.
+# Template to configure the cache for CMake generated files for the compiler.
 .cache:
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
@@ -101,7 +101,7 @@ stages:
     exclude:
       - "**/.gitkeep"
 
-# Template to define package generated artifacts in the designated directory.
+# Template to define the package-generated artifacts in the designated directory.
 .artifacts-pack:
   artifacts:
     name: "${CI_COMMIT_REF_NAME}-${SF_TOOLCHAIN}-packages"
@@ -139,8 +139,8 @@ job-check:
   script:
     - echo "..."
 
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Wiping build directory is not needed since the push policy.
+# Job for creating the make-file using the build.py script calling CMake with appropriate arguments.
+# Wiping the build directory is not needed due to the push policy.
 job-config:
   stage: configure
   needs:
@@ -153,7 +153,7 @@ job-config:
     # The make stage needs tags for versioning of shared libraries and packaging.
     - *tags-script
     # Execute the build script to CMake the makefiles.
-    - '"${SF_DIR_MOUNT}/build.sh" --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '${SF_BUILD_CMD} --make "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
 job-build:
@@ -167,7 +167,7 @@ job-build:
     - *tags-script
     - *bind-script
     # Execute the build script to actually build the running target and libraries.
-    - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '${SF_BUILD_CMD} --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
 job-test:
@@ -180,7 +180,7 @@ job-test:
   script:
     - *bind-script
     # Run the test which in Linux can have absolute path dependencies to dynamic libraries.
-    - '"${SF_DIR_MOUNT}/build.sh" --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '${SF_BUILD_CMD} --test "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     - *unbind-script
 
 job-pack:
@@ -193,11 +193,11 @@ job-pack:
   script:
     - *bind-script
     # Build the 'install' target which enables cpack to pick them up.
-    - '"${SF_DIR_MOUNT}/build.sh" --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
-    - '"${SF_DIR_MOUNT}/build.sh" --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" '
+    - '${SF_BUILD_CMD} --build-only "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" --target install'
+    - '${SF_BUILD_CMD} --package "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}" '
     - *unbind-script
 
-# Template for all deploy jobs.
+# Template for all 'deploy' jobs.
 .deploy:
   needs:
     - job: job-pack
@@ -235,7 +235,7 @@ job-deploy-staging:
       when: manual
       # Make this job optional.
       allow_failure: true
-    # When this branch is not the release branch set it allow manual deployment.
+    # When this branch is not the release branch, set it allow manual deployment.
     - if: '$CI_COMMIT_REF_NAME == $SF_RELEASE_BRANCH'
       when: manual
       allow_failure: true

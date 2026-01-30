@@ -2,7 +2,7 @@
 set(TEST_TARGET "${SF_TEST_NAME_PREFIX}${PROJECT_NAME}-test-catch")
 
 # Make Catch2::Catch2 library available compatible with v3.5.2.
-find_package(SfCatch2 3.5.2 CONFIG REQUIRED)
+find_package(SfCatch2 CONFIG REQUIRED)
 
 # Make nlohmann_json::nlohmann_json library available.
 find_package(SfJson CONFIG REQUIRED)
@@ -33,7 +33,7 @@ Sf_SetTargetSuffix("${TEST_TARGET}")
 target_link_libraries(${TEST_TARGET} PRIVATE Catch2::Catch2 nlohmann_json::nlohmann_json)
 
 # Add the ctest application.
-Sf_AddTest("${TEST_TARGET}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/..")
+Sf_AddTest("${TEST_TARGET}" "Catch2")
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_TARGET}")

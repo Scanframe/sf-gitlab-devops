@@ -1,5 +1,5 @@
 # Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.29)
 
 # Set the project name which is also used as the target name.
 project("hello-lib"
@@ -15,12 +15,45 @@ if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	find_package(SfBuildCheck CONFIG REQUIRED)
 	find_package(SfMacros CONFIG REQUIRED)
 	find_package(SfCompiler CONFIG REQUIRED)
-	# Set the 3 CMAKE_xxxxx_OUTPUT_DIRECTORY variables.
-	Sf_SetOutputDirs("bin")
 endif ()
 
-# Add shared library target and also sets the dynamic library version.
-Sf_AddSharedLibrary("${PROJECT_NAME}")
+
+# //! [switch]
+# Switch between static and dynamic library build.
+if (TRUE)
+	# Add shared library target and also sets the dynamic library version.
+	Sf_AddSharedLibrary("${PROJECT_NAME}")
+	# Sets the extension of the generated binary.
+	Sf_SetTargetSuffix("${PROJECT_NAME}")
+	# Add version resource to the target.
+	Sf_AddVersionResource("${PROJECT_NAME}")
+	# Add target compile definitions.
+	target_compile_definitions(${PROJECT_NAME} PRIVATE
+		# Tell the compiled code a dynamic library (DL) is being build.
+		TARGET_DYNAMIC_LIB
+		# Tell the code the 'hello-lib' library is used as dynamic library. (So imports needed)
+		_HWL_PKG
+		## The 'DEBUG_LEVEL' controls the debug output macro's.
+		_DEBUG_LEVEL=1
+		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
+		#REPORT_TARGET
+	)
+else ()
+	add_library("${PROJECT_NAME}" STATIC)
+	# Add target compile definitions.
+	target_compile_definitions(${PROJECT_NAME} PRIVATE
+		# Tell the compiled code a static library is being build.
+		TARGET_STATIC_LIB
+		## The 'DEBUG_LEVEL' controls the debug output macro's.
+		_DEBUG_LEVEL=1
+		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
+		#REPORT_TARGET
+		PUBLIC
+		# Tell the code the 'hello-lib' library is used as an archive. (So no imports or exports)
+		_HWL_ARC
+	)
+endif ()
+# //! [switch]
 
 # Adds the compiler and linker options for coverage.
 Sf_AddTargetForCoverage("${PROJECT_NAME}")
@@ -36,25 +69,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	src/hello.cpp
 )
 
-# Add target compile definitions.
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-	# Tell the compiled code a dynamic library (DL) is being build.
-	TARGET_DYNAMIC_LIB
-	# Tell the compiled code a dynamic library (DL) is being build.
-	QDESIGNER_EXPORT_WIDGETS
-	# Tell the code the 'sf-misc' library is used as an archive. (So no imports or exports)
-	#_HWL_ARC
-	# Tell the code the 'misc' library is used as dynamic library. (So imports needed)
-	_HWL_PKG
-	# The 'DEBUG_LEVEL' controls the debug output macro's.
-	_DEBUG_LEVEL=1
-	# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
-	#REPORT_TARGET
-)
-
-# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
-#target_compile_definitions(${PROJECT_NAME} PRIVATE REPORT_TARGET)
-
 # Set the include directories for this target.
 target_include_directories(${PROJECT_NAME}
 	# Make users use a directory prefix to prevent collisions in file-naming.
@@ -62,12 +76,6 @@ target_include_directories(${PROJECT_NAME}
 	# Privately no need for a prefix.
 	PRIVATE "inc/hwl"
 )
-
-# Sets the extension of the generated binary.
-Sf_SetTargetSuffix("${PROJECT_NAME}")
-
-# Add version resource to the target.
-Sf_AddVersionResource("${PROJECT_NAME}")
 
 
 

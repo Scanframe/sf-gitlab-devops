@@ -1,13 +1,13 @@
 #include <catch2/catch_all.hpp>
+#if defined(_WIN32)
+	#include <windows.h>
+#endif
 #include <climits>
 #include <csignal>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#if defined(_WIN32)
-	#include <windows.h>
-#endif
 
 static std::string getExecutableFilepath()
 {
@@ -25,15 +25,14 @@ TEST_CASE("sf::Json", "[json]")
 {
 	SECTION("Json")
 	{
-		std::filesystem::path const path =
-			std::filesystem::path(getExecutableFilepath())
-				.parent_path()
-				.parent_path()
-				.parent_path()
-				.append("src")
-				.append("tests")
-				.append("catch")
-				.append("test.customer.json");
+		std::filesystem::path const path = std::filesystem::path(getExecutableFilepath())
+																				 .parent_path()
+																				 .parent_path()
+																				 .parent_path()
+																				 .append("src")
+																				 .append("tests")
+																				 .append("catch")
+																				 .append("test.customer.json");
 		std::cerr << "Json File: " << path << std::endl;
 		REQUIRE(std::filesystem::exists(path));
 
@@ -45,9 +44,9 @@ TEST_CASE("sf::Json", "[json]")
 		}
 		REQUIRE(is.is_open());
 		nlohmann::json j;
-		std::cout << "Reading: " << path << std::endl;
+		std::clog << "Reading: " << path << std::endl;
 		is >> j;
 		is.close();
-		std::cout << std::setw(2) << j;
+		std::clog << std::setw(2) << j;
 	}
 }

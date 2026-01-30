@@ -2,7 +2,7 @@
 variables:
   # Make Git clone the submodules as well.
   GIT_SUBMODULE_STRATEGY: recursive
-  # Fixed base directory the source root is mounted to between jobs for each toolchain.
+  # Fixed the base directory the source root is mounted to between jobs for each toolchain.
   SF_DIR_MOUNT: "/tmp/binder/${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
   # Set a specific Docker image to execute all jobs in.
   image: "${SF_DOCKER_IMAGE}"
@@ -19,7 +19,7 @@ stages:
   - second-check
   - deploy
 
-# Template to configure cache for CMake generated files for the compiler.
+# Template to configure a cache for CMake generated files for the compiler.
 .cache:
   cache:
     key: "${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHORT_SHA}-${SF_TOOLCHAIN}"
@@ -56,11 +56,11 @@ stages:
     exclude:
       - ${SF_DIR_BIN}/**/.gitkeep
 
-# Script to mount source root on a fixed directory path for cmake.
+# Script to mount the source root on a fixed directory path for cmake.
 .bind-script: &bind-script
   - mkdir -p "${SF_DIR_MOUNT}" && ! mountpoint "${SF_DIR_MOUNT}" && bindfs "${PWD}" "${SF_DIR_MOUNT}" || exit 1
 
-# Template to unmount source root on a fixed directory path for cmake.
+# Template to unmount the source root on a fixed directory path for cmake.
 .unbind-script: &unbind-script
   - mountpoint "${SF_DIR_MOUNT}" && fusermount -uz "${SF_DIR_MOUNT}" && rmdir "${SF_DIR_MOUNT}" || exit 1
 
@@ -141,7 +141,7 @@ step-check:
     - 'cat cmake-build/my-file.txt || echo "Cache-file does not exist."'
     - 'cat "${SF_DIR_BIN}/my-artifact.txt" || echo "Artifact-File does not exist."'
 
-# Use local variables set using unset environment.
+# Use local variables set using an unset environment.
 step-deploy:
   stage: deploy
   extends:

@@ -1,4 +1,4 @@
-# Variables needed for this file where commented out values are from the parent pipeline or CI-settings.
+# Variables needed for this file where commented-out values are from the parent pipeline or CI-settings.
 variables:
   # Tag values for runner selection.
   #SF_TARGET_ARCH: "amd64"
@@ -13,7 +13,7 @@ variables:
   #SF_GCOVR_DIR: "bin/gcov"
   # Nexus exchange directory for coverage reports between child and parent pipeline.
   #SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
-  # Other needed CI-variables: NEXUS_USER, NEXUS_PASSWORD, NEXUS_SERVER_URL, NEXUS_EXCHANGE_REPO
+  # Other necessary CI variables are: NEXUS_USER, NEXUS_PASSWORD, NEXUS_SERVER_URL, NEXUS_EXCHANGE_REPO
   # Make Git clone the submodules as well.
   GIT_SUBMODULE_STRATEGY: recursive
 
@@ -30,8 +30,8 @@ stages:
   # Jobs involved in coverage reporting.
   - coverage
 
-# Fetches tags and checks if a tag describes current state of the repository.
-# Is not, unshallow is tried and exits when no tag is still not found.
+# Fetches tags and checks if a tag describes the current state of the repository.
+# If not, unshallow is tried and exits when still no tag is found.
 .script-tags: &tags-script
   - |
     # Prevent error when fetching.
@@ -72,8 +72,8 @@ job-coverage:
     # The make stage needs tags for versioning of shared libraries and packaging.
     - *tags-script
     # Execute the build script to CMake the makefiles.
-    - './build.sh --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '${SF_BUILD_CMD} --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     # Upload the all coverage files in the coverage directory.
     - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
-    # Add message to merge request.
+    # Add a message to the merge request.
     - 'cmake/lib/bin/coverage-comment.sh 1'

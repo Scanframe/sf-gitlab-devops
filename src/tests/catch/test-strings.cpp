@@ -1,4 +1,4 @@
-#include "gen/template.h"
+#include "cli/template.h"
 #include <catch2/catch_all.hpp>
 
 TEST_CASE("Some Unit Tests", "[generic][any]")

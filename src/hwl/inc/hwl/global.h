@@ -28,7 +28,7 @@ Add compiler definition flags:
 	#define _HWL_DATA
 	#define _HWL_FUNC
 	#define _HWL_CLASS
-// When no flags are defined assume the package is imported.
+// When no flags are defined, assume the package is imported.
 #else
 	#define _HWL_DATA TARGET_IMPORT
 	#define _HWL_FUNC TARGET_IMPORT

@@ -6,10 +6,10 @@ View or clone this project from [GitHub](https://github.com/Scanframe/sf-gitlab-
 
 ## Markdown Pages
 
-This current page is the main page of the generate HTML pages.
+This current page is the main page of the generated HTML pages.
 It is a mandatory file in this Doxygen setup.
 
-Open the [README.md](../README.md) page of this project/repository or its submodule     
+Open the [README.md](../README.md) page of this project/repository or its submodule 
 [cmake/lib/README.md](../cmake/lib/README.md).
 
 
@@ -17,8 +17,8 @@ Open the [README.md](../README.md) page of this project/repository or its submod
 
 Example of referencing namespaced functions:
 
-* ::Myself::calculateOffset
-* ::Myself::clip
+* ::MySpace::calculateOffset
+* ::MySpace::clip
 * ::getHello
 
 ## Images
@@ -29,7 +29,7 @@ The image below is created using LibreOffice (file: `svg-images.odg`) since it i
 only cross-platform application able to export SVG well enough.<br>
 To get a file like this select all items in the page wit `Ctrl+A` then export the file
 with menu `File | Export` and in the save dialog put a checkmark at **Selection** option.
-When not, the whole page is put in the resulting SVG-file which means a lot of white space around it.
+When not, the whole page is put in the resulting SVG-file, which means a lot of white space around it.
 
 ![services-processes](./services-processes.svg "Services & processes")
 

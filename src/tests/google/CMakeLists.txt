@@ -2,7 +2,7 @@
 set(TEST_TARGET "${SF_TEST_NAME_PREFIX}${PROJECT_NAME}-test-google")
 
 # Make GoogleTest::GoogleTest library available compatible with 1.15.2.
-find_package(SfGoogleTest 1.15.2 CONFIG REQUIRED)
+find_package(SfGoogleTest 1.17.0 CONFIG REQUIRED)
 
 # Find the test sources.
 file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test-*")
@@ -28,7 +28,7 @@ Sf_SetTargetSuffix("${TEST_TARGET}")
 target_link_libraries(${TEST_TARGET} PRIVATE gtest)
 
 # Add the ctest application.
-Sf_AddTest("${TEST_TARGET}" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/..")
+Sf_AddTest("${TEST_TARGET}" "GoogleTest")
 
 # Make sure this test is executed before coverage test.
 Sf_AddAsCoverageTest("${TEST_TARGET}")

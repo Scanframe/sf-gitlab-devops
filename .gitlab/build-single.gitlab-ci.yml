@@ -1,4 +1,4 @@
-# Variables needed for this file where commented out values are from the parent pipeline or CI-settings.
+# Variables needed for this file where the commented-out values are from the parent pipeline or CI-settings.
 variables:
   # Logger tag value.
   #SF_TARGET_ARCH: "amd64"
@@ -31,8 +31,8 @@ stages:
   # Deploy generated packages.
   - deploy
 
-# Fetches tags and checks if a tag describes current state of the repository.
-# Is not, unshallow is tried and exits when no tag is still not found.
+# Fetches tags and checks if a tag describes the current state of the repository.
+# If not, unshallow is tried and exits when still no tag is found.
 .script-tags: &tags-script
   - |
     # Prevent error when fetching.
@@ -64,8 +64,8 @@ default:
   # Allow to be interrupted.
   interruptible: true
 
-# Job for creating the make-file using the build.sh script calling CMake with appropriate arguments.
-# Wiping build directory is not needed since the push policy.
+# Job for creating the make-file using the build.py script calling CMake with appropriate arguments.
+# Wiping the build directory is not needed due to the push policy.
 job-build:
   stage: build
   rules:
@@ -96,9 +96,9 @@ job-build:
     # The make stage needs tags for versioning of shared libraries and packaging.
     - *tags-script
     # Execute the build script to CMake the makefiles.
-    - './build.sh --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
+    - '${SF_BUILD_CMD} --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
 
-# Template for all deploy jobs.
+# Template for all 'deploy' jobs.
 .deploy:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
@@ -142,7 +142,7 @@ job-deploy-staging:
       when: manual
       # Make this job optional.
       allow_failure: true
-    # When this branch is not the release branch set it allow manual deployment.
+    # When this branch is not the release branch, set it allow manual deployment.
     - if: '$CI_COMMIT_REF_NAME == $SF_RELEASE_BRANCH'
       when: manual
       allow_failure: true

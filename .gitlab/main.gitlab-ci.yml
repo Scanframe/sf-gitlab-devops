@@ -1,5 +1,5 @@
 # Variables needed for this file.
-# Commented out values are passed from GitLab CI/CD-settings.
+# Commented-out values are passed from GitLab CI/CD settings.
 variables:
   # Make Git clone the submodules as well.
   GIT_SUBMODULE_STRATEGY: recursive
@@ -12,25 +12,25 @@ variables:
   #SF_RELEASE_BRANCH: "main"
   # Output directory used by 'coverage-report.sh'.
   SF_GCOVR_DIR: "bin/gcov"
-  # Nexus exchange directory for coverage reports between child and parent pipeline.
+  # Nexus exchange directory for coverage reports between a child and parent pipeline.
   SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
   # To propagate the CI_PIPELINE_ID to the child pipeline.
   SF_PARENT_PIPELINE_ID: "${CI_PIPELINE_ID}"
   # Default Docker image.
-  SF_DOCKER_IMAGE: "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.8.1"
+  SF_DOCKER_IMAGE: "nexus.scanframe.com/amd64/gnu-cpp:24.04-6.10.1"
 
 workflow:
   rules:
     # No pipeline when SF_SIGNAL equals 'skip'.
     - if: '$SF_SIGNAL == "skip"'
       when: never
-    # Run pipeline initiated by a merge request event.
+    # Run the pipeline initiated by a merge request event.
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
-    # Run pipeline initiated by the web application.
+    # Run the pipeline initiated by the web application.
     - if: '$CI_PIPELINE_SOURCE == "web"'
       when: always
-    # Prevent double pipeline when having this workflow.
+    # Prevent a double pipeline when having this workflow.
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: always
     - when: never
@@ -45,6 +45,8 @@ stages:
 
 # Defaults for all jobs.
 default:
+  # Set a time limit for all jobs.
+  timeout: 2h
   # Set a specific Docker image to execute all jobs in.
   image: "${SF_DOCKER_IMAGE}"
   # Tags determine the selection of a runner.
@@ -56,7 +58,7 @@ default:
 # Rules for build jobs.
 .build-rules:
   rules:
-    # Skip if signal is 'test'.
+    # Skip if the signal is 'test'.
     - if: '$SF_SIGNAL == "test"'
       when: never
     # For testing the 'deploy' jobs.
@@ -74,7 +76,7 @@ check-env:
   stage: check
   script:
     - echo "Working Directory=$(pwd)"
-    # Print all environments variables sorted to make it easier to find.
+    # Print all environment variables sorted to make it easier to find.
     - echo "Environment Dump" && printenv | sort
     # Prevent error when fetching using 'check-format.sh'.
     - git config --global --add safe.directory '*'
@@ -87,7 +89,7 @@ cache-test:
   needs:
     - job: check-env
   rules:
-    # Run when signal is test.
+    # Run when the signal is 'test'.
     - if: '$SF_SIGNAL != "test"'
       when: never
     - when: on_success
@@ -96,6 +98,7 @@ cache-test:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "toolchain"
     SF_BUILD_TYPE: "debug"
+    SF_BUILD_CMD: "./build.py native"
     SF_DIR_BIN: "bin/lnx64"
   trigger:
     forward:
@@ -113,6 +116,7 @@ linux-gnu:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "gnu"
     SF_BUILD_TYPE: "release"
+    SF_BUILD_CMD: "./build.py native"
     SF_DIR_BIN: "bin/lnx64"
   trigger:
     forward:
@@ -131,6 +135,7 @@ linux-gw:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "gw"
     SF_BUILD_TYPE: "release"
+    SF_BUILD_CMD: "./build.py native"
     SF_DIR_BIN: "bin/win64"
   trigger:
     strategy: depend
@@ -149,7 +154,27 @@ linux-ga:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "ga"
     SF_BUILD_TYPE: "release"
+    SF_BUILD_CMD: "./build.py native"
     SF_DIR_BIN: "bin/lnx64"
+  trigger:
+    strategy: depend
+    forward:
+      yaml_variables: true
+    include:
+      - local: '.gitlab/build-single.gitlab-ci.yml'
+
+wine-msvc:
+  stage: build
+  needs:
+    - job: check-env
+    - job: linux-gcov
+  extends: .build-rules
+  variables:
+    # Set the toolchain to use.
+    SF_TOOLCHAIN: "msvc"
+    SF_BUILD_TYPE: "release"
+    SF_BUILD_CMD: "./build.py wine --"
+    SF_DIR_BIN: "bin/win64"
   trigger:
     strategy: depend
     forward:
@@ -166,9 +191,10 @@ linux-gcov:
     # Set the toolchain to use.
     SF_TOOLCHAIN: "gnu"
     SF_BUILD_TYPE: "coverage"
+    SF_BUILD_CMD: "./build.py native"
     SF_DIR_BIN: "bin/lnx64"
   rules:
-    # Skip if signal is "test"
+    # Skip if the signal is 'test'.
     - if: '$SF_SIGNAL == "test"'
       when: never
     # Run always when triggered by a merge request event.
@@ -185,7 +211,7 @@ linux-gcov:
     include:
       - local: '.gitlab/coverage.gitlab-ci.yml'
 
-# Report the coverage generated in the pipeline using infor stored on Nexus.
+# Report the coverage generated in the pipeline using info stored on Nexus.
 report-coverage:
   stage: report
   needs: [linux-gcov]

@@ -15,7 +15,7 @@ Defines these with true (1) or false (0):
 // Detect usage of the GCC GNU compiler.
 #if defined(__GNUC__)
 	#define IS_GNU 1
-//#pragma GCC visibility
+// #pragma GCC visibility
 #else
 	#define IS_GNU 0
 #endif
