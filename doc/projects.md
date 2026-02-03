@@ -23,5 +23,5 @@ This is the CMake project for the Hello World graphic application.
 
 ## Help on Template
 
-\ref src/gen/template.h
+\ref src/cli/gen/template.h
 
