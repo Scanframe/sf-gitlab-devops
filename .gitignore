@@ -1,6 +1,7 @@
 # Files from possible IDE's.
 /.metadata
 /.idea
+/.junie
 /.run
 /.vscode
 /.vs
@@ -26,9 +27,10 @@
 # Docker .ssh/environment additions.
 /.ssh-environment
 # Debug messages for testing conventinal commit.
-/.version-bump
+/.version-bump*
 # Test bash scripts.
 /test-*.sh
+/test-*.py
 /.tc-*
 # CMake include file overrulling the cache instead of changing the CMakePresets.json file.
 /user.cmake
