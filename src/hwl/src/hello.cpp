@@ -114,31 +114,3 @@ std::string getHello(int how)
 	}
 	return rv;
 }
-
-void killOtherThreads()
-{
-#if IS_WIN
-	if (isWine())
-	{
-		const auto pid = ::GetCurrentProcessId();
-		auto snapshot = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
-		THREADENTRY32 te;
-		te.dwSize = sizeof(te);
-		if (::Thread32First(snapshot, &te) != 0)
-		{
-			do
-			{
-				if (te.th32OwnerProcessID == pid && te.th32ThreadID != ::GetCurrentThreadId())
-				{
-					if (auto hThread = ::OpenThread(THREAD_TERMINATE, FALSE, te.th32ThreadID))
-					{
-						::TerminateThread(hThread, 0);
-						::CloseHandle(hThread);
-					}
-				}
-			} while (::Thread32Next(snapshot, &te) != 0);
-		}
-		CloseHandle(snapshot);
-	}
-#endif
-}

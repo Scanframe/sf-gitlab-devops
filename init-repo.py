@@ -172,7 +172,7 @@ def fix_submodule_url() -> None:
 def main() -> int:
 	"""
 	Main function.
-	:return: non-zero on error.
+	:return: Returns non-zero on error.
 	"""
 	# Change to the script directory.
 	os.chdir(ROOT_DIR)

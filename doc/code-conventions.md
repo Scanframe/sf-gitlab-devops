@@ -1,42 +1,41 @@
-@page conventions Conventions
-
-# C++ Naming Conventions
-
-This section contains design documentation.
-
+# C++ Naming Conventions {#code-conventions}
 
 ## Definitions
 
-
 ### Types of 'Casings'
 
-Names and examples of named case-types.  
+Names and examples of named case-types.
 
 #### Pascal Case (Studly Caps)
+
 ```
 NumberOfWords = 3
 MyGreetingText = "Hello World"
 ```
 
 #### Camel Case
+
 ```
 numberOfWords = 3
 myGreetingText = "Hello World"
 ```
 
 #### Upper Snake Case
+
 ```
 NUMBER_OF_WORDS = 3
 MY_GREETING_TEXT = "Hello World"
 ```
 
 #### Lower Snake Case
+
 ```
 number_of_words = 3
 my_greeting_text = "Hello World"
 ```
 
 #### Kebab cases
+
 ```
 number-of-words = 3
 my-greeting-text = "Hello World"
@@ -44,9 +43,9 @@ my-greeting-text = "Hello World"
 
 ## Naming Convention
 
-> This section is a far from complete but the basics are there at least.
+> This section is far from complete, but the basics are there at least.
 
-### General 
+### General
 
 * Types are always declared in a namespace (_to prevent naming collisions_).
 * Each class has its own header and code file if possible.
@@ -55,14 +54,14 @@ my-greeting-text = "Hello World"
 
 #### Header files (.h)
 
-Header files are clean and contain functions and class declarations having documentation blocks 
-(Doxygen) and do not contain definitions to keep them clean and easy to read.  
+Header files are clean and contain functions and class declarations having documentation blocks (Doxygen) and do not
+contain definitions to keep them clean and easy to read.  
 A distinction is made between inline and non-inline definitions.
 
 #### Definition files (.hpp)
 
-Contains the definitions of template functions or class methods and inlined functions or 
-class methods declared in the header file.
+Contains the definitions of template functions or class methods and inlined functions or class methods declared in the
+header file.
 
 #### Definition files (.cpp)
 
@@ -75,7 +74,7 @@ Contain the definitions of the functions and class methods declared in the heade
 ### Functions
 
 * Names are in "Camel Case".
-* The first word is verb in lowercase followed by one or more nouns.
+* The first word is a verb in the lowercase followed by one or more nouns.
 
 ### Classes & Structs
 
@@ -91,7 +90,7 @@ Contain the definitions of the functions and class methods declared in the heade
 ### Enumerates
 
 * An enumerate type name is a noun or a combination of nouns in "Pascal Case" prefixed with '**E**'.
-* Values entries of the enumerate are in "Camel Case" prefixed using all capitals of the type in lowercase.
+* Values entries of an enumeration are in "Camel Case" prefixed using all capitals of the type in lowercase.
 * Anonymous enumerates are used as constants are named using "Upper Snake Case".
 
 ### Templates
@@ -100,15 +99,15 @@ Contain the definitions of the functions and class methods declared in the heade
 
 ### Defines or Global Constants
 
-* Naming consists of nouns in "Upper Snake Case".
-* Order the nouns in the name in order of importance.  
+* Naming consists of nouns in 'Upper-Snake-Case'.
+* Order the nouns in the name in order of importance.
 
 ### Example
 
-The example is using the Allman code styling of braces which translates 
-to a [`.clang-format`]( ...clang-format/ ".clang-format project file") file.
+The example is using the Allman code styling of braces which translates to a
+[`.clang-format`](../.clang-format/ ".clang-format project file.") file.
 
-Filename according this convention looks like this `ArgumentMultiplier.h` and has this fictive class.
+Filename, according to this convention, looks like this `ArgumentMultiplier.h` and has this fictive class.
 
 ```cpp
 /**
@@ -180,4 +179,27 @@ class ArgumentMultiplier
 }
 ```
 
+## AI Rules as Context for Generating Code
 
+The following should be copied when asking for code C++ generation by an AI to get the correct formatted code.
+
+```text
+Apply the following instructions on generating the C++ code:
+
+- Use only up to C++17.
+- Enforcing Allman bracing.
+- Doxygen-style comments in headers only.
+- Use `#pragma once` as header sentries.
+- Use tabs for indentation.
+- Use tabs size is 2 characters.
+- Use no open lines in function bodies.
+- Comments in code are always placed above the code line and never behind it.
+- Comments must be full sentences ending with a period.
+- Comments must be placed above the code line they describe, never trailing on the same line.
+- Camel-case naming is used for object methods.
+- Camel-case naming is used for object data-members and starts with an underscore.
+- Lower-snake-case is used for class method and function argument names and also for the variables declared in them.
+- Const expression and define names are in Upper-Case-Snake.
+- Pascal Case is used for naming classes and structures.
+- Pascal Case is used for naming enumerate types and prefixed with the letter 'E'.
+```

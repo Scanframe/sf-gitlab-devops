@@ -102,9 +102,9 @@ job-build:
 .deploy:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
+    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" -o -name "*.tar.gz" | xargs cmake/lib/bin/upload-nexus.sh'
 
-# Use non specific environment depended variables for deployment of development builds.
+# Use non-specific environment depended on variables to deploy development builds.
 job-deploy-develop:
   stage: deploy
   extends: .deploy

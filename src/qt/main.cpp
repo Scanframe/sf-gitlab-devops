@@ -1,10 +1,11 @@
 #include <QApplication>
 #include <QPushButton>
+#include <QThreadPool>
 #include <hwl/hello.h>
 
 int main(int argc, char* argv[])
 {
-	auto* app = new QApplication(argc, argv);
+	QApplication app(argc, argv);
 	auto text = QString::fromStdString(getHello(argc)) + "\n";
 	text += "Timestamp: " + QString::fromStdString(utcTimeString()) + "\n";
 	text += QString("Qemu Virtualization: ").append(isQemu() ? "Yes" : "No") + "\n";
@@ -14,15 +15,18 @@ int main(int argc, char* argv[])
 	text += "Standard: " + QString::fromStdString(getCppStandardVersion()) + "\n";
 	text += QString("Qt Library: v") + qVersion() + "\n";
 	text += QString("Qt Build  : v") + QT_VERSION_STR;
-	auto* HelloWorld = new QPushButton(text);
-	HelloWorld->resize(300, 170);
-	HelloWorld->show();
-	auto rv = app->exec();
-// Fix for hanging Qt threads in Wine since 6.9.1
-#if defined(__MINGW32__) && QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-	killOtherThreads();
+	auto* btn = new QPushButton(text);
+	btn->resize(300, 170);
+	btn->show();
+	QObject::connect(btn, &QPushButton::clicked, [] {
+		QApplication::quit();
+	});
+	// Fix for hanging Qt threads in Wine since 6.9.1
+	auto rv = QCoreApplication::exec();
+	delete btn;
+#if IS_MINGW_THREADLOCAL_BUGGY
+	QThreadPool::globalInstance()->waitForDone();
+	exit(rv);
 #endif
-	delete HelloWorld;
-	delete app;
 	return rv;
 }

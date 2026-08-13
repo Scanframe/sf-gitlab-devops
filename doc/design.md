@@ -1,4 +1,4 @@
 # Design {#design}
 
-* @subpage conventions
+* @subpage code-conventions
 * @subpage projects

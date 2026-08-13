@@ -39,9 +39,3 @@ _HWL_FUNC std::string getCompilerVersion();
  * @brief Gets the C++ standard used when compiling.
  */
 _HWL_FUNC std::string getCppStandardVersion();
-
-/**
- * Kills/cancels all other thread besides this one.
- * Fixes a problem in the Qt library for Wine.
- */
-_HWL_FUNC void killOtherThreads();
