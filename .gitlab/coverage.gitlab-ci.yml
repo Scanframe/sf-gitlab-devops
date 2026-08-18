@@ -74,6 +74,6 @@ job-coverage:
     # Execute the build script to CMake the makefiles.
     - '${SF_BUILD_CMD} --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     # Upload the all coverage files in the coverage directory.
-    - './build.py --exchange "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
+    - './build.py publish --exchange "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
     # Add a message to the merge request.
     - 'cmake/lib/bin/coverage-comment.sh 1'

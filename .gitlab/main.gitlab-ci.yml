@@ -229,6 +229,6 @@ report-coverage:
       - "**/.gitkeep"
   script:
     # Retrieve the coverage file needed for GitLab created by the child pipeline.
-    - './build.py --exchange "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
+    - './build.py publish --exchange "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
     # Output the report.txt for the regex to pickup on.
     - 'if [[ -f "${SF_GCOVR_DIR}/report.txt" ]]; then cat "${SF_GCOVR_DIR}/report.txt"; fi'
