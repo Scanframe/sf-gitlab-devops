@@ -50,7 +50,7 @@ stages:
         echo "Could not git describe and is probably missing a version tag!"
         exit 1
       fi
-    fi    
+    fi
 
 # Defaults for all jobs.
 default:
@@ -88,6 +88,8 @@ job-build:
       - "${SF_DIR_PKG}/*.exe"
       # Package generator ZIP results.
       - "${SF_DIR_PKG}/*.zip"
+      # Package generator TGZ results.
+      - "${SF_DIR_PKG}/*.tar.gz"
     exclude:
       - "**/.gitkeep"
   before_script:
@@ -102,7 +104,7 @@ job-build:
 .deploy:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" -o -name "*.tar.gz" | xargs cmake/lib/bin/upload-nexus.sh'
+    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
 
 # Use non-specific environment depended on variables to deploy development builds.
 job-deploy-develop:

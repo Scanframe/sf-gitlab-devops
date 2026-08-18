@@ -10,7 +10,7 @@ variables:
   SF_DIR_PKG: "bin/pkg"
   # Name of the branch that allows running deploying to production. (set from CI/CD settings)
   #SF_RELEASE_BRANCH: "main"
-  # Output directory used by 'coverage-report.sh'.
+  # Output directory used by coverage.
   SF_GCOVR_DIR: "bin/gcov"
   # Nexus exchange directory for coverage reports between a child and parent pipeline.
   SF_EXCHANGE_DIR: "gitlab-ci/${CI_PROJECT_PATH}/pipeline/${CI_PIPELINE_ID}"
@@ -229,6 +229,6 @@ report-coverage:
       - "**/.gitkeep"
   script:
     # Retrieve the coverage file needed for GitLab created by the child pipeline.
-    - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
+    - './build.py --exchange "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
     # Output the report.txt for the regex to pickup on.
     - 'if [[ -f "${SF_GCOVR_DIR}/report.txt" ]]; then cat "${SF_GCOVR_DIR}/report.txt"; fi'

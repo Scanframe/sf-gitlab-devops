@@ -19,7 +19,7 @@ if (SfDoxygen_FOUND)
 		list(APPEND _SourceList ${_Sources})
 	endforeach ()
 	# Retrieve all non-test targets from the global project.
-	Sf_GetAllTargets(_Targets "${CMAKE_SOURCE_DIR}" "TRUE")
+	Sf_GetAllTargets(_Targets "${CMAKE_SOURCE_DIR}" TRUE)
 	# Remove all the test targets using its prefix.
 	list(FILTER _Targets EXCLUDE REGEX "^${SF_TEST_NAME_PREFIX}.*$")
 	# Iterate through all targets to remove non suited ones.

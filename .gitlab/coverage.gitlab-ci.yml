@@ -49,7 +49,7 @@ stages:
         echo "Could not git describe and is probably missing a version tag!"
         exit 1
       fi
-    fi    
+    fi
 
 # Defaults for all jobs.
 default:
@@ -74,6 +74,6 @@ job-coverage:
     # Execute the build script to CMake the makefiles.
     - '${SF_BUILD_CMD} --workflow "${SF_TOOLCHAIN}-${SF_BUILD_TYPE}"'
     # Upload the all coverage files in the coverage directory.
-    - 'cmake/lib/bin/exchange-nexus.sh --remote "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
+    - './build.py --exchange "${SF_EXCHANGE_DIR}" "${SF_GCOVR_DIR}/report".*'
     # Add a message to the merge request.
     - 'cmake/lib/bin/coverage-comment.sh 1'

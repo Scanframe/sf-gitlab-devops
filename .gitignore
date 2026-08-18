@@ -22,6 +22,7 @@
 /cmake/cpack/
 # Credential files for testing CI-pipeline called scripts.
 /.nexus-upload-credentials
+/.nexus-credentials.ini
 /.comment-credentials
 /.gitlab-credentials.ini
 # Docker .ssh/environment additions.

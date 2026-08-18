@@ -70,7 +70,7 @@ stages:
         echo "Could not git describe and is probably missing a version tag!"
         exit 1
       fi
-    fi    
+    fi
 
 # Script to mount the source root on a fixed directory path for cmake.
 .script-bind: &bind-script
@@ -115,6 +115,8 @@ stages:
       - "${SF_DIR_PKG}/*.exe"
       # Package generator ZIP results.
       - "${SF_DIR_PKG}/*.zip"
+      # Package generator TGZ results.
+      - "${SF_DIR_PKG}/*.tar.gz"
     exclude:
       - "**/.gitkeep"
 
@@ -204,9 +206,9 @@ job-pack:
     - job: job-test
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - 'find "${SF_DIR_PKG}" -maxdepth 1 -type f -name "*.deb" -o -name "*.exe" -o -name "*.zip" | xargs cmake/lib/bin/upload-nexus.sh'
+    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
 
-# Use non specific environment depended variables.
+# Use non-specific environment depended on variables.
 job-deploy-develop:
   stage: deploy
   extends:

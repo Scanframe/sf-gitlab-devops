@@ -22,15 +22,9 @@ endif ()
 # Switch between static and dynamic library build.
 if (TRUE)
 	# Add shared library target and also sets the dynamic library version.
-	Sf_AddSharedLibrary("${PROJECT_NAME}")
-	# Sets the extension of the generated binary.
-	Sf_SetTargetSuffix("${PROJECT_NAME}")
-	# Add version resource to the target.
-	Sf_AddVersionResource("${PROJECT_NAME}")
+	Sf_AddTarget("${PROJECT_NAME}" SHARED FLAGS pack VERSION EXIF SUFFIX COVERAGE)
 	# Add target compile definitions.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
-		# Tell the compiled code a dynamic library (DL) is being build.
-		TARGET_DYNAMIC_LIB
 		# Tell the code the 'hello-lib' library is used as dynamic library. (So imports needed)
 		_HWL_PKG
 		## The 'DEBUG_LEVEL' controls the debug output macro's.
@@ -39,11 +33,9 @@ if (TRUE)
 		#REPORT_TARGET
 	)
 else ()
-	add_library("${PROJECT_NAME}" STATIC)
+	Sf_AddTarget("${PROJECT_NAME}" STATIC COVERAGE)
 	# Add target compile definitions.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
-		# Tell the compiled code a static library is being build.
-		TARGET_STATIC_LIB
 		## The 'DEBUG_LEVEL' controls the debug output macro's.
 		_DEBUG_LEVEL=1
 		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
@@ -54,9 +46,6 @@ else ()
 	)
 endif ()
 # //! [switch]
-
-# Adds the compiler and linker options for coverage.
-Sf_AddTargetForCoverage("${PROJECT_NAME}")
 
 # Add the library alias.
 add_library(Sf::Hello ALIAS "${PROJECT_NAME}")
