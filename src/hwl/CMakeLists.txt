@@ -1,6 +1,3 @@
-# Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.29)
-
 # Set the project name which is also used as the target name.
 project("hello-lib"
 	DESCRIPTION "Hello shared library"
@@ -17,8 +14,16 @@ if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	find_package(SfCompiler CONFIG REQUIRED)
 endif ()
 
-
 # //! [switch]
+# Get the Git versions from the repository of this files directory.
+Sf_GetGitTagVersion(_Versions "${CMAKE_CURRENT_LIST_DIR}")
+# Report the found Git tag found version.
+Sf_ReportGitTagVersion("${_Versions}")
+# Split the list into separate values.
+list(GET _Versions 0 SF_GIT_TAG_VERSION)
+list(GET _Versions 1 SF_GIT_TAG_RC)
+list(GET _Versions 2 SF_GIT_TAG_COMMITS)
+
 # Switch between static and dynamic library build.
 if (TRUE)
 	# Add shared library target and also sets the dynamic library version.
@@ -31,6 +36,8 @@ if (TRUE)
 		_DEBUG_LEVEL=1
 		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 		#REPORT_TARGET
+		# Set version from Git.
+		SF_VERSION=${SF_GIT_TAG_VERSION}-rc${SF_GIT_TAG_RC}~${SF_GIT_TAG_COMMITS}
 	)
 else ()
 	Sf_AddTarget("${PROJECT_NAME}" STATIC COVERAGE)
@@ -40,6 +47,8 @@ else ()
 		_DEBUG_LEVEL=1
 		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 		#REPORT_TARGET
+		# Set version from Git.
+		SF_VERSION=${SF_GIT_TAG_VERSION}-rc${SF_GIT_TAG_RC}~${SF_GIT_TAG_COMMITS}
 		PUBLIC
 		# Tell the code the 'hello-lib' library is used as an archive. (So no imports or exports)
 		_HWL_ARC

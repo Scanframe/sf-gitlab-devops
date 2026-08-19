@@ -1,6 +1,4 @@
 # //! [all]
-# Required first entry checking the cmake version.
-cmake_minimum_required(VERSION 3.29)
 # Set the project name.
 project("hello-world-qt" LANGUAGES CXX)
 

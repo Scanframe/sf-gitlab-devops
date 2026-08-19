@@ -7,6 +7,7 @@ int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 	auto text = QString::fromStdString(getHello(argc)) + "\n";
+	text += "Application: " + QString::fromStdString(getApplicationVersion()) + "\n";
 	text += "Timestamp: " + QString::fromStdString(utcTimeString()) + "\n";
 	text += QString("Qemu Virtualization: ").append(isQemu() ? "Yes" : "No") + "\n";
 	text += QString("Wine Compatibility Layer: ").append(isWine() ? "Yes" : "No") + "\n";
@@ -16,7 +17,7 @@ int main(int argc, char* argv[])
 	text += QString("Qt Library: v") + qVersion() + "\n";
 	text += QString("Qt Build  : v") + QT_VERSION_STR;
 	auto* btn = new QPushButton(text);
-	btn->resize(300, 170);
+	btn->resize(300, 200);
 	btn->show();
 	QObject::connect(btn, &QPushButton::clicked, [] {
 		QApplication::quit();

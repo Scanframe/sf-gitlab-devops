@@ -31,6 +31,11 @@ _HWL_FUNC std::string getCpuArchitecture();
 _HWL_FUNC std::string getHello(int how);
 
 /**
+ * @brief Gets the application version retrieved from Git.
+ */
+_HWL_FUNC std::string getApplicationVersion();
+
+/**
  * @brief Gets the GNU compiler version.
  */
 _HWL_FUNC std::string getCompilerVersion();

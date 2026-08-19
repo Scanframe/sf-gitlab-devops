@@ -15,15 +15,15 @@ Add compiler definition flags:
 
 #pragma once
 
-// Import of defines for this target.
+// Import of definitions for this target.
 #include "target.h"
 
-// When DL target and the misc PKG is not used the shlib is being build.
+// When DL target and the hwl PKG is not used the shlib is being built.
 #if IS_DL_TARGET && defined(_HWL_PKG)
 	#define _HWL_DATA TARGET_EXPORT
 	#define _HWL_FUNC TARGET_EXPORT
 	#define _HWL_CLASS TARGET_EXPORT
-// Is used as an archive so no importing is needed.
+// Is used as an archive importing is not needed.
 #elif defined(_HWL_ARC)
 	#define _HWL_DATA
 	#define _HWL_FUNC
