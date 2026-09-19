@@ -105,7 +105,7 @@ job-build:
 .deploy:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
+    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.zip-def" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
 
 # Use non-specific environment depended on variables to deploy development builds.
 job-deploy-develop:
