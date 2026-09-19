@@ -27,10 +27,10 @@
 # Debug messages for testing conventinal commit.
 /.version-bump*
 # Test bash scripts.
-/test-*.sh
-/test-*.py
+/test-*.*
 /.tc-*
 # CMake include file overrulling the cache instead of changing the CMakePresets.json file.
 /user.cmake
 /user.ini
 /progress
+/www-export

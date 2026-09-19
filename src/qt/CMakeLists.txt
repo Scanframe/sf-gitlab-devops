@@ -25,4 +25,13 @@ target_sources(${PROJECT_NAME} PRIVATE main.cpp)
 # Add this for the headers in the autogen directory made by the *.ui files.
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Add the message log context for debug builds so %{function}, %{file} and %{line} are available in the log.
+# It can be specified by environment variable:
+#   QT_MESSAGE_PATTERN="%{if-category}%{category}: %{endif}%{function}: %{message}"
+# And not to forget by categorized log entry and rules:
+#   QT_LOGGING_RULES=qt.tts.*=true
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_compile_definitions(QT_MESSAGELOGCONTEXT)
+endif()
+
 # //! [all]

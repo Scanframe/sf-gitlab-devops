@@ -86,8 +86,9 @@ job-build:
       - "${SF_DIR_PKG}/*.rpm"
       # Package generator NSIS and NSIS64 results.
       - "${SF_DIR_PKG}/*.exe"
-      # Package generator ZIP results.
+      # Package generator ZIP results and Winget definitions.
       - "${SF_DIR_PKG}/*.zip"
+      - "${SF_DIR_PKG}/*.zip-def"
       # Package generator TGZ results.
       - "${SF_DIR_PKG}/*.tar.gz"
     exclude:

@@ -1,5 +1,5 @@
 # Set the target name using the project name as a base name.
-set(TEST_TARGET "${SF_TEST_NAME_PREFIX}${PROJECT_NAME}-test-google")
+set(TEST_TARGET "${PROJECT_NAME}-test-google")
 
 # Make GoogleTest::GoogleTest library available compatible with 1.15.2.
 find_package(SfGoogleTest 1.17.0 CONFIG REQUIRED)

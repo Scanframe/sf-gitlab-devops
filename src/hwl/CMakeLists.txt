@@ -11,7 +11,6 @@ if (PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
 	# Make sure builds do not wind up in the source directory.
 	find_package(SfBuildCheck CONFIG REQUIRED)
 	find_package(SfMacros CONFIG REQUIRED)
-	find_package(SfCompiler CONFIG REQUIRED)
 endif ()
 
 # //! [switch]
@@ -23,11 +22,13 @@ Sf_ReportGitTagVersion("${_Versions}")
 list(GET _Versions 0 SF_GIT_TAG_VERSION)
 list(GET _Versions 1 SF_GIT_TAG_RC)
 list(GET _Versions 2 SF_GIT_TAG_COMMITS)
+# Convert the versions list to a string.
+Sf_VersionToString(SF_VERSION "${_Versions}")
 
 # Switch between static and dynamic library build.
 if (TRUE)
 	# Add shared library target and also sets the dynamic library version.
-	Sf_AddTarget("${PROJECT_NAME}" SHARED FLAGS pack VERSION EXIF SUFFIX COVERAGE)
+	Sf_AddTarget("${PROJECT_NAME}" SHARED FLAGS pack doc VERSION EXIF SUFFIX COVERAGE)
 	# Add target compile definitions.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		# Tell the code the 'hello-lib' library is used as dynamic library. (So imports needed)
@@ -37,10 +38,10 @@ if (TRUE)
 		# When enabled the 'target.h' file enables reporting of the current target being build using 'pragma message'.
 		#REPORT_TARGET
 		# Set version from Git.
-		SF_VERSION=${SF_GIT_TAG_VERSION}-rc${SF_GIT_TAG_RC}~${SF_GIT_TAG_COMMITS}
+		SF_VERSION=${SF_VERSION}
 	)
 else ()
-	Sf_AddTarget("${PROJECT_NAME}" STATIC COVERAGE)
+	Sf_AddTarget("${PROJECT_NAME}" STATIC FLAGS doc COVERAGE)
 	# Add target compile definitions.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		## The 'DEBUG_LEVEL' controls the debug output macro's.
