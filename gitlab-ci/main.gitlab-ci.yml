@@ -104,7 +104,7 @@ cache-test:
     forward:
       yaml_variables: true
     include:
-      - local: .gitlab/test.gitlab-ci.yml
+      - local: gitlab-ci/test.gitlab-ci.yml
 
 linux-gnu:
   stage: build
@@ -123,7 +123,7 @@ linux-gnu:
       yaml_variables: true
     strategy: depend
     include:
-      - local: .gitlab/build-single.gitlab-ci.yml
+      - local: gitlab-ci/build-single.gitlab-ci.yml
 
 linux-gw:
   stage: build
@@ -142,7 +142,7 @@ linux-gw:
     forward:
       yaml_variables: true
     include:
-      - local: '.gitlab/build-single.gitlab-ci.yml'
+      - local: 'gitlab-ci/build-single.gitlab-ci.yml'
 
 linux-ga:
   stage: build
@@ -161,7 +161,7 @@ linux-ga:
     forward:
       yaml_variables: true
     include:
-      - local: '.gitlab/build-single.gitlab-ci.yml'
+      - local: 'gitlab-ci/build-single.gitlab-ci.yml'
 
 wine-msvc:
   stage: build
@@ -180,7 +180,7 @@ wine-msvc:
     forward:
       yaml_variables: true
     include:
-      - local: '.gitlab/build-single.gitlab-ci.yml'
+      - local: 'gitlab-ci/build-single.gitlab-ci.yml'
 
 # TODO: Coverage information is not read from child pipelines.
 #  See: https://gitlab.com/gitlab-org/gitlab/-/issues/280818
@@ -209,7 +209,7 @@ linux-gcov:
     forward:
       yaml_variables: true
     include:
-      - local: '.gitlab/coverage.gitlab-ci.yml'
+      - local: 'gitlab-ci/coverage.gitlab-ci.yml'
 
 # Report the coverage generated in the pipeline using info stored on Nexus.
 report-coverage:
