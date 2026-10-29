@@ -5,6 +5,8 @@
 The root repository is only for testing the `cmake/lib` submodule which is a project boilerplate.
 Follow the `cmake/lib` submodule documentation [`AGENTS.md`](cmake/lib/tpl/root/AGENTS.md).
 
+# Specific Main Repository
+
 ## Scripting & Build Tool Development (`build.py` / Python)
 
 ### Architectural Alignment
@@ -20,19 +22,19 @@ Follow the `cmake/lib` submodule documentation [`AGENTS.md`](cmake/lib/tpl/root/
 ### Configuration & Schema Changes
 
 - **Evaluate End-to-End Schema Impact**: When refactoring configuration sections or inheritance hierarchies (such as
-	splitting base credentials from environment-specific targets), always check how child defaults interact with required
-	variable validations.
+  splitting base credentials from environment-specific targets), always check how child defaults interact with required
+  variable validations.
 - **Maintain Clear Override Hierarchy**: Follow the strict precedence: `CLI Arguments` >
 	`Process Environment (RUN_ENV)` > `Merged INI Configuration`.
 
 ### Verification Checklist for Subcommands & Scripts
 
 - **Default Invocation Test**: Always test the default command line path with zero optional flags to ensure default
-	values satisfy all validations.
+  values satisfy all validations.
 - **All Config Target Sections**: Test resolution against all configured environments with dry-run mode (`-d`).
 - **CLI & ENV Overrides**: Confirm explicit CLI options properly override INI defaults when applicable.
 - **Windows / Cross-Platform Compatibility**: Ensure wildcard expansion (`glob.glob`) and URL/path separator
-	normalization are accounted for when processing file paths or arguments.
+  normalization are accounted for when processing file paths or arguments.
 
 ## Video Project
 
@@ -42,5 +44,3 @@ The file `cpp-build-framework/scenario.md` is used as a guide for the video crea
 A recorded slideshow is used to stitch the video scenes together and move from topic to topic and item to item.
 The slideshow is created using an HTML app in `cpp-build-framework/slides` where file
 `cpp-build-framework/slides/slides.js` contains the slide content.
-
-

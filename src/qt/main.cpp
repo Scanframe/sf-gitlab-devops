@@ -2,10 +2,12 @@
 #include <QPushButton>
 #include <QThreadPool>
 #include <hwl/hello.h>
+#include <iostream>
 
 int main(int argc, char* argv[])
 {
 	QApplication const app(argc, argv);
+	listLoadedLibraries(std::cout);
 	auto text = QString::fromStdString(getHello(argc)) + "\n";
 	text += "Application: " + QString::fromStdString(getApplicationVersion()) + "\n";
 	text += "Timestamp: " + QString::fromStdString(utcTimeString()) + "\n";

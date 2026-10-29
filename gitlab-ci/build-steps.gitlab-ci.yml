@@ -45,7 +45,7 @@ stages:
 # Template to dump all environment variables.
 .env-dump:
   # Do not need the cache for this one.
-  cache: []
+  cache: [ ]
   before_script:
     - echo "Working Directory=$(pwd)" && echo "Environment Dump" && printenv | sort
   script:
@@ -111,8 +111,6 @@ stages:
       - "${SF_DIR_BIN}/"
       # Package generator DEB Debian results.
       - "${SF_DIR_PKG}/*.deb"
-      # Package generator RPM results.
-      - "${SF_DIR_PKG}/*.rpm"
       # Package generator NSIS and NSIS64 results.
       - "${SF_DIR_PKG}/*.exe"
       # Package generator ZIP results and Winget definitions.
@@ -120,6 +118,10 @@ stages:
       - "${SF_DIR_PKG}/*.zip-def"
       # Package generator TGZ results.
       - "${SF_DIR_PKG}/*.tar.gz"
+      # Package generator RPM results.
+      - "${SF_DIR_PKG}/*.rpm"
+      # Package generator TGZ results.
+      - "${SF_DIR_PKG}/*.AppImage"
     exclude:
       - "**/.gitkeep"
 
@@ -150,7 +152,7 @@ job-config:
   stage: configure
   needs:
     - job: job-check
-  extends: [.cache]
+  extends: [ .cache ]
   cache:
     policy: push
   script:
@@ -165,7 +167,7 @@ job-build:
   stage: build
   needs:
     - job: job-config
-  extends: [.cache, .artifacts-build]
+  extends: [ .cache, .artifacts-build ]
   cache:
     policy: pull
   script:
@@ -177,7 +179,7 @@ job-build:
 
 job-test:
   stage: test
-  extends: [.cache]
+  extends: [ .cache ]
   needs:
     - job: job-build
   cache:
@@ -190,7 +192,7 @@ job-test:
 
 job-pack:
   stage: pack
-  extends: [.cache, .artifacts-pack]
+  extends: [ .cache, .artifacts-pack ]
   needs:
     - job: job-build
   cache:
@@ -209,7 +211,15 @@ job-pack:
     - job: job-test
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.zip-def" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
+    - >-
+      ./build.py publish
+      "${SF_DIR_PKG}/*.deb"
+      "${SF_DIR_PKG}/*.exe"
+      "${SF_DIR_PKG}/*.zip"
+      "${SF_DIR_PKG}/*.zip-def"
+      "${SF_DIR_PKG}/*.tar.gz"
+      "${SF_DIR_PKG}/*.rpm"
+      "${SF_DIR_PKG}/*.AppImage"
 
 # Use non-specific environment depended on variables.
 job-deploy-develop:

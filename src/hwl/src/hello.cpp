@@ -12,6 +12,8 @@
 		#include <Windows.h>
 	#endif
 	#include <tlhelp32.h>
+#else
+	#include <link.h>
 #endif
 
 std::string utcTimeString()
@@ -37,13 +39,40 @@ bool isQemu()
 bool isWine()
 {
 #if IS_WIN
-	HMODULE handle = ::GetModuleHandleA("ntdll.dll");
-	if (handle && ::GetProcAddress(handle, "wine_get_version"))
-	{
-		return true;
-	}
-#endif
+	static const bool underWine = [] {
+		HMODULE ntdll = ::GetModuleHandleW(L"ntdll.dll");
+		return ntdll && ::GetProcAddress(ntdll, "wine_get_version") != nullptr;
+	}();
+	return underWine;
+#else
 	return false;
+#endif
+}
+
+std::string getWineVersion()
+{
+	std::string retval;
+#if IS_WIN
+	static const char* version = reinterpret_cast<const char*>(UINTPTR_MAX);
+	// Sentry for Wine version detection.
+	if (reinterpret_cast<uintptr_t>(version) == UINTPTR_MAX)
+	{
+		HMODULE ntdll = ::GetModuleHandleA("ntdll.dll");
+		if (ntdll)
+		{
+			// using wine_get_version_t = const char* (*)();
+			auto wine_get_version = reinterpret_cast<const char* (*)()>(GetProcAddress(ntdll, "wine_get_version"));
+			version = wine_get_version ? wine_get_version() : nullptr;
+		}
+		else
+		{
+			version = nullptr;
+		}
+	}
+	return version ? version : "";
+#else
+	return "";
+#endif
 }
 
 std::string getCpuArchitecture()
@@ -86,7 +115,7 @@ std::string getCompilerVersion()
 #elif defined(__GNUC__)
 	return std::string("GCC ") + std::to_string(__GNUC__) + "." + std::to_string(__GNUC_MINOR__) + "." + std::to_string(__GNUC_PATCHLEVEL__);
 #else
-	return {"Unknown ?.?.?"}
+	return {"Unknown ?.?.?"};
 #endif
 }
 
@@ -121,4 +150,25 @@ std::string getHello(int how)
 		rv = "Hello World!";
 	}
 	return rv;
+}
+
+void listLoadedLibraries(std::ostream& os)
+{
+#if !IS_WIN
+	// Callback function executed for each loaded library.
+	auto callback = [](dl_phdr_info* info, size_t, void* data) -> int {
+		auto& os = *static_cast<std::ostream*>(data);
+		// The first entry is usually the main executable itself, which has an empty name.
+		if (info->dlpi_name && info->dlpi_name[0] != '\0')
+		{
+			os << "Library: " << info->dlpi_name << " (Base Address: 0x" << std::hex << info->dlpi_addr << std::dec << ")\n";
+		}
+		else
+		{
+			os << "Executable: 0x" << std::hex << info->dlpi_addr << "\n";
+		}
+		return 0;
+	};
+	dl_iterate_phdr(callback, &os);
+#endif
 }

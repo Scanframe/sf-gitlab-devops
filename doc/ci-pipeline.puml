@@ -1,12 +1,16 @@
 @startuml
 <style>
-	FontName Arial
-	FontSize 13
 	root
 	{
-		Padding 0
+		FontName Arial
+		FontSize 13
 		Margin 0
 		HorizontalAlignment Left
+	}
+	title{
+		FontStyle Bold
+		FontSize 16
+		FontColor #black
 	}
 	frame {
 		' define a new style, using CSS class syntax

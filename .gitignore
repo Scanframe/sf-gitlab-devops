@@ -5,21 +5,29 @@
 /.run
 /.vscode
 /.vs
-/CMakeLists.txt.user
+/.qtcreator
+# Python virtual environment.
+/venv
+/.venv
+# Optional user CMake include file which is included when it exists.
+/user.cmake
+# Optional user INI include file which is included when it exists.
+/user.ini
 # Any cmake-build directory in the project tree.
-**/cmake-build*
+**/cmake-build*/*
+# Any python cache.
+**/__pycache__/
 # Developers addition on the 'CMakePresets.json' file.
 /CMakeUserPresets.json
 # Binary directories containg build/packaged results.
-/bin/gcov
-/bin/pkg
+/bin/gcov/*
+/bin/pkg/*
 # Ignore all binary directories.
 /bin/lnx64*
 /bin/win64*
 /bin/man
-# Location of downloaded uncompressed libraries.
+# Location of downloaded and uncompressed libraries in the project root.
 /lib
-/cmake/cpack/
 # Credential files for testing CI-pipeline called scripts.
 /.*credentials*
 # Docker .ssh/environment additions.
@@ -28,9 +36,14 @@
 /.version-bump*
 # Test bash scripts.
 /test-*.*
+# Toochain environment files.
 /.tc-*
+# Temporary markdowns.
+**/COMMITLST.md
+**/COMMITMSG.md
+**/REVIEW.md
 # CMake include file overrulling the cache instead of changing the CMakePresets.json file.
-/user.cmake
-/user.ini
 /progress
-/www-export
+/external
+# Test apps
+/src/tests/app/*

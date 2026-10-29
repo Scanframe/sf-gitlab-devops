@@ -6,7 +6,7 @@ project("hello-world"
 )
 
 # Set the actual executable target.
-Sf_AddTarget("${PROJECT_NAME}" FLAGS doc cli pack VERSION EXIF SUFFIX)
+Sf_AddTarget("${PROJECT_NAME}" FLAGS doc cli pack VERSION EXIF SUFFIX EXCL_COV)
 
 # Import the library static or dynamic.
 target_link_libraries(${PROJECT_NAME} PRIVATE Sf::Hello)

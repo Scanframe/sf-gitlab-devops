@@ -19,6 +19,12 @@ _HWL_FUNC bool isQemu();
 _HWL_FUNC bool isWine();
 
 /**
+ * @brief Gets the Wine version string.
+ * @return Wine version string or nullptr if not running under Wine.
+ */
+_HWL_FUNC std::string getWineVersion();
+
+/**
  * @brief Gets the Cpu architecture.
  */
 _HWL_FUNC std::string getCpuArchitecture();
@@ -44,3 +50,8 @@ _HWL_FUNC std::string getCompilerVersion();
  * @brief Gets the C++ standard used when compiling.
  */
 _HWL_FUNC std::string getCppStandardVersion();
+
+/**
+ * @brief Lists the loaded dynamic libraries loaded at this time.
+ */
+_HWL_FUNC void listLoadedLibraries(std::ostream& os);

@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+#include <sstream>
+#include <string>
 #include <hwl/hello.h>
 
 TEST(Hello, World)

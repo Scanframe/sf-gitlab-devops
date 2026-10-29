@@ -91,6 +91,8 @@ job-build:
       - "${SF_DIR_PKG}/*.zip-def"
       # Package generator TGZ results.
       - "${SF_DIR_PKG}/*.tar.gz"
+      # Package generator TGZ results.
+      - "${SF_DIR_PKG}/*.AppImage"
     exclude:
       - "**/.gitkeep"
   before_script:
@@ -105,7 +107,15 @@ job-build:
 .deploy:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
-    - './build.py publish "${SF_DIR_PKG}/*.deb" "${SF_DIR_PKG}/*.exe" "${SF_DIR_PKG}/*.zip" "${SF_DIR_PKG}/*.zip-def" "${SF_DIR_PKG}/*.tar.gz" "${SF_DIR_PKG}/*.rpm"'
+    - >-
+      ./build.py publish
+      "${SF_DIR_PKG}/*.deb"
+      "${SF_DIR_PKG}/*.exe"
+      "${SF_DIR_PKG}/*.zip"
+      "${SF_DIR_PKG}/*.zip-def"
+      "${SF_DIR_PKG}/*.tar.gz"
+      "${SF_DIR_PKG}/*.rpm"
+      "${SF_DIR_PKG}/*.AppImage"
 
 # Use non-specific environment depended on variables to deploy development builds.
 job-deploy-develop:
@@ -115,7 +125,7 @@ job-deploy-develop:
     - job: job-build
   # Jobs from which it needs artifacts.
   dependencies:
-    -  job-build
+    - job-build
   rules:
     # For testing the 'deploy' step in any scenario.
     - if: '$SF_SIGNAL == "deploy"'

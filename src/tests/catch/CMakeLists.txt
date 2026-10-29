@@ -1,7 +1,7 @@
 # Set the target name using the project name as a base name.
 set(TEST_TARGET "${PROJECT_NAME}-test-catch")
 
-# Make Catch2::Catch2 library available compatible with v3.5.2.
+# Make Catch2::Catch2 library available.
 find_package(SfCatch2 CONFIG REQUIRED)
 
 # Make nlohmann_json::nlohmann_json library available.

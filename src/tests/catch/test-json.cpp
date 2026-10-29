@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <nlohmann/json.hpp>
 
 static std::string getExecutableFilepath()

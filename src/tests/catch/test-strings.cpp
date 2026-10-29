@@ -1,4 +1,6 @@
 #include <catch2/catch_all.hpp>
+#include <vector>
+#include <string>
 
 TEST_CASE("Some Unit Tests", "[generic][any]")
 {
