@@ -11,7 +11,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 # Set the actual executable target.
-Sf_AddTarget("${PROJECT_NAME}" FLAGS gui pack qt VERSION EXIF SUFFIX EXCL_COV)
+Sf_AddTarget("${PROJECT_NAME}" FLAGS gui pack qt pri VERSION EXIF SUFFIX EXCL_COV)
 
 # Explicitly tell the compiled code the QT libraries are included.
 target_compile_definitions(${PROJECT_NAME} PRIVATE TARGET_QT)

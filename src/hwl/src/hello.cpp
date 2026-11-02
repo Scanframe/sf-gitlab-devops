@@ -29,9 +29,16 @@ std::string utcTimeString()
 bool isQemu()
 {
 #if !IS_WIN
-	// QEMU often uses virtio devices.
-	if (std::filesystem::exists("/sys/bus/virtio"))
+	// QEMU user-mode (Docker with binfmt_misc): the host registers an emulator handler.
+	if (std::filesystem::exists("/proc/sys/fs/binfmt_misc/qemu-aarch64"))
+	{
 		return true;
+	}
+	// QEMU system emulation (a full VM) with virtio devices.
+	if (std::filesystem::exists("/sys/bus/virtio"))
+	{
+		return true;
+	}
 #endif
 	return false;
 }
