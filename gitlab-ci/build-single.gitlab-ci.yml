@@ -116,7 +116,7 @@ job-build:
   script:
     # Upload all generated packages to Nexus depending on their extension to a specific destination.
     - >-
-      ./build.py --verbose publish
+      ./build.py publish --verbose
       "${SF_DIR_PKG}/*.deb"
       "${SF_DIR_PKG}/*.exe"
       "${SF_DIR_PKG}/*.zip"
