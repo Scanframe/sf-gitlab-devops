@@ -95,6 +95,8 @@ cache-test:
     - when: on_success
     - allow_failure: false
   variables:
+    # Only need the last commit for the build.py script.
+    GIT_DEPTH: 1
     # Set the toolchain to use.
     SF_TOOLCHAIN: "toolchain"
     SF_BUILD_TYPE: "debug"
@@ -213,6 +215,9 @@ linux-gcov:
 
 # Report the coverage generated in the pipeline using info stored on Nexus.
 report-coverage:
+  variables:
+    # Only need the last commit for the build.py script.
+    GIT_DEPTH: 1
   stage: report
   needs: [linux-gcov]
   coverage: /^\s*lines:\s*\d+.\d+\%/
@@ -224,11 +229,11 @@ report-coverage:
       coverage_report:
         coverage_format: cobertura
         path: "${SF_GCOVR_DIR}/report.xml"
-    expire_in: 2 days
+    expire_in: 7 days
     exclude:
       - "**/.gitkeep"
   script:
     # Retrieve the coverage file needed for GitLab created by the child pipeline.
-    - './build.py publish --exchange "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
+    - './build.py publish --verbose --exchange "${SF_EXCHANGE_DIR}" --local "${SF_GCOVR_DIR}" report.xml report.txt'
     # Output the report.txt for the regex to pickup on.
     - 'if [[ -f "${SF_GCOVR_DIR}/report.txt" ]]; then cat "${SF_GCOVR_DIR}/report.txt"; fi'

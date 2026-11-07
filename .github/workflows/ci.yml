@@ -1,0 +1,30 @@
+name: CI
+
+# Cancel in-progress runs on the same ref when there is a new commit.
+# This must be in the caller. In the called workflow it would cancel itself.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Manual deploy of the packages (only from the release branch)'
+        type: choice
+        default: none
+        options: [none, staging, stable]
+
+jobs:
+  ci:
+    # A called workflow can not get more permissions than the caller grants.
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: Scanframe/sf-workflows/github-ci/workflows/ci.yml@v1
+    secrets: inherit
+    with:
+      deploy: ${{ inputs.deploy || 'none' }}
