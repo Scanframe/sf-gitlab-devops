@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: Scanframe/sf-workflows/.github/workflows/ci.yml@v1
+    uses: Scanframe/sf-workflows/.github/workflows/ci.yml@main
     secrets: inherit
     with:
       deploy: ${{ inputs.deploy || 'none' }}
