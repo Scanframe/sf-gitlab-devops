@@ -134,7 +134,7 @@ def symlink2native(target_dir: Union[str, Path]) -> None:
 			magic_link: Path = link_path.with_name(link_path.name + magic)
 			original_backup: Path = link_path.with_name(link_path.name + magic + "org")
 
-			# Create native symlink. 
+			# Create native symlink.
 			# In Cygwin, we can use 'CYGWIN=winsymlinks:native ln -rs'.
 			if is_cygwin():
 				env: Dict[str, str] = os.environ.copy()
@@ -164,7 +164,7 @@ def fix_submodule_url() -> None:
 			if os.path.dirname(origin_url) == 'https://github.com/Scanframe':
 				print("Fixing cmake library submodule URL.")
 				run_command(["git", "config", "--file", ".gitmodules", "submodule.cmake/lib.url",
-					"https://github.com/Scanframe/sf-cmake.git"])
+					"https://github.com/scanframe-org/sf-cmake.git"])
 	except Exception as ex:
 		print(f"! Warning: Failed to fix submodule URL: {ex}")
 
