@@ -38,3 +38,5 @@ jobs:
       docker-image: 'nexus.scanframe.com/amd64/gnu-cpp:24.04-6.12.0'
       # Allow the repository to define a matrix of build configurations.
       matrix: ${{ vars.SF_BUILD_MATRIX || '' }}
+      # Allow the repository to pin the cmake/lib submodule to a specific branch.
+      cmake-lib-branch: ${{ vars.SF_CMAKE_LIB_BRANCH || '' }}
