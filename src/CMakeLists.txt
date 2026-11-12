@@ -1,4 +1,4 @@
-add_subdirectory("gen")
+add_subdirectory("cli")
 add_subdirectory("hwl")
 
 # When Qt libraries are linked.
@@ -8,6 +8,16 @@ endif ()
 
 # Function enable_testing() set the 'BUILD_TESTING' flag.
 if (SF_BUILD_TESTING)
-	add_subdirectory(tests/google)
+	# Optional temporary applications.
+	if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/tests/app/CMakeLists.txt")
+		add_subdirectory(tests/app)
+	endif ()
 	add_subdirectory(tests/catch)
+	# Somehow Windows MinGW compiler causes errors: undefined reference to '__imp__Exit' and to '__imp_quick_exit'.
+	add_subdirectory(tests/google)
 endif ()
+
+# Add a files as examples.
+Sf_AddExamples("hwl/CMakeLists.txt" "hwl")
+Sf_AddExamples("cli/CMakeLists.txt" "hwl/gen")
+Sf_AddExamples("qt/CMakeLists.txt" "hwl/qt")

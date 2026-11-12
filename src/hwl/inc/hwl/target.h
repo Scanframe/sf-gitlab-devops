@@ -1,21 +1,24 @@
-/*
-Making it easier to build libraries for the various targets and platforms.
-Defines these with true (1) or false (0):
+/**
+ * @file hwl//target.h
+ * @hideincludedbygraph
+ * <pre>
+ * Making it easier to build libraries for the various targets and platforms.
+ * Defines these with true (1) or false (0):
  * IS_GCC > GNU compiler detected.
  * IS_QT > QT compile target is detected.
  * IS_WIN > Windows compile target is detected.
-
  * IS_AB_TARGET > An application binary is the current target.
  * IS_DL_TARGET > A dynamic library is the current target.
  * IS_SL_TARGET > A static library is the current target.
-*/
+ * </pre>
+ */
 
 #pragma once
 
 // Detect usage of the GCC GNU compiler.
 #if defined(__GNUC__)
 	#define IS_GNU 1
-//#pragma GCC visibility
+// #pragma GCC visibility
 #else
 	#define IS_GNU 0
 #endif
@@ -48,7 +51,7 @@ Defines these with true (1) or false (0):
 	#define IS_SL_TARGET 0
 #endif
 
-// CHeck if an application binary is targeted
+// Check if an application binary is targeted
 #if IS_DL_TARGET || IS_SL_TARGET
 	#define IS_AB_TARGET 0
 #else
@@ -80,34 +83,55 @@ Defines these with true (1) or false (0):
 	#define TARGET_HIDDEN __attribute__((visibility("hidden")))
 #endif
 
+// MinGW GCC < 13.4 detection for thread_local destructor ordering bug GCC #116159"
+#if (defined(__MINGW32__) || defined(__MINGW64__)) && ((__GNUC__ < 13) || (__GNUC__ == 13 && __GNUC_MINOR__ < 4))
+	#define IS_MINGW_THREADLOCAL_BUGGY 1
+#else
+	#define IS_MINGW_THREADLOCAL_BUGGY 0
+#endif
+
 // Report current targeted result.
 #if defined(REPORT_TARGET)
-// Report when GNU GCC is used.
+	// Report when GNU GCC is used.
 	#if IS_GNU
 		#pragma message("GNU compiler")
 	#endif
-// Report the Windows target.
+	// Report the Windows target.
 	#if IS_WIN
 		#pragma message("Windows build")
 	#endif
-// Report the GNU C++ compiler.
+	// Report the GNU C++ compiler.
 	#if IS_GNU
 		#pragma message("GNU C++ Compiler")
 	#endif
-// Report the Visual C++ compiler.
+	// Report the Visual C++ compiler.
 	#if IS_MSVC
 		#pragma message("Visual C++ Compiler")
 	#endif
-// Report the QT is linked.
+	// Report the QT is linked.
 	#if IS_QT
 		#pragma message("Target: QT")
 	#endif
-// Report the target is a dynamic shared library.
+	// Report the QT designer widgets are exported.
+	#ifdef QDESIGNER_EXPORT_WIDGETS
+		#pragma message("Target: QT Export designer widgets")
+	#endif
+	// Report the target is a dynamic library.
 	#if IS_DL_TARGET
 		#pragma message("Target: Shared Library")
 	#endif
-// Report the target is a static library (archive).
+	// Report the target is a static library (archive).
 	#if IS_SL_TARGET
 		#pragma message("Target: Static Library")
+	#endif
+	// Report the C++ version using preprocessor directives
+	#define _STRINGIFY_(x) #x
+	#define _TOSTRING_(x) _STRINGIFY_(x)
+	#pragma message("C++: " _TOSTRING_(__cplusplus))
+	#undef _STRINGIFY_
+	#undef _TOSTRING_
+	// Report the thread local bug.
+	#if IS_MINGW_THREADLOCAL_BUGGY
+		#pragma message("MinGW GCC < 13.4 detected: thread_local destructor ordering bug present (GCC #116159)")
 	#endif
 #endif// REPORT_TARGET

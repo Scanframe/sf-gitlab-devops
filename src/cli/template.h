@@ -43,17 +43,9 @@ auto calculateOffset(T value, T min_val, T max_val, S len, bool clip) -> S
 		// When the len is a negative value.
 		if (len < 0)
 		{
-			return (temp < len)
-				? len
-				: (temp > S(0))
-				? S(0)
-				: temp;
+			return (temp < len) ? len : (temp > S(0)) ? S(0) : temp;
 		}
-		return (temp > len)
-			? len
-			: (temp < S(0))
-			? S(0)
-			: temp;
+		return (temp > len) ? len : (temp < S(0)) ? S(0) : temp;
 	}
 	return temp;
 }
@@ -69,13 +61,7 @@ auto calculateOffset(T value, T min_val, T max_val, S len, bool clip) -> S
 template<class T>
 inline auto clip(const T value, const T min_val, const T max_val) -> T
 {
-	return (value < min_val)
-		? min_val
-		: (
-				(value > max_val)
-					? max_val
-					: value
-			);
+	return (value < min_val) ? min_val : ((value > max_val) ? max_val : value);
 }
 
 }// namespace MySpace

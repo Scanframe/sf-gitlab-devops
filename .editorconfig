@@ -1,0 +1,14 @@
+[*]
+indent_style = tab
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+max_line_length = 120
+
+[*.{c++,cc,cpp,cxx,h,h++,hh,hpp,hxx,inl,ipp,tlh,tli}]
+max_line_length = 160
+
+[*.md]
+trim_trailing_whitespace = false
+

@@ -1,12 +1,16 @@
 @startuml
 <style>
-	FontName Arial
-	FontSize 13
 	root
 	{
-		Padding 0
+		FontName Arial
+		FontSize 13
 		Margin 0
 		HorizontalAlignment Left
+	}
+	title{
+		FontStyle Bold
+		FontSize 16
+		FontColor #black
 	}
 	frame {
 		' define a new style, using CSS class syntax
@@ -55,6 +59,7 @@ frame "Pipeline" as pipeline {
 	frame "GitLab-CI" as gitlab_ci {
 		rectangle "Child: GNU-Build" <<gitlab-ci>> as gnu_cmake
 		rectangle "Child: GW-Build" <<gitlab-ci>> as gw_cmake
+		rectangle "Child: MSVC-Build" <<gitlab-ci>> as msvc_cmake
 		rectangle "Child: GNU-Coverage" <<gitlab-ci>> as gnu_coverage
 		rectangle "Main" <<gitlab-ci>> as main
 	}
@@ -63,6 +68,7 @@ frame "Pipeline" as pipeline {
 	merge_event --> main : trigger
 	main --> gnu_cmake : trigger
 	main --> gw_cmake : trigger
+	main --> msvc_cmake : trigger
 	main --> gnu_coverage : trigger
 }
 @enduml

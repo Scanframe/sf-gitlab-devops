@@ -1,23 +1,29 @@
+---
+# Example for a Project CI workflow.
+
 name: Project CI
 
 # Cancel in-progress runs on the same ref when there is a new commit.
 # This must be in the caller. In the called workflow it would cancel itself.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
-on:
+"on":
   push:
     branches: ['**']
   pull_request:
   workflow_dispatch:
     inputs:
+      skip_build:
+        description: 'Skip build and beyond'
+        type: boolean
+        default: false
       deploy:
         description: 'Manual deploy of the packages (only from the release branch)'
         type: choice
         default: none
         options: [none, staging, stable]
-
 jobs:
   ci:
     # A called workflow can not get more permissions than the caller grants.
@@ -27,5 +33,10 @@ jobs:
     uses: scanframe-org/sf-workflows/.github/workflows/ci.yml@main
     secrets: inherit
     with:
-      docker-image: 'nexus.scanframe.com/amd64/gnu-cpp:24.04-6.12.0'
+      skip_build: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.skip_build) || false }}
       deploy: ${{ inputs.deploy || 'none' }}
+      docker-image: 'nexus.scanframe.com/amd64/gnu-cpp:24.04-6.12.0'
+      # Allow the repository to define a matrix of build configurations.
+      matrix: ${{ vars.SF_BUILD_MATRIX || '' }}
+      # Allow the repository to pin the cmake/lib submodule to a specific branch.
+      cmake-lib-branch: ${{ vars.SF_CMAKE_LIB_BRANCH || '' }}

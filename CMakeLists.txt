@@ -1,1 +1,1 @@
-cmake/lib/tpl/root/CMakeLists.tpl.cmake
+cmake/lib/tpl/root/CMakeLists.cmake
